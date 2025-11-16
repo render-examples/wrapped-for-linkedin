@@ -1,6 +1,6 @@
 # LinkedIn Wrapped
 
-LinkedIn 2025 Wrapped transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and identify when your audience is most active.
+LinkedIn Wrapped transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and identify when your audience is most active.
 
 Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [Venkata Naga Sai Kumar Bysani](https://www.linkedin.com/in/saibysani18/).
 
