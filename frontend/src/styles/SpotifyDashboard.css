@@ -1,0 +1,445 @@
+/* Spotify Dashboard Styling */
+:root {
+  --primary-green: #1DB954;
+  --primary-black: #0F0F0F;
+  --dark-bg: #121212;
+  --card-bg: #1E1E1E;
+  --light-text: #FFFFFF;
+  --secondary-text: #B3B3B3;
+  --accent-purple: #9945FF;
+  --accent-pink: #FF006E;
+  --accent-blue: #00B4D8;
+
+  /* Gradients */
+  --gradient-1: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+  --gradient-2: linear-gradient(135deg, #FF006E 0%, #FF4B70 100%);
+  --gradient-3: linear-gradient(135deg, #00B4D8 0%, #0096C7 100%);
+  --gradient-4: linear-gradient(135deg, #9945FF 0%, #B575FF 100%);
+
+  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.6);
+}
+
+.spotify-dashboard {
+  width: 100%;
+  padding: 3rem 2rem;
+  background: linear-gradient(180deg, var(--primary-black) 0%, var(--dark-bg) 100%);
+  color: var(--light-text);
+  font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+  margin-bottom: 4rem;
+  text-align: center;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.hero-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--secondary-text);
+  font-weight: 500;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Metric Cards */
+.metric-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-card);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metric-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.9;
+}
+
+.gradient-1 {
+  background: var(--gradient-1);
+}
+
+.gradient-2 {
+  background: var(--gradient-2);
+}
+
+.gradient-3 {
+  background: var(--gradient-3);
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.card-value-container {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.card-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.primary-value {
+  font-size: 3rem;
+}
+
+.secondary-value {
+  font-size: 2.75rem;
+}
+
+.card-unit {
+  font-size: 0.875rem;
+  opacity: 0.85;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.card-accent {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  margin-top: 1rem;
+  border-radius: 2px;
+}
+
+/* Primary Card - Larger */
+.primary-card {
+  grid-column: 1 / -1;
+  min-height: 240px;
+}
+
+/* Secondary Card */
+.secondary-card {
+  grid-column: span 1;
+}
+
+@media (max-width: 768px) {
+  .primary-card {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Engagement Card - Special Layout */
+.engagement-card {
+  grid-column: span 1;
+}
+
+.engagement-content {
+  justify-content: space-between;
+}
+
+.engagement-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.engagement-item {
+  text-align: center;
+}
+
+.engagement-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.engagement-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.engagement-label {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Detailed Stats Section */
+.detailed-stats {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  backdrop-filter: blur(10px);
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: var(--transition-smooth);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--secondary-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metric-card {
+  animation: slideUp 0.6s ease-out;
+}
+
+.metric-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.metric-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.metric-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .card-value {
+    font-size: 2rem;
+  }
+
+  .primary-value {
+    font-size: 2.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .spotify-dashboard {
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-section {
+    margin-bottom: 2rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    min-height: 180px;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .card-label {
+    font-size: 0.75rem;
+  }
+
+  .card-value,
+  .primary-value {
+    font-size: 1.75rem;
+  }
+
+  .engagement-metrics {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .engagement-icon {
+    font-size: 1.25rem;
+  }
+
+  .engagement-value {
+    font-size: 1.125rem;
+  }
+
+  .detailed-stats {
+    padding: 1.5rem 1rem;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-dashboard {
+    padding: 1rem 0.75rem;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .card-value,
+  .primary-value,
+  .secondary-value {
+    font-size: 1.5rem;
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+  }
+
+  .engagement-metrics {
+    gap: 0.25rem;
+  }
+
+  .engagement-icon {
+    font-size: 1rem;
+  }
+
+  .engagement-value {
+    font-size: 1rem;
+  }
+
+  .engagement-label {
+    font-size: 0.65rem;
+  }
+}
