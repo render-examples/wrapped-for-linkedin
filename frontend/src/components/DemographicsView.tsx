@@ -26,7 +26,7 @@ const DemographicCategory: React.FC<{
           <div key={index} className="demographic-item">
             <div className="item-info">
               <span className="item-name">{item.name}</span>
-              <span className="item-percentage">{(item.percentage * 100).toFixed(1)}%</span>
+              <span className="item-percentage">{Math.round(item.percentage * 100)}%</span>
             </div>
             <div className="item-bar">
               <div

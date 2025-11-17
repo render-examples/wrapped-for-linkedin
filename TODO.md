@@ -1,6 +1,5 @@
 # TODO
 
-- Top follower demographics (locations, industries, etc)
 - Find a way to preview content or summarize top posts
 - Unify dashboard with similar styles
 - Redesign header with LinkedIn Wrapped text in top left or top center smaller to focus attention on the actual content
