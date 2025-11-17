@@ -1,14 +1,16 @@
 import React from 'react';
 import { SpotifyDashboard } from './SpotifyDashboard';
 import { TopPostsDisplay } from './TopPostsDisplay';
-import type { EngagementMetrics, LinkedInTopPost } from '../types';
+import { DemographicsView } from './DemographicsView';
+import type { EngagementMetrics, LinkedInTopPost, DemographicInsights } from '../types';
 import '../styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {
   data: EngagementMetrics;
+  demographics?: DemographicInsights;
 }
 
-export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data }) => {
+export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, demographics }) => {
   // Extract discovery data if available
   const discoveryData = data.discovery_data as any;
   const topPosts: LinkedInTopPost[] = data.top_posts || [];
@@ -30,8 +32,13 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data }) => {
         <TopPostsDisplay posts={topPosts} />
       )}
 
+      {/* Demographics Section */}
+      {demographics && (
+        <DemographicsView demographics={demographics} />
+      )}
+
       {/* Fallback content if no discovery data */}
-      {!discoveryData && (
+      {!discoveryData && !demographics && (
         <div className="fallback-section">
           <h1 className="fallback-title">Your LinkedIn Year in Review</h1>
 

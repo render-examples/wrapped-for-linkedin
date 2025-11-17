@@ -30,6 +30,9 @@ class DemographicInsights(BaseModel):
     job_titles: List[dict]
     locations: List[dict]
     industries: List[dict]
+    seniority: Optional[List[dict]] = None
+    company_size: Optional[List[dict]] = None
+    companies: Optional[List[dict]] = None
 
 class ProcessedFileResponse(BaseModel):
     file_id: str

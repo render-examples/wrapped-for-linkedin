@@ -44,30 +44,18 @@ export interface EngagementByDay {
   engagement: number;
 }
 
+export interface DemographicItem {
+  name: string;
+  percentage: number;
+}
+
 export interface DemographicInsights {
-  jobTitles: JobTitleData[];
-  geography: GeographyData[];
-  industries: IndustryData[];
-  totalFollowers: number;
-  followerGrowth: number;
-}
-
-export interface JobTitleData {
-  title: string;
-  count: number;
-  percentage: number;
-}
-
-export interface GeographyData {
-  country: string;
-  count: number;
-  percentage: number;
-}
-
-export interface IndustryData {
-  industry: string;
-  count: number;
-  percentage: number;
+  job_titles: DemographicItem[];
+  locations: DemographicItem[];
+  industries: DemographicItem[];
+  seniority?: DemographicItem[];
+  company_size?: DemographicItem[];
+  companies?: DemographicItem[];
 }
 
 export interface UploadResponse {

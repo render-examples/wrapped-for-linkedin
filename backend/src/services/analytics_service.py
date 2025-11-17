@@ -69,8 +69,21 @@ async def get_engagement_metrics(file_id: str) -> EngagementMetrics:
 
 
 async def get_demographic_insights(file_id: str) -> DemographicInsights:
-    # TODO: Implement demographic insights calculation
-    # This is a placeholder that will be expanded
+    """Get demographic insights for a file"""
+    data = get_file_data(file_id)
+    if data and "demographics_data" in data:
+        demographics = data["demographics_data"]
+        if demographics:
+            return DemographicInsights(
+                job_titles=demographics.to_dict()["job_titles"],
+                locations=demographics.to_dict()["locations"],
+                industries=demographics.to_dict()["industries"],
+                seniority=demographics.to_dict()["seniority"],
+                company_size=demographics.to_dict()["company_size"],
+                companies=demographics.to_dict()["companies"],
+            )
+
+    # Fallback if no demographic data
     return DemographicInsights(
         job_titles=[],
         locations=[],

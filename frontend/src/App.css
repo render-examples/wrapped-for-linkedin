@@ -176,10 +176,10 @@ body {
 }
 
 .app-footer {
-  background-color: var(--bg-tertiary);
+  background-color: #1A1A1A;
   border-top: 1px solid var(--border-color-light);
   padding: 2rem;
-  text-align: center;
+  text-align: left;
   color: var(--text-tertiary);
   font-size: 0.9rem;
   margin-top: 3rem;
