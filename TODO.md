@@ -11,4 +11,3 @@
 - Create a nice ribbon wrapping or bow animation on the LinkedIn Wrapped text
 - Change all imports to absolute imports
 - Make UI titles blue instead of gradient blue to green
-- Change date range from month abbreviations to full month names

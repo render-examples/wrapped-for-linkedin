@@ -35,11 +35,10 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Your Professional Journey</h1>
           {startDate && endDate && (
-            <p className="hero-subtitle">
-              {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - {endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </p>
+            <h2 className="hero-subtitle">
+              {startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - {endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </h2>
           )}
         </div>
       </div>
