@@ -3,6 +3,7 @@ import { FileUpload } from './components/FileUpload';
 import { UnifiedDashboard } from './components/UnifiedDashboard';
 import { Loading } from './components/Loading';
 import { ErrorDisplay } from './components/Error';
+import { Header } from './components/Header';
 import { uploadFile, getEngagementMetrics, getDemographicInsights } from './utils/api';
 import type { DemographicInsights } from './types';
 import './App.css';
@@ -63,11 +64,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="app-header">
-        <div className="header-content">
-          <h1 className="app-title">LinkedIn Wrapped</h1>
-        </div>
-      </header>
+      <Header />
 
       <main className="app-main">
         {error && <ErrorDisplay error={error} onRetry={handleRetry} />}

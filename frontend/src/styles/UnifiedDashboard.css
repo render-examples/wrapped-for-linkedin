@@ -1,11 +1,11 @@
 .unified-dashboard {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 .fallback-section {
@@ -15,9 +15,10 @@
 }
 
 .fallback-title {
+  font-family: var(--font-title);
   font-size: 2.5rem;
   font-weight: 700;
-  color: #0a3d62;
+  color: var(--text-accent, #0A66C2);
   margin: 0 0 2rem 0;
   letter-spacing: -1px;
 }

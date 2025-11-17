@@ -109,7 +109,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ data }) => {
       {/* Top Posts */}
       {data.topPosts && data.topPosts.length > 0 && (
         <div className="chart-section">
-          <h2>Top Performing Posts</h2>
+          <h2>Top Posts</h2>
           <div className="posts-grid">
             {data.topPosts.slice(0, 6).map((post, index) => (
               <div key={post.id} className="post-card">

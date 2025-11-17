@@ -21,17 +21,16 @@
 }
 
 .hero-title {
+  font-family: var(--font-title);
   font-size: 3.5rem;
   font-weight: 900;
   letter-spacing: -1px;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--primary-light), var(--accent-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-accent);
 }
 
 .hero-subtitle {
+  font-family: var(--font-body);
   font-size: 1.125rem;
   color: var(--text-secondary);
   font-weight: 500;
@@ -52,11 +51,11 @@
 /* Metric Cards - Modern Design with Color Response */
 .metric-card {
   position: relative;
-  border-radius: 20px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   min-height: 220px;
   display: flex;
   flex-direction: column;

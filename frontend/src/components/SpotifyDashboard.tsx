@@ -40,7 +40,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
         <div className="hero-content">
           {startDate && endDate && (
             <h2 className="hero-subtitle">
-                {startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - {endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                {startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} — {endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </h2>
           )}
         </div>

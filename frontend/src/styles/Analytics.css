@@ -4,13 +4,11 @@
 }
 
 .analytics-title {
+  font-family: var(--font-title);
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-accent);
 }
 
 .summary-cards {
