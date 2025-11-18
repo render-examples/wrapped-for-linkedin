@@ -1,9 +1,10 @@
 # TODO
 
-- Align engagement and impressions in a single row
+-
 - Move the metrics under `Top posts` into the `Your year at a glance` section
 	- Also move tiles (Total impressions, Members Reached, likes/comments/shares) under `Your year at a glance`
 	- Make the `Year at a glance` section more prominent and similar to the `Top posts` section
+- Consider showing the top 6 posts for a cleaner 2x3 grid
 - Make the ribbon animation on the the LinkedIn Wrapped logo more gift-wrap like and remove the text enlargement effect on hover
 - Remove explicit ordering for top posts section and use the same ordering in the spreadsheet since it's already sorted by engagements
 - Unify design so that `Top posts` and `Top demographics` have similar card styles with color outlines on hover not movement
