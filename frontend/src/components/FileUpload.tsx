@@ -35,7 +35,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelected, isLoadin
             <>
               <p className="dropzone-text">Drag and drop your LinkedIn analytics file here</p>
               <p className="dropzone-subtext">or click to select a file</p>
-              <p className="dropzone-formats">Supported: Excel (.xlsx) or CSV (.csv)</p>
+              <p className="dropzone-formats">Supported: Excel (.xlsx) files only</p>
             </>
           )}
         </div>
