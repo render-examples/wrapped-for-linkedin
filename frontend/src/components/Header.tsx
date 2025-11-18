@@ -41,14 +41,26 @@ export function Header({ onLogoClick }: HeaderProps) {
                   <stop offset="100%" style={{ stopColor: '#0A66C2', stopOpacity: 0 }} />
                 </linearGradient>
               </defs>
-              {/* Ribbon threading through the text */}
+              {/* Ribbon wrapping effect with tighter undulation */}
               <path
                 className="ribbon-thread"
-                d="M -10 25 Q 40 8 80 30 Q 120 50 160 25 Q 200 5 240 28 Q 270 40 310 25"
+                d="M -10 20 Q 30 5 60 20 Q 90 35 120 20 Q 150 8 180 20 Q 210 32 240 20 Q 270 10 310 20"
+                fill="none"
+                stroke="url(#ribbonGradient)"
+                strokeWidth="7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Secondary ribbon layer for depth */}
+              <path
+                className="ribbon-thread ribbon-thread-secondary"
+                d="M -10 30 Q 30 42 60 30 Q 90 18 120 30 Q 150 40 180 30 Q 210 20 240 30 Q 270 38 310 30"
                 fill="none"
                 stroke="url(#ribbonGradient)"
                 strokeWidth="6"
                 strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.6"
               />
             </svg>
           </div>

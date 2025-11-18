@@ -116,7 +116,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
             </div>
           </div>
           <div className="stat-item">
-            <div className="stat-label">Avg Impressions per Day</div>
+            <div className="stat-label">Average Impressions per Day</div>
             <div className="stat-value">
               {discovery?.total_impressions && startDate && endDate
                 ? formatNumber(
