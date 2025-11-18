@@ -36,7 +36,7 @@
 .linkedin-wrapped-title {
   font-family: var(--font-title, 'Avenir Next', Avenir, -apple-system, BlinkMacSystemFont, sans-serif);
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-accent, #0A66C2);
   margin: 0;
   letter-spacing: -0.5px;
@@ -155,5 +155,29 @@
   .ribbon-bow {
     width: 50px;
     height: 25px;
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-bow {
+    animation: none;
+    opacity: 1;
+  }
+
+  .ribbon-path {
+    animation: none;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  .bow-center {
+    animation: none;
+  }
+
+  .linkedin-wrapped-title,
+  .linkedin-wrapped-title-container {
+    transition: none;
   }
 }

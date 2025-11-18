@@ -2,7 +2,7 @@ import React from 'react';
 import { SpotifyDashboard } from './SpotifyDashboard';
 import { TopPostsDisplay } from './TopPostsDisplay';
 import { DemographicsView } from './DemographicsView';
-import type { EngagementMetrics, LinkedInTopPost, DemographicInsights } from '../types';
+import type { EngagementMetrics, LinkedInTopPost, DemographicInsights } from '@types';
 import '../styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {

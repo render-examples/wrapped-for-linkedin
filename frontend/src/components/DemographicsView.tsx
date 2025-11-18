@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { DemographicInsights, DemographicItem } from '../types';
+import type { DemographicInsights, DemographicItem } from '@types';
 import '../styles/Demographics.css';
 
 interface DemographicsViewProps {

@@ -4,6 +4,11 @@ import '../styles/Header.css';
 export function Header() {
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleHomeClick = () => {
+    // Navigate back to home by reloading the page
+    window.location.href = '/';
+  };
+
   return (
     <header className="app-header">
       <div className="header-content">
@@ -11,6 +16,7 @@ export function Header() {
           className="linkedin-wrapped-title-container"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onClick={handleHomeClick}
         >
           <h1 className={`linkedin-wrapped-title ${isHovered ? 'hovered' : ''}`}>
             LinkedIn Wrapped

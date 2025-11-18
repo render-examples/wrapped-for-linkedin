@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AnalyticsData } from '../types';
+import type { AnalyticsData } from '@types';
 
 interface AppState {
   fileId: string | null;

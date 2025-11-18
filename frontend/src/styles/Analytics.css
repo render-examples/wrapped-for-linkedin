@@ -6,7 +6,7 @@
 .analytics-title {
   font-family: var(--font-title);
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 2rem;
   color: var(--text-accent);
 }
@@ -60,7 +60,7 @@
 
 .card-value {
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 700;
   background: linear-gradient(135deg, var(--primary-light), var(--accent-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -158,7 +158,7 @@
 
 .stat-value {
   font-size: 1.3rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--primary-color);
   margin-top: 0.25rem;
 }

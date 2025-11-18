@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LinkedInTopPost } from '../types';
+import type { LinkedInTopPost } from '@types';
 import '../styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {
@@ -18,7 +18,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
 
   return (
     <div className="top-posts-section">
-      <h2 className="section-title">🏆 Top Performing Posts</h2>
+      <h2 className="section-title">🏆 Top posts</h2>
       <p className="section-subtitle">Your most engaging content</p>
 
       <div className="posts-container">

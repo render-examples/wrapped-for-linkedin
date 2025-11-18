@@ -1,7 +1,7 @@
 import React from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { SpotifyDashboard } from './SpotifyDashboard';
-import type { EngagementMetrics } from '../types';
+import type { EngagementMetrics } from '@types';
 import '../styles/Analytics.css';
 
 interface AnalyticsViewProps {
