@@ -98,7 +98,7 @@ async def get_top_posts(file_id: str) -> Optional[List[TopPost]]:
         posts_data = data["top_posts"]
         if isinstance(posts_data, list):
             top_posts = []
-            for idx, post in enumerate(posts_data[:5], 1):
+            for idx, post in enumerate(posts_data[:6], 1):
                 top_posts.append(TopPost(
                     rank=idx,
                     url=post.get("url", ""),

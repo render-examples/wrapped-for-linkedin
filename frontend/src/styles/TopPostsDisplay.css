@@ -154,10 +154,10 @@
   letter-spacing: 0.5px;
 }
 
-/* 2 rows of 3 posts grid layout */
+/* 3 rows of 2 posts grid layout */
 .posts-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   max-width: 100%;
 }
@@ -172,6 +172,7 @@
   position: relative;
   overflow: hidden;
   color: var(--text-primary);
+  cursor: pointer;
 }
 
 .post-card:hover {
@@ -208,15 +209,15 @@
 }
 
 .post-rank-badge {
-  background: linear-gradient(135deg, #0A66C2, #378FE9);
-  color: white;
+  background: transparent;
+  color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 700;
   font-size: 1.1rem;
   min-width: 60px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+  text-align: left;
+  box-shadow: none;
 }
 
 .post-date {
@@ -319,7 +320,7 @@
   padding: 0.6rem 1.2rem;
   background: rgba(10, 102, 194, 0.1);
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: none !important;
   display: inline-block;
   margin-top: 0.5rem;
 }
@@ -327,6 +328,7 @@
 .fallback-link:hover {
   background: rgba(10, 102, 194, 0.2);
   color: #004182;
+  transition: none !important;
 }
 
 .post-stats {
@@ -348,12 +350,13 @@
   background: linear-gradient(135deg, rgba(10, 102, 194, 0.05) 0%, rgba(74, 158, 255, 0.05) 100%);
   border-radius: 8px;
   border: 1px solid rgba(10, 102, 194, 0.1);
-  transition: all 0.2s ease;
+  transition: none !important;
 }
 
 .stat-box:hover {
   background: linear-gradient(135deg, rgba(10, 102, 194, 0.1) 0%, rgba(74, 158, 255, 0.1) 100%);
   border-color: rgba(10, 102, 194, 0.25);
+  transition: none !important;
 }
 
 .stat-icon {

@@ -93,10 +93,14 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
         {displayedPosts.map((post) => {
           const cleanUrl = getCleanLinkedInUrl(post.url);
 
+          const handlePostClick = () => {
+            window.open(post.url, '_blank');
+          };
+
           return (
-            <div key={post.url} className="post-card">
+            <div key={post.url} className="post-card" onClick={handlePostClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handlePostClick()}>
               <div className="post-header">
-                <div className="post-rank-badge">#{post.rank}</div>
+                <div className="post-rank-badge">{post.rank}</div>
                 <div className="post-date">{formatDate(post.publish_date)}</div>
               </div>
 
