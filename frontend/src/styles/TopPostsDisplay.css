@@ -154,7 +154,7 @@
 }
 
 .post-card {
-  background: var(--bg-card);
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
