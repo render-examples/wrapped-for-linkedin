@@ -56,7 +56,7 @@
 }
 
 .metric-card:hover {
-  box-shadow: 0 5px 20px rgba(10, 102, 194, 0.3) !important;
+  box-shadow: 0 3px 20px rgba(10, 102, 194, 0.3) !important;
   transition: none !important;
 }
 

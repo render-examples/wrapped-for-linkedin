@@ -123,7 +123,6 @@
 
 .summary-stat-card:hover {
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px var(--primary-color), 0 8px 24px rgba(10, 102, 194, 0.3) !important;
   transition: none !important;
 }
 
@@ -159,7 +158,6 @@
   background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow-md);
   border: 2px solid var(--border-color-light);
   transition: none !important;
   position: relative;
@@ -170,7 +168,6 @@
 
 .post-card:hover {
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px var(--primary-color), 0 12px 32px rgba(10, 102, 194, 0.3) !important;
   transition: none !important;
 }
 
