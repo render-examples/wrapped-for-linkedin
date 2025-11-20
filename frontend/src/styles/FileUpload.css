@@ -14,7 +14,7 @@
   padding: 3rem 2rem;
   border: 2px solid var(--border-color-light);
   border-radius: 16px;
-  background: rgba(10, 102, 194, 0.06);
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
@@ -22,13 +22,13 @@
 
 .dropzone:hover:not(.disabled) {
   border-color: var(--primary-light);
-  background: rgba(24, 130, 236, 0.621);
+  background: rgba(10, 102, 194, 0.06);
   box-shadow: 0 0 32px rgba(10, 143, 255, 0.2);
 }
 
 .dropzone.active {
   border-color: var(--primary-light);
-  background: rgba(24, 130, 236, 0.621);
+  background: rgba(10, 102, 194, 0.06);
   transform: scale(1.02);
   box-shadow: 0 0 40px rgba(10, 143, 255, 0.3);
 }
@@ -79,7 +79,7 @@
 .instructions {
   width: 100%;
   max-width: 600px;
-  background: rgba(10, 102, 194, 0.06);
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
   border: 1px solid var(--border-color-light);
   padding: 2rem;
   border-radius: 16px;
