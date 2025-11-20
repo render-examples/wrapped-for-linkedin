@@ -92,15 +92,13 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
               </div>
 
               <div className="post-stats">
-                <div className="stat-box stat-engagements">
-                  <div className="stat-icon">❤️</div>
-                  <div className="stat-value">{formatEngagements(post.engagements)}</div>
-                  <div className="stat-label">Engagements</div>
+                <div className="stat-column">
+                  <div className="stat-header">❤️ Engagements</div>
+                  <div className="stat-number">{formatEngagements(post.engagements)}</div>
                 </div>
-                <div className="stat-box stat-impressions">
-                  <div className="stat-icon">✨</div>
-                  <div className="stat-value">{formatEngagements(post.impressions || 0)}</div>
-                  <div className="stat-label">Impressions</div>
+                <div className="stat-column">
+                  <div className="stat-header">✨ Impressions</div>
+                  <div className="stat-number">{formatEngagements(post.impressions || 0)}</div>
                 </div>
               </div>
             </div>
