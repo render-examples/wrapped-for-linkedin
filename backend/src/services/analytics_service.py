@@ -31,7 +31,8 @@ async def get_discovery_data(file_id: str) -> Optional[DiscoveryData]:
                 total_impressions=discovery.total_impressions,
                 members_reached=discovery.members_reached,
                 total_engagements=discovery.total_engagements,
-                average_impressions_per_day=discovery.average_impressions_per_day
+                average_impressions_per_day=discovery.average_impressions_per_day,
+                new_followers=discovery.new_followers
             )
         return discovery
     return None
@@ -53,7 +54,8 @@ async def get_engagement_metrics(file_id: str) -> EngagementMetrics:
                 "total_impressions": discovery.total_impressions,
                 "members_reached": discovery.members_reached,
                 "total_engagements": discovery.total_engagements,
-                "average_impressions_per_day": discovery.average_impressions_per_day
+                "average_impressions_per_day": discovery.average_impressions_per_day,
+                "new_followers": discovery.new_followers
             },
             top_posts=top_posts
         )

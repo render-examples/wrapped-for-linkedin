@@ -4,23 +4,29 @@ Handles extraction and validation of overall performance metrics.
 """
 
 from datetime import datetime, date
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 import re
 
 
 class DiscoveryData:
     """Overall performance metrics from the DISCOVERY sheet"""
-    def __init__(self, start_date: date, end_date: date, total_impressions: int, members_reached: int):
+    def __init__(
+        self,
+        start_date: date,
+        end_date: date,
+        total_impressions: int,
+        members_reached: int,
+        total_engagements: Optional[int] = None,
+        average_impressions_per_day: Optional[float] = None,
+        new_followers: Optional[int] = None
+    ):
         self.start_date = start_date
         self.end_date = end_date
         self.total_impressions = total_impressions
         self.members_reached = members_reached
-
-        # Calculate derived metrics
-        days_count = (end_date - start_date).days + 1  # +1 to include both start and end dates
-        self.average_impressions_per_day = total_impressions // days_count if days_count > 0 else 0
-        # For now, total_engagements equals total_impressions (can be refined with actual engagement data)
-        self.total_engagements = total_impressions
+        self.total_engagements = total_engagements
+        self.average_impressions_per_day = average_impressions_per_day
+        self.new_followers = new_followers
 
     def to_dict(self):
         return {
@@ -29,7 +35,8 @@ class DiscoveryData:
             "total_impressions": self.total_impressions,
             "members_reached": self.members_reached,
             "total_engagements": self.total_engagements,
-            "average_impressions_per_day": self.average_impressions_per_day
+            "average_impressions_per_day": self.average_impressions_per_day,
+            "new_followers": self.new_followers
         }
 
 
@@ -83,7 +90,10 @@ def parse_integer_value(value: Any) -> int:
         raise ValueError(f"Failed to parse integer value '{value}': {str(e)}")
 
 
-def extract_discovery_data(discovery_cells: Dict[str, Any]) -> DiscoveryData:
+def extract_discovery_data(
+    discovery_cells: Dict[str, Any],
+    file_content: Optional[bytes] = None
+) -> DiscoveryData:
     """
     Extract discovery data from the 4 cells in the DISCOVERY sheet.
 
@@ -96,9 +106,10 @@ def extract_discovery_data(discovery_cells: Dict[str, Any]) -> DiscoveryData:
 
     Args:
         discovery_cells: Dictionary with discovery data keys and values
+        file_content: Optional binary content of Excel file for calculating summary metrics
 
     Returns:
-        DiscoveryData object
+        DiscoveryData object with all calculated metrics
 
     Raises:
         ValueError: If required fields are missing or invalid
@@ -118,11 +129,30 @@ def extract_discovery_data(discovery_cells: Dict[str, Any]) -> DiscoveryData:
         impressions = parse_integer_value(discovery_cells["Impressions"])
         members_reached = parse_integer_value(discovery_cells["Members reached"])
 
+        # Calculate summary metrics if file content is provided
+        total_engagements = None
+        average_impressions_per_day = None
+        new_followers = None
+
+        if file_content:
+            from .summary_metrics_parser import calculate_summary_metrics
+            try:
+                metrics = calculate_summary_metrics(file_content, impressions)
+                total_engagements = metrics["total_engagements"]
+                average_impressions_per_day = metrics["average_impressions_per_day"]
+                new_followers = metrics["new_followers"]
+            except ValueError as e:
+                # Log warning but don't fail - continue with None values
+                print(f"Warning: Could not calculate summary metrics: {e}")
+
         return DiscoveryData(
             start_date=start_date,
             end_date=end_date,
             total_impressions=impressions,
-            members_reached=members_reached
+            members_reached=members_reached,
+            total_engagements=total_engagements,
+            average_impressions_per_day=average_impressions_per_day,
+            new_followers=new_followers
         )
     except ValueError as e:
         raise ValueError(f"Failed to extract discovery data: {str(e)}")

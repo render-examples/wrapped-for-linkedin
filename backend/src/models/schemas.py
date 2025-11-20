@@ -9,7 +9,8 @@ class DiscoveryData(BaseModel):
     total_impressions: int
     members_reached: int
     total_engagements: Optional[int] = None
-    average_impressions_per_day: Optional[int] = None
+    average_impressions_per_day: Optional[float] = None
+    new_followers: Optional[int] = None
 
 class TopPost(BaseModel):
     """Top performing post data"""

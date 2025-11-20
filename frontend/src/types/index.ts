@@ -16,6 +16,7 @@ export interface EngagementMetrics {
     members_reached: number;
     total_engagements?: number;
     average_impressions_per_day?: number;
+    new_followers?: number;
   };
   top_posts?: LinkedInTopPost[];
 }

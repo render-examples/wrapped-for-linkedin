@@ -40,7 +40,7 @@
 
 .card:hover {
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px var(--primary-color), 0 12px 32px rgba(10, 102, 194, 0.3) !important;
+  box-shadow: 0 0 \0 2px var(--primary-color), 0 12px 32px rgba(10, 102, 194, 0.3) !important;
   background: linear-gradient(135deg, rgba(10, 143, 255, 0.12) 0%, rgba(10, 143, 255, 0.04) 100%);
   transition: none !important;
 }
@@ -161,15 +161,6 @@
   font-weight: 700;
   color: var(--primary-color);
   margin-top: 0.25rem;
-}
-
-.engagement-rate {
-  font-size: 0.85rem;
-  color: var(--success-color);
-  font-weight: 600;
-  text-align: center;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border-color);
 }
 
 .insights-section {

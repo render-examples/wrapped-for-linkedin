@@ -21,13 +21,16 @@ async def process_linkedin_file(file: UploadFile) -> dict:
     discovery_data = None
     try:
         discovery_cells = parse_discovery_sheet(content)
-        parser_discovery = extract_discovery_data(discovery_cells)
+        parser_discovery = extract_discovery_data(discovery_cells, content)
         # Convert to Pydantic model
         discovery_data = DiscoveryData(
             start_date=parser_discovery.start_date,
             end_date=parser_discovery.end_date,
             total_impressions=parser_discovery.total_impressions,
-            members_reached=parser_discovery.members_reached
+            members_reached=parser_discovery.members_reached,
+            total_engagements=parser_discovery.total_engagements,
+            average_impressions_per_day=parser_discovery.average_impressions_per_day,
+            new_followers=parser_discovery.new_followers
         )
     except ValueError as e:
         print(f"Warning: Could not parse discovery data: {e}")

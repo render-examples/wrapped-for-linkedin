@@ -32,4 +32,9 @@ export const getDemographicInsights = async (fileId: string) => {
   return response.data;
 };
 
+export const getDiscovery = async (fileId: string) => {
+  const response = await api.get(`/analytics/discovery/${fileId}`);
+  return response.data;
+};
+
 export default api;

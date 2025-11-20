@@ -85,9 +85,6 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ data }) => {
                     <span className="stat-value">{post.shares}</span>
                   </div>
                 </div>
-                <div className="engagement-rate">
-                  Engagement Rate: {(post.engagementRate * 100).toFixed(2)}%
-                </div>
               </div>
             ))}
           </div>

@@ -8,6 +8,7 @@ interface DiscoveryData {
   members_reached: number;
   total_engagements?: number;
   average_impressions_per_day?: number;
+  new_followers?: number;
 }
 
 interface SpotifyDashboardProps {
@@ -97,14 +98,14 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
             </div>
           </div>
 
-          {/* Placeholder Card for 3-column layout */}
+          {/* New Followers Card */}
           <div className="metric-card">
             <div className="card-background gradient-2"></div>
             <div className="card-content">
               <h3 className="card-label">New followers</h3>
               <div className="card-value-container">
                 <div className="card-value secondary-value">
-                  {formatNumber(discovery?.members_reached || 0)}
+                  {formatNumber(discovery?.new_followers || 0)}
                 </div>
               </div>
               <div className="card-accent"></div>

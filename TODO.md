@@ -1,9 +1,12 @@
 # TODO
 
-- Backend calculations for
-	- New followers card
-	- Average daily impressions card
+- Put top posts stats in nice side-by-side cards like initial version of project
+❤️ Engagements
+151
+✨ Impressions
+11.6K
 - Pad demographics cards similar to other sections
+- Consolidate card gradient as main gradient
 - Cache previously uploaded LinkedIn analytics files in local storage for faster loading and show an indicator that the data is from a previous upload with an upload date
 - Remove explicit ordering for top posts section and use the same ordering in the spreadsheet since it's already sorted by engagements
 - Bonus: Show mini calendar of follower activity
