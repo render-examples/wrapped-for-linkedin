@@ -44,20 +44,19 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  cursor: pointer;
+  cursor: default;
   transition: none !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   min-height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  border: 2px solid var(--border-color-light);
+  border: none;
   background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
 }
 
 .metric-card:hover {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px var(--primary-color), 0 12px 32px rgba(10, 102, 194, 0.3) !important;
+  box-shadow: 0 5px 20px rgba(10, 102, 194, 0.3) !important;
   transition: none !important;
 }
 
@@ -76,15 +75,15 @@
 }
 
 .gradient-1 {
-  background: var(--gradient-accent);
+  background: var(--gradient-primary);
 }
 
 .gradient-2 {
-  background: linear-gradient(135deg, var(--accent-pink), #FF4B70);
+  background: var(--gradient-primary);
 }
 
 .gradient-3 {
-  background: linear-gradient(135deg, var(--accent-cyan), #0096C7);
+  background: var(--gradient-primary);
 }
 
 .card-content {
@@ -128,7 +127,7 @@
 }
 
 .metric-card:hover .primary-value {
-  background: var(--gradient-accent);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -136,14 +135,6 @@
 
 .secondary-value {
   font-size: 2.75rem;
-}
-}
-
-.metric-card:nth-child(3):hover .secondary-value {
-  background: linear-gradient(135deg, var(--accent-cyan), #0096C7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .card-unit {
