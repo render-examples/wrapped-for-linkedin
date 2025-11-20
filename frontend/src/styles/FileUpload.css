@@ -14,7 +14,7 @@
   padding: 3rem 2rem;
   border: 2px solid var(--border-color-light);
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(10, 102, 194, 0.05) 0%, rgba(29, 185, 84, 0.03) 100%);
+  background: rgba(10, 102, 194, 0.06);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
@@ -22,13 +22,13 @@
 
 .dropzone:hover:not(.disabled) {
   border-color: var(--primary-light);
-  background: linear-gradient(135deg, rgba(10, 143, 255, 0.1) 0%, rgba(29, 185, 84, 0.08) 100%);
+  background: rgba(24, 130, 236, 0.621);
   box-shadow: 0 0 32px rgba(10, 143, 255, 0.2);
 }
 
 .dropzone.active {
   border-color: var(--primary-light);
-  background: linear-gradient(135deg, rgba(10, 143, 255, 0.15) 0%, rgba(29, 185, 84, 0.1) 100%);
+  background: rgba(24, 130, 236, 0.621);
   transform: scale(1.02);
   box-shadow: 0 0 40px rgba(10, 143, 255, 0.3);
 }
@@ -79,7 +79,7 @@
 .instructions {
   width: 100%;
   max-width: 600px;
-  background: linear-gradient(135deg, rgba(10, 102, 194, 0.08) 0%, rgba(29, 185, 84, 0.05) 100%);
+  background: rgba(10, 102, 194, 0.06);
   border: 1px solid var(--border-color-light);
   padding: 2rem;
   border-radius: 16px;
@@ -90,7 +90,7 @@
   margin-bottom: 1rem;
   color: var(--text-primary);
   font-size: 1.2rem;
-  background: linear-gradient(135deg, var(--primary-light), var(--accent-green));
+  background: white;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
