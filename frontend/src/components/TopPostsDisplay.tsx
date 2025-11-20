@@ -91,15 +91,63 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
                 </div>
               </div>
 
-              <div className="post-stats">
-                <div className="stat-column">
-                  <div className="stat-header">❤️ Engagements</div>
-                  <div className="stat-number">{formatEngagements(post.engagements)}</div>
+              <div 
+                className="top-post-stats"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '1rem',
+                  marginTop: '1.5rem',
+                  paddingTop: '1.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+                }}
+              >
+                <div 
+                  className="top-post-stat-box"
+                  style={{
+                    flex: 1,
+                    minWidth: '130px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '1rem',
+                    background: 'linear-gradient(135deg, rgba(13, 110, 253, 0.15) 0%, rgba(13, 110, 253, 0.08) 100%)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(13, 110, 253, 0.3)',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div className="top-post-stat-icon" style={{ fontSize: '1.8rem', flexShrink: 0, display: 'flex', alignItems: 'center' }}>❤️</div>
+                  <div className="top-post-stat-info" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+                    <div className="top-post-stat-value" style={{ fontWeight: 700, fontSize: '1.5rem', color: '#0A8FFF', lineHeight: 1 }}>{formatEngagements(post.engagements)}</div>
+                    <div className="top-post-stat-label" style={{ fontSize: '0.75rem', color: '#B3B3B3', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1 }}>Engagements</div>
+                  </div>
                 </div>
-                <div className="stat-column">
-                  <div className="stat-header">✨ Impressions</div>
-                  <div className="stat-number">{formatEngagements(post.impressions || 0)}</div>
-                </div>
+                {post.impressions && post.impressions > 0 && (
+                  <div 
+                    className="top-post-stat-box"
+                    style={{
+                      flex: 1,
+                      minWidth: '130px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '1rem',
+                      background: 'linear-gradient(135deg, rgba(13, 110, 253, 0.15) 0%, rgba(13, 110, 253, 0.08) 100%)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(13, 110, 253, 0.3)',
+                      transition: 'all 0.2s ease',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div className="top-post-stat-icon" style={{ fontSize: '1.8rem', flexShrink: 0, display: 'flex', alignItems: 'center' }}>✨</div>
+                    <div className="top-post-stat-info" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+                      <div className="top-post-stat-value" style={{ fontWeight: 700, fontSize: '1.5rem', color: '#0A8FFF', lineHeight: 1 }}>{formatEngagements(post.impressions)}</div>
+                      <div className="top-post-stat-label" style={{ fontSize: '0.75rem', color: '#B3B3B3', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1 }}>Impressions</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           );
