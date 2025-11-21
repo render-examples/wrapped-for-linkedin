@@ -2,21 +2,37 @@ import React from 'react';
 import { SpotifyDashboard } from './SpotifyDashboard';
 import { TopPostsDisplay } from './TopPostsDisplay';
 import { DemographicsView } from './DemographicsView';
+import { CacheIndicator } from './CacheIndicator';
 import type { EngagementMetrics, LinkedInTopPost, DemographicInsights } from '@types';
 import '../styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {
   data: EngagementMetrics;
   demographics?: DemographicInsights;
+  uploadDate?: number;
+  isFromCache?: boolean;
+  onClearCache?: () => void;
 }
 
-export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, demographics }) => {
+export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
+  data,
+  demographics,
+  uploadDate = 0,
+  isFromCache = false,
+  onClearCache,
+}) => {
   // Extract discovery data if available
   const discoveryData = data.discovery_data as any;
   const topPosts: LinkedInTopPost[] = data.top_posts || [];
 
   return (
     <div className="unified-dashboard">
+      {isFromCache && uploadDate && (
+        <CacheIndicator
+          uploadDate={uploadDate}
+          onClear={onClearCache}
+        />
+      )}
       {/* Main Dashboard Section */}
       {discoveryData && (
         <SpotifyDashboard

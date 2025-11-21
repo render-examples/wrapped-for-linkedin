@@ -1,32 +1,39 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { ParsedExcelData } from '../utils/excel/types';
+import { useCache } from '../hooks/useCache';
+import { CacheIndicator } from './CacheIndicator';
 import '../styles/FileUpload.css';
 
 interface FileUploadProps {
-  onFileProcessed: (data: ParsedExcelData, error?: string) => void;
+  onFileProcessed: (data: ParsedExcelData, error?: string, uploadDate?: number, isFromCache?: boolean) => void;
   isLoading?: boolean;
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading = false }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const cache = useCache((data, uploadDate) => {
+    // Auto-load cached data on mount
+    onFileProcessed(data, undefined, uploadDate, true);
+  });
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setIsProcessing(true);
-      try {
-        const { processExcelFile } = await import('../utils/excel/excelProcessor');
-        const data = await processExcelFile(acceptedFiles[0]);
-        onFileProcessed(data);
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
-        console.error('Error processing file:', error);
-        onFileProcessed({}, errorMessage);
-      } finally {
-        setIsProcessing(false);
-      }
+    if (acceptedFiles.length === 0) return;
+
+    setIsProcessing(true);
+    try {
+      const { processExcelFile } = await import('../utils/excel/excelProcessor');
+      const data = await processExcelFile(acceptedFiles[0]);
+      cache.save(data);
+      onFileProcessed(data, undefined, Date.now(), false);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
+      console.error('Error processing file:', error);
+      onFileProcessed({}, errorMessage);
+    } finally {
+      setIsProcessing(false);
     }
-  }, [onFileProcessed]);
+  }, [cache, onFileProcessed]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -39,6 +46,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
 
   return (
     <div className="file-upload-container">
+      {cache.isLoaded && cache.uploadDate && (
+        <CacheIndicator
+          uploadDate={cache.uploadDate}
+          onClear={cache.clear}
+        />
+      )}
       <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isProcessing || isLoading ? 'disabled' : ''}`}>
         <input {...getInputProps()} />
         <div className="dropzone-content">

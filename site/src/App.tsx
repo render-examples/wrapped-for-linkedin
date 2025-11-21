@@ -4,63 +4,95 @@ import { UnifiedDashboard } from './components/UnifiedDashboard';
 import { Loading } from './components/Loading';
 import { ErrorDisplay } from './components/Error';
 import { Header } from './components/Header';
+import { useCache } from './hooks/useCache';
 import type { DemographicInsights, EngagementMetrics } from './types';
 import type { ParsedExcelData } from './utils/excel/types';
 import './App.css';
 
+interface DataState {
+  engagement: EngagementMetrics | null;
+  demographics: DemographicInsights | undefined;
+  uploadDate: number | null;
+  isFromCache: boolean;
+  error: string | null;
+}
+
 function App() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [engagement, setEngagement] = useState<EngagementMetrics | null>(null);
-  const [demographics, setDemographics] = useState<DemographicInsights | undefined>(undefined);
+  const [state, setState] = useState<DataState>({
+    engagement: null,
+    demographics: undefined,
+    uploadDate: null,
+    isFromCache: false,
+    error: null,
+  });
+  const cache = useCache();
 
-  const handleFileProcessed = (excelData: ParsedExcelData, fileError?: string) => {
+  const handleFileProcessed = (excelData: ParsedExcelData, fileError?: string, date?: number, fromCache?: boolean) => {
     setLoading(false);
 
     if (fileError) {
-      setError(fileError);
+      setState(prev => ({ ...prev, error: fileError }));
       return;
     }
 
     try {
-      setError(null);
-
-      // Convert parsed Excel data to analytics format
       const engagementMetrics: EngagementMetrics = {
         discovery_data: excelData.discovery_data,
         top_posts: excelData.top_posts,
         engagementByDay: excelData.engagement_by_day,
       };
 
-      setEngagement(engagementMetrics);
-      setDemographics(excelData.demographics);
+      setState({
+        engagement: engagementMetrics,
+        demographics: excelData.demographics,
+        uploadDate: date ?? Date.now(),
+        isFromCache: fromCache ?? false,
+        error: null,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to process Excel data');
+      setState(prev => ({
+        ...prev,
+        error: err instanceof Error ? err.message : 'Failed to process Excel data'
+      }));
     }
   };
 
-  const handleRetry = () => {
-    setEngagement(null);
-    setDemographics(undefined);
-    setError(null);
+  const resetState = () => {
+    setState({
+      engagement: null,
+      demographics: undefined,
+      uploadDate: null,
+      isFromCache: false,
+      error: null,
+    });
   };
 
-  const handleLogoClick = () => {
-    handleRetry();
+  const handleRetry = resetState;
+  const handleClearCache = () => {
+    cache.clear();
+    resetState();
   };
+  const handleLogoClick = resetState;
 
   return (
     <div className="app-container">
       <Header onLogoClick={handleLogoClick} />
 
       <main className="app-main">
-        {error && <ErrorDisplay error={error} onRetry={handleRetry} />}
+        {state.error && <ErrorDisplay error={state.error} onRetry={handleRetry} />}
 
         {loading && <Loading />}
 
-        {!loading && !error && engagement ? (
-          <UnifiedDashboard data={engagement} demographics={demographics} />
-        ) : !loading && !error && !engagement ? (
+        {!loading && !state.error && state.engagement ? (
+          <UnifiedDashboard
+            data={state.engagement}
+            demographics={state.demographics}
+            uploadDate={state.uploadDate ?? undefined}
+            isFromCache={state.isFromCache}
+            onClearCache={handleClearCache}
+          />
+        ) : !loading && !state.error && !state.engagement ? (
           <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />
         ) : null}
       </main>
