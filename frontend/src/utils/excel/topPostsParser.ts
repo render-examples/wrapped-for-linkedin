@@ -65,18 +65,18 @@ export function parseTopPosts(workbook: WorkBook): LinkedInTopPost[] {
     // Parse data rows
     // LinkedIn exports have TWO-COLUMN layout:
     // Left side (Engagements): Columns A=URL, B=Date, C=Engagements
-    // Right side (Impressions): Columns D=URL, E=Date, F=Impressions
+    // Right side (Impressions): Columns E=URL, F=Date, G=Impressions (Column D is blank separator)
     // We need to merge both sides by URL
     for (let row = headerRow + 1; row <= 1000; row++) {
       const cellA = getCellValue(sheet, `A${row}`);
       const cellB = getCellValue(sheet, `B${row}`);
       const cellC = getCellValue(sheet, `C${row}`);
-      const cellD = getCellValue(sheet, `D${row}`);
       const cellE = getCellValue(sheet, `E${row}`);
       const cellF = getCellValue(sheet, `F${row}`);
+      const cellG = getCellValue(sheet, `G${row}`);
 
       // Stop if we hit a completely empty row on the left side (end of data)
-      if (!cellA && !cellB && !cellC && !cellD && !cellE && !cellF) {
+      if (!cellA && !cellB && !cellC && !cellE && !cellF && !cellG) {
         break;
       }
 
@@ -110,10 +110,10 @@ export function parseTopPosts(workbook: WorkBook): LinkedInTopPost[] {
       }
 
       // Process RIGHT SIDE (Impressions)
-      if (cellD && String(cellD).includes('linkedin.com')) {
-        const url = parseURL(cellD);
-        const dateStr = cellE;
-        const impressionVal = cellF;
+      if (cellE && String(cellE).includes('linkedin.com')) {
+        const url = parseURL(cellE);
+        const dateStr = cellF;
+        const impressionVal = cellG;
 
         if (url && url.includes('linkedin.com')) {
           const date = parseDate(dateStr);
