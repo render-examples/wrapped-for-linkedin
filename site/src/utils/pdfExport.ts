@@ -70,6 +70,25 @@ export async function exportCardsAsPDF(
         const shareButtons = clone.querySelectorAll('.share-button-wrapper, .share-button, [class*="share"]');
         shareButtons.forEach(btn => btn.remove());
 
+        // Replace metric values with plain text to remove gradient highlighting
+        const metricValues = clone.querySelectorAll('.metric-value');
+        metricValues.forEach(el => {
+          const element = el as HTMLElement;
+          const textContent = element.textContent || '';
+
+          // Create a new plain div with no class
+          const plainDiv = document.createElement('div');
+          plainDiv.textContent = textContent;
+          plainDiv.style.fontSize = '2rem';
+          plainDiv.style.fontWeight = '700';
+          plainDiv.style.color = 'rgba(255, 255, 255, 0.95)';
+          plainDiv.style.margin = '0';
+          plainDiv.style.padding = '0';
+
+          // Replace the element
+          element.parentNode?.replaceChild(plainDiv, element);
+        });
+
         // Get dimensions
         const rect = cardElement.getBoundingClientRect();
         const width = Math.ceil(rect.width || 400);
