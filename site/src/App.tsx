@@ -77,7 +77,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header onLogoClick={handleLogoClick} />
+      <Header 
+        onLogoClick={handleLogoClick} 
+        onClearCache={handleClearCache}
+        hasCachedData={cache.data !== null}
+      />
 
       <main className="app-main">
         {state.error && <ErrorDisplay error={state.error} onRetry={handleRetry} />}
@@ -88,9 +92,6 @@ function App() {
           <UnifiedDashboard
             data={state.engagement}
             demographics={state.demographics}
-            uploadDate={state.uploadDate ?? undefined}
-            isFromCache={state.isFromCache}
-            onClearCache={handleClearCache}
           />
         ) : !loading && !state.error && !state.engagement ? (
           <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />

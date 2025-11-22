@@ -79,11 +79,7 @@
 .cache-clear-btn:hover {
   background: rgba(29, 185, 84, 0.3);
   border-color: rgba(29, 185, 84, 0.6);
-  transform: scale(1.05);
-}
-
-.cache-clear-btn:active {
-  transform: scale(0.98);
+  transform: none;
 }
 
 @media (max-width: 768px) {

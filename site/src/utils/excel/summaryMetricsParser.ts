@@ -122,7 +122,7 @@ export function parseSummaryMetrics(workbook: WorkBook): EngagementByDay[] {
 }
 
 /**
- * Calculate total engagements from engagement by day data
+ * Calculate Total engagements from engagement by day data
  * @param engagementByDay - Array of engagement metrics by date
  * @returns Total sum of all engagements
  */

@@ -5,7 +5,7 @@
  *
  * The Followers sheet contains:
  * - Total followers at end of period
- * - Daily new followers breakdown
+ * - Daily New followers breakdown
  *
  * Expected Excel Structure:
  * - Sheet name: "FOLLOWERS"
@@ -21,7 +21,7 @@ import type { WorkBook } from 'xlsx';
 import { getCellValue, parseNumber, findSheet } from './utils';
 
 /**
- * Parse the Followers sheet to extract total followers and new followers data
+ * Parse the Followers sheet to extract total followers and New followers data
  * @param workbook - Parsed Excel workbook from xlsx library
  * @returns Object with total_followers count and new_followers sum, or undefined if sheet not found
  */
@@ -62,7 +62,7 @@ export function parseFollowers(workbook: WorkBook): { total_followers: number; n
       }
     }
 
-    // Parse daily new followers and sum them
+    // Parse daily New followers and sum them
     for (let row = headerRow + 1; row <= 500; row++) {
       const cellA = getCellValue(sheet, `A${row}`);
       const cellB = getCellValue(sheet, `B${row}`);

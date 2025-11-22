@@ -41,8 +41,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       // Step 3: Copy text to clipboard
       await copyToClipboard(shareText);
 
-      // Step 4: Open LinkedIn share page in new tab
-      const linkedInUrl = 'https://www.linkedin.com/sharing/share-offsite/';
+      // Step 4: Open LinkedIn share page with pre-filled text
+      // Note: LinkedIn doesn't support pre-filling text via URL parameters for security reasons
+      // Users will need to paste the copied text manually
+      const linkedInUrl = 'https://www.linkedin.com/feed/';
       window.open(linkedInUrl, '_blank', 'noopener,noreferrer');
 
       // Step 5: Show success message
@@ -60,24 +62,28 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
   return (
     <div className="share-button-wrapper">
-      <button
-        className="share-button"
-        onClick={handleShare}
-        disabled={isExporting}
-        aria-label="Share this card on LinkedIn"
-      >
-        {isExporting ? (
-          <>
-            <span className="spinner"></span>
-            <span>Preparing...</span>
-          </>
-        ) : (
-          <>
-            <span className="linkedin-icon">in</span>
+      <div className="share-button-container">
+        <img
+          src="/linkedin-logo.png"
+          alt="LinkedIn"
+          className="linkedin-logo"
+        />
+        <button
+          className="share-button"
+          onClick={handleShare}
+          disabled={isExporting}
+          aria-label="Share this card on LinkedIn"
+        >
+          {isExporting ? (
+            <>
+              <span className="spinner"></span>
+              <span>Preparing...</span>
+            </>
+          ) : (
             <span>Share</span>
-          </>
-        )}
-      </button>
+          )}
+        </button>
+      </div>
 
       {showSuccess && (
         <div className="share-feedback success">

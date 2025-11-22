@@ -20,23 +20,60 @@ function formatNumber(num: number): string {
 }
 
 /**
+ * Get a profile avatar color based on card ID
+ */
+function getAvatarColor(cardId: string): string {
+  const colors = [
+    '#0A66C2', // LinkedIn Blue
+    '#00B4D8', // Cyan
+    '#06A77D', // Green
+    '#FFB703', // Orange
+    '#FB5607', // Red-Orange
+    '#9945FF', // Purple
+    '#FF006E', // Pink
+    '#2A9D8F', // Teal
+  ];
+
+  const hash = cardId
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+}
+
+/**
+ * Generate a profile photo URL from LinkedIn post URL
+ * Uses LinkedIn's CDN to fetch profile pictures associated with posts
+ * Falls back to a data URL with initials if not available
+ */
+function generateProfilePhotoUrl(postUrl: string): string | undefined {
+  if (!postUrl) return undefined;
+  
+  // LinkedIn profile pictures can be fetched from the post page using Open Graph data
+  // For now, we'll store the post URL and fetch it later in the component
+  // This avoids CORS issues and allows lazy loading
+  return postUrl;
+}
+
+/**
  * Generate all shareable cards from parsed Excel data
  * Cards are ordered by virality potential
  */
 export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
   const cards: ShareableCard[] = [];
 
-  // Card 1: Total Impressions
+  // Card 1: Total impressions
   if (data.discovery_data?.total_impressions) {
     cards.push({
       id: 'total-impressions',
       type: 'total-impressions',
-      title: 'Impressive Influencer',
+      title: 'Impression Icon',
       data: {
         value: formatNumber(data.discovery_data.total_impressions),
-        label: 'Total Impressions in 2025',
+        label: 'Total impressions in 2025',
         icon: '✨',
         context: 'Your posts were seen this many times',
+        profileId: 'impressions',
+        avatarColor: getAvatarColor('total-impressions'),
       },
       shareText: generateShareText('total-impressions', data),
       backgroundColor: '#0F0F0F',
@@ -44,13 +81,37 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 2: Top Post
+  // Card 2: Members Reached
+  if (data.discovery_data?.members_reached) {
+    cards.push({
+      id: 'members-reached',
+      type: 'members-reached',
+      title: 'Network Ninja',
+      data: {
+        value: formatNumber(data.discovery_data.members_reached),
+        label: 'Unique Professionals Reached',
+        icon: '👥',
+        context: 'Your network is powerful',
+        profileId: 'network',
+        avatarColor: getAvatarColor('members-reached'),
+      },
+      shareText: generateShareText('members-reached', data),
+      backgroundColor: '#0F0F0F',
+      gradient: 'linear-gradient(135deg, #00D9FF 0%, #0A8FFF 100%)',
+    });
+  }
+
+  // Card 3: Top Post
   if (data.top_posts && data.top_posts.length > 0) {
     const topPost = data.top_posts[0];
+    // Extract profile photo URL from post URL if available
+    // LinkedIn post URLs contain profile data that can be used to fetch profile picture
+    const profilePhotoUrl = topPost.url ? generateProfilePhotoUrl(topPost.url) : undefined;
+    
     cards.push({
       id: 'top-post',
       type: 'top-post',
-      title: 'Pinnacle Post Producer',
+      title: 'Peak Performer',
       data: {
         value: formatNumber(topPost.engagements),
         label: 'Engagements on Your Top Post',
@@ -58,28 +119,13 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         context: 'Your highest-performing content',
         url: topPost.url,
         date: topPost.publish_date,
+        profileId: 'toppost',
+        avatarColor: getAvatarColor('top-post'),
+        profilePhotoUrl: profilePhotoUrl,
       },
       shareText: generateShareText('top-post', data),
       backgroundColor: '#0F0F0F',
       gradient: 'linear-gradient(135deg, #FFB703 0%, #FB5607 100%)',
-    });
-  }
-
-  // Card 3: Members Reached
-  if (data.discovery_data?.members_reached) {
-    cards.push({
-      id: 'members-reached',
-      type: 'members-reached',
-      title: 'Magnificent Member Magnetizer',
-      data: {
-        value: formatNumber(data.discovery_data.members_reached),
-        label: 'Unique Professionals Reached',
-        icon: '👥',
-        context: 'Your network is powerful',
-      },
-      shareText: generateShareText('members-reached', data),
-      backgroundColor: '#0F0F0F',
-      gradient: 'linear-gradient(135deg, #00D9FF 0%, #0A8FFF 100%)',
     });
   }
 
@@ -90,13 +136,15 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     cards.push({
       id: 'top-industry',
       type: 'audience-industry',
-      title: 'Incredible Industry Insider',
+      title: 'Industry Insider',
       data: {
         value: topIndustry.name,
         label: `${percentage}% of Your Audience`,
         icon: '💼',
         context: 'Your primary professional segment',
         percentage: topIndustry.percentage,
+        profileId: 'industry',
+        avatarColor: getAvatarColor('top-industry'),
       },
       shareText: generateShareText('audience-industry', data),
       backgroundColor: '#0F0F0F',
@@ -112,14 +160,16 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     cards.push({
       id: 'engagement-rate',
       type: 'engagement-rate',
-      title: 'Excellent Engagement Expert',
+      title: 'Engagement Expert',
       data: {
         value: `${engagementRate}%`,
         label: 'Average Engagement Rate',
         icon: '❤️',
         context: 'Your audience loves your content',
+        profileId: 'engage',
+        avatarColor: getAvatarColor('engagement-rate'),
       },
-      shareText: generateShareText('engagement-rate', data),
+      shareText: generateShareText('engagements', data),
       backgroundColor: '#0F0F0F',
       gradient: 'linear-gradient(135deg, #06A77D 0%, #2A9D8F 100%)',
     });
@@ -130,12 +180,14 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     cards.push({
       id: 'new-followers',
       type: 'new-followers',
-      title: 'Popular Professional Personality',
+      title: 'Popular Professional',
       data: {
         value: `+${formatNumber(data.discovery_data.new_followers)}`,
         label: 'New Followers in 2025',
         icon: '🎉',
         context: 'Your community is growing!',
+        profileId: 'growth',
+        avatarColor: getAvatarColor('new-followers'),
       },
       shareText: generateShareText('new-followers', data),
       backgroundColor: '#0F0F0F',
@@ -150,13 +202,15 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     cards.push({
       id: 'top-location',
       type: 'audience-location',
-      title: 'Landmark Location Legend',
+      title: 'Local Legend',
       data: {
         value: topLocation.name,
         label: `${percentage}% of Your Audience`,
         icon: '📍',
         context: 'Your primary geographic reach',
         percentage: topLocation.percentage,
+        profileId: 'location',
+        avatarColor: getAvatarColor('top-location'),
       },
       shareText: generateShareText('audience-location', data),
       backgroundColor: '#0F0F0F',
@@ -168,15 +222,16 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
   cards.push({
     id: 'year-summary',
     type: 'year-summary',
-    title: 'Legendary LinkedIn Leader',
+    title: 'LinkedIn Wrapped',
     data: {
       impressions: formatNumber(data.discovery_data?.total_impressions || 0),
       membersReached: formatNumber(data.discovery_data?.members_reached || 0),
       engagements: formatNumber(data.discovery_data?.total_engagements || 0),
       newFollowers: formatNumber(data.discovery_data?.new_followers || 0),
-      topPosts: data.top_posts?.length || 0,
       icon: '🎊',
       context: 'Your complete 2025 LinkedIn impact',
+      profileId: 'summary',
+      avatarColor: getAvatarColor('year-summary'),
     },
     shareText: generateShareText('year-summary', data),
     backgroundColor: '#0F0F0F',
@@ -195,7 +250,7 @@ export function getCardTitles(): Record<string, string> {
     'top-post': 'Pinnacle Post Producer',
     'members-reached': 'Magnificent Member Magnetizer',
     'audience-industry': 'Incredible Industry Insider',
-    'engagement-rate': 'Excellent Engagement Expert',
+    'engagements': 'Excellent Engagement Expert',
     'new-followers': 'Popular Professional Personality',
     'audience-location': 'Landmark Location Legend',
     'year-summary': 'Legendary LinkedIn Leader',

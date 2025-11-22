@@ -6,7 +6,6 @@ interface StoryCardProps {
   card: ShareableCard;
   isActive: boolean;
   cardIndex: number;
-  totalCards: number;
   onNext: () => void;
   onPrevious: () => void;
 }
@@ -15,7 +14,6 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   card,
   isActive,
   cardIndex,
-  totalCards,
   onNext,
   onPrevious,
 }) => {
@@ -57,9 +55,9 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       ref={cardRef}
       className={`story-card ${card.type} ${isActive ? 'active' : ''}`}
       style={{
-        background: card.gradient,
-        backgroundColor: card.backgroundColor,
-      }}
+        '--card-gradient': card.gradient,
+        '--card-bg-color': card.backgroundColor,
+      } as React.CSSProperties & { [key: string]: string }}
       onClick={handleCardClick}
       role="region"
       aria-label={`Card ${cardIndex + 1}: ${card.title}`}
@@ -68,22 +66,74 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       <div className="card-content-wrapper">
         <div className="card-header">
           <h2 className="card-title">{card.title}</h2>
-          <div className="card-badge">{cardIndex + 1}/{totalCards}</div>
         </div>
 
         <div className="card-body">
           <span className="card-icon">{card.data.icon}</span>
 
-          {card.data.value && (
-            <div className="card-value">{card.data.value}</div>
-          )}
+          {card.type === 'year-summary' ? (
+            // Summary card with multiple metrics
+            <div className="summary-metrics">
+              <div className="metric-row">
+                <div className="metric">
+                  <div className="metric-value">{card.data.impressions}</div>
+                  <div className="metric-label">Total impressions</div>
+                </div>
+                <div className="metric">
+                  <div className="metric-value">{card.data.membersReached}</div>
+                  <div className="metric-label">Members reached</div>
+                </div>
+              </div>
+              <div className="metric-row">
+                <div className="metric">
+                  <div className="metric-value">{card.data.engagements}</div>
+                  <div className="metric-label">Total engagements</div>
+                </div>
+                <div className="metric">
+                  <div className="metric-value">{card.data.newFollowers}</div>
+                  <div className="metric-label">New followers</div>
+                </div>
+              </div>
+            </div>
+          ) : card.type === 'top-post' ? (
+            // Top post card with engagement details
+            <div className="top-post-content">
+              <div className="post-engagements">
+                <div className="engagement-stat">
+                  <span className="engagement-icon">❤️</span>
+                  <span className="engagement-value">{card.data.value}</span>
+                </div>
+              </div>
+              {card.data.label && (
+                <div className="card-label">{card.data.label}</div>
+              )}
+              {card.data.date && (
+                <div className="post-date">
+                  Published: {new Date(card.data.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </div>
+              )}
+              {card.data.context && (
+                <div className="card-context">{card.data.context}</div>
+              )}
+            </div>
+          ) : (
+            <>
+              {card.data.value && (
+                <div className="card-value">{card.data.value}</div>
+              )}
 
-          {card.data.label && (
-            <div className="card-label">{card.data.label}</div>
-          )}
+              {card.data.label && (
+                <div className="card-label">{card.data.label}</div>
+              )}
 
-          {card.data.context && (
-            <div className="card-context">{card.data.context}</div>
+              {card.data.context && (
+                <div className="card-context">{card.data.context}</div>
+              )}
+            </>
           )}
         </div>
 
@@ -92,7 +142,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
           <ShareButton
             cardId={card.id}
             shareText={card.shareText}
-            cardRef={cardRef}
+            cardRef={cardRef as React.RefObject<HTMLDivElement>}
           />
         </div>
       </div>

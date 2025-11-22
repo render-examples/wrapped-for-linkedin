@@ -89,14 +89,14 @@ export async function processExcelFile(file: File): Promise<ParsedExcelData> {
       parsedData.discovery_data = discoveryData;
     }
 
-    // Parse followers data (total and new followers)
+    // Parse followers data (total and New followers)
     const followersData = parseFollowers(workbook);
     if (followersData && discoveryData) {
       // Merge followers data into discovery data
       discoveryData.new_followers = followersData.new_followers;
     }
 
-    // Parse top posts (individual post metrics)
+    // Parse Top posts (individual post metrics)
     const topPosts = parseTopPosts(workbook);
     if (topPosts && topPosts.length > 0) {
       parsedData.top_posts = topPosts;

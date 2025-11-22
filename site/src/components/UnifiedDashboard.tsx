@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { SpotifyDashboard } from './SpotifyDashboard';
 import { TopPostsDisplay } from './TopPostsDisplay';
 import { DemographicsView } from './DemographicsView';
-import { CacheIndicator } from './CacheIndicator';
 import { WrappedStoriesContainer } from './WrappedStories/WrappedStoriesContainer';
 import { generateShareableCards } from '../utils/cardDataMapper';
 import type { EngagementMetrics, LinkedInTopPost, DemographicInsights } from '@types';
@@ -12,17 +11,11 @@ import '../styles/UnifiedDashboard.css';
 interface UnifiedDashboardProps {
   data: EngagementMetrics;
   demographics?: DemographicInsights;
-  uploadDate?: number;
-  isFromCache?: boolean;
-  onClearCache?: () => void;
 }
 
 export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
   data,
   demographics,
-  uploadDate = 0,
-  isFromCache = false,
-  onClearCache,
 }) => {
   // Extract discovery data if available
   const discoveryData = data.discovery_data as any;
@@ -42,13 +35,6 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
 
   return (
     <div className="unified-dashboard">
-      {isFromCache && uploadDate && (
-        <CacheIndicator
-          uploadDate={uploadDate}
-          onClear={onClearCache}
-        />
-      )}
-
       {/* Wrapped Stories Section (at the top) */}
       {wrappedCards.length > 0 && (
         <WrappedStoriesContainer cards={wrappedCards} autoPlayDuration={5000} />
@@ -61,7 +47,7 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
         />
       )}
 
-      {/* Top Posts Section */}
+      {/* Top posts Section */}
       {topPosts.length > 0 && (
         <TopPostsDisplay posts={topPosts} />
       )}

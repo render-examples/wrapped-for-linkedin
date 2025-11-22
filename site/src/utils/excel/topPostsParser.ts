@@ -1,16 +1,16 @@
 /**
- * Top Posts Parser
+ * Top posts Parser
  * ================
- * Parses the "TOP POSTS" sheet from LinkedIn analytics Excel export.
+ * Parses the "Top posts" sheet from LinkedIn analytics Excel export.
  *
- * The Top Posts sheet contains individual post performance metrics:
+ * The Top posts sheet contains individual post performance metrics:
  * - Post URL (unique identifier)
  * - Publish date
  * - Engagement count
  * - Impression count
  *
  * Expected Excel Structure:
- * - Sheet name: "TOP POSTS"
+ * - Sheet name: "Top posts"
  * - Contains post data with URL, Date, Engagements, Impressions
  * - May have two-column layout (left side for engagements, right side for impressions)
  * - Data rows start after header row
@@ -33,14 +33,14 @@ interface PostData {
 }
 
 /**
- * Parse the Top Posts sheet to extract top performing posts
+ * Parse the Top posts sheet to extract top performing posts
  * @param workbook - Parsed Excel workbook from xlsx library
  * @returns Array of LinkedInTopPost objects in the order they appear in the spreadsheet (already sorted by engagement)
  */
 export function parseTopPosts(workbook: WorkBook): LinkedInTopPost[] {
-  const sheet = findSheet(workbook, 'TOP POSTS');
+  const sheet = findSheet(workbook, 'Top posts');
   if (!sheet) {
-    console.warn('TOP POSTS sheet not found');
+    console.warn('Top posts sheet not found');
     return [];
   }
 
@@ -141,7 +141,7 @@ export function parseTopPosts(workbook: WorkBook): LinkedInTopPost[] {
 
     return posts;
   } catch (error) {
-    console.error('Error parsing TOP POSTS sheet:', error);
+    console.error('Error parsing Top posts sheet:', error);
     return [];
   }
 }

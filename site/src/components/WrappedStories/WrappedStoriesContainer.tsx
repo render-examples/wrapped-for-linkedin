@@ -15,6 +15,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [userManuallyPaused, setUserManuallyPaused] = useState(false);
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Validate we have cards
@@ -58,8 +59,11 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       return nextIndex;
     });
     clearAutoPlayTimer();
-    setIsAutoPlaying(false);
-  }, [totalCards, clearAutoPlayTimer]);
+    // Only stop auto-play if not manually paused
+    if (!userManuallyPaused) {
+      setIsAutoPlaying(false);
+    }
+  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
 
   const handlePrevious = useCallback(() => {
     setCurrentCardIndex(prev => {
@@ -68,22 +72,30 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       return prevIndex;
     });
     clearAutoPlayTimer();
-    setIsAutoPlaying(false);
-  }, [clearAutoPlayTimer]);
+    // Only stop auto-play if not manually paused
+    if (!userManuallyPaused) {
+      setIsAutoPlaying(false);
+    }
+  }, [clearAutoPlayTimer, userManuallyPaused]);
 
   const handleJumpToCard = useCallback((index: number) => {
     if (index >= 0 && index < totalCards) {
       setCurrentCardIndex(index);
       clearAutoPlayTimer();
-      setIsAutoPlaying(false);
+      // Only stop auto-play if not manually paused
+      if (!userManuallyPaused) {
+        setIsAutoPlaying(false);
+      }
     }
-  }, [totalCards, clearAutoPlayTimer]);
+  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
 
   const handleToggleAutoPlay = useCallback(() => {
     if (isAutoPlaying) {
       clearAutoPlayTimer();
       setIsAutoPlaying(false);
+      setUserManuallyPaused(true);
     } else if (currentCardIndex < totalCards - 1) {
+      setUserManuallyPaused(false);
       startAutoPlay();
     }
   }, [isAutoPlaying, currentCardIndex, totalCards, clearAutoPlayTimer, startAutoPlay]);
@@ -174,8 +186,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
           onClick={handlePrevious}
           disabled={currentCardIndex === 0}
           aria-label="Previous card"
+          title="Previous card"
         >
-          ← Prev
+          ←
         </button>
 
         <button
@@ -183,8 +196,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
           onClick={handleToggleAutoPlay}
           disabled={currentCardIndex === totalCards - 1}
           aria-label={isAutoPlaying ? 'Pause auto-play' : 'Start auto-play'}
+          title={isAutoPlaying ? 'Pause' : 'Play'}
         >
-          {isAutoPlaying ? '⏸ Pause' : '▶ Play'}
+          {isAutoPlaying ? '⏸' : '▶'}
         </button>
 
         <button
@@ -192,8 +206,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
           onClick={handleNext}
           disabled={currentCardIndex === totalCards - 1}
           aria-label="Next card"
+          title="Next card"
         >
-          Next →
+          →
         </button>
       </div>
 

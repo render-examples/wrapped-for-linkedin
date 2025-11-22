@@ -6,6 +6,7 @@ export type CardType =
   | 'total-impressions'
   | 'members-reached'
   | 'engagement-rate'
+  | 'engagements'
   | 'top-post'
   | 'audience-industry'
   | 'audience-location'
@@ -17,6 +18,9 @@ export interface CardData {
   label?: string;
   icon: string;
   context?: string;
+  profileId?: string; // LinkedIn profile ID
+  avatarColor?: string; // Avatar background color
+  profilePhotoUrl?: string; // LinkedIn profile picture URL
   [key: string]: any; // Allow card-specific properties
 }
 

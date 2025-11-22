@@ -12,7 +12,7 @@
  * Expected Excel Structure:
  * - Sheet name: "DISCOVERY"
  * - Contains labeled metrics with values in adjacent cells
- * - Labels typically include: "Overall Performance", "Impressions", "Members Reached", "Engagements"
+ * - Labels typically include: "Overall Performance", "Impressions", "Members reached", "Engagements"
  *
  * Performance Notes:
  * - Single pass through up to 100 rows
@@ -71,7 +71,7 @@ export function parseDiscovery(workbook: WorkBook): DiscoveryData | undefined {
       }
     }
 
-    // Look for members reached (audience size metric)
+    // Look for Members reached (audience size metric)
     for (let row = 1; row < 100; row++) {
       const cellA = getCellValue(sheet, `A${row}`);
       if (cellA && String(cellA).toLowerCase().includes('member')) {
@@ -83,7 +83,7 @@ export function parseDiscovery(workbook: WorkBook): DiscoveryData | undefined {
       }
     }
 
-    // Look for total engagements count
+    // Look for Total engagements count
     for (let row = 1; row < 100; row++) {
       const cellA = getCellValue(sheet, `A${row}`);
       if (cellA && String(cellA).toLowerCase().includes('engagement')) {
@@ -95,7 +95,7 @@ export function parseDiscovery(workbook: WorkBook): DiscoveryData | undefined {
       }
     }
 
-    // Look for new followers count (this should be read from FOLLOWERS sheet primarily)
+    // Look for New followers count (this should be read from FOLLOWERS sheet primarily)
     // But check DISCOVERY sheet first in case it's here
     for (let row = 1; row < 100; row++) {
       const cellA = getCellValue(sheet, `A${row}`);
