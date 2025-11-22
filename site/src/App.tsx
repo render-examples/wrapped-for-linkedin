@@ -77,8 +77,8 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header 
-        onLogoClick={handleLogoClick} 
+      <Header
+        onLogoClick={handleLogoClick}
         onClearCache={handleClearCache}
         hasCachedData={cache.data !== null}
       />

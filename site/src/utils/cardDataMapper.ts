@@ -47,7 +47,7 @@ function getAvatarColor(cardId: string): string {
  */
 function generateProfilePhotoUrl(postUrl: string): string | undefined {
   if (!postUrl) return undefined;
-  
+
   // LinkedIn profile pictures can be fetched from the post page using Open Graph data
   // For now, we'll store the post URL and fetch it later in the component
   // This avoids CORS issues and allows lazy loading
@@ -107,7 +107,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     // Extract profile photo URL from post URL if available
     // LinkedIn post URLs contain profile data that can be used to fetch profile picture
     const profilePhotoUrl = topPost.url ? generateProfilePhotoUrl(topPost.url) : undefined;
-    
+
     cards.push({
       id: 'top-post',
       type: 'top-post',

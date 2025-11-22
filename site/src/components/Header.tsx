@@ -37,10 +37,10 @@ export function Header({ onLogoClick, onClearCache, hasCachedData = false }: Hea
           </div>
         </button>
       {hasCachedData && (
-        <button 
-          className="cache-clear-btn" 
+        <button
+          className="cache-clear-btn"
           onClick={handleClearCacheClick}
-          title="Clear cache and upload new data" 
+          title="Clear cache and upload new data"
           aria-label="Clear cached data"
         >
           Upload new data
