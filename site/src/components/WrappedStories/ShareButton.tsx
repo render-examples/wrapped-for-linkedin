@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '../../utils/imageExport';
-import { exportCardsAsPDFFromImages } from '../../utils/pdfExportV2';
+import { exportCardsAsPDFFromImages } from '../../utils/pdfExport';
 import { DownloadInstructions } from './DownloadInstructions';
 import '../../styles/ShareButton.css';
 

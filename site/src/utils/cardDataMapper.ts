@@ -152,7 +152,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 5: Engagement Rate
+  // Card 5: Engagements
   if (data.discovery_data?.total_engagements && data.discovery_data?.total_impressions) {
     const engagementRate = (
       (data.discovery_data.total_engagements / data.discovery_data.total_impressions) * 100
@@ -171,7 +171,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
       },
       shareText: generateShareText('engagements', data),
       backgroundColor: '#0F0F0F',
-      gradient: 'linear-gradient(135deg, #06A77D 0%, #2A9D8F 100%)',
+      gradient: 'linear-gradient(135deg, #00D9FF 0%, #0A8FFF 100%)',
     });
   }
 
@@ -191,7 +191,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
       },
       shareText: generateShareText('new-followers', data),
       backgroundColor: '#0F0F0F',
-      gradient: 'linear-gradient(135deg, #00D9FF 0%, #0A8FFF 100%)',
+      gradient: 'linear-gradient(135deg, #06A77D 0%, #2A9D8F 100%)',
     });
   }
 

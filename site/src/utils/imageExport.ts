@@ -105,12 +105,13 @@ export async function exportCardAsImage(element: HTMLElement): Promise<Blob> {
     // Remove highlighting effects (text selection, highlights, etc.)
     removeHighlightingEffects(clone);
 
-    // Remove border-radius for sharp corners (all elements)
+    // Remove border-radius ONLY on the outer card container to prevent black background
+    // This removes the rounded corners that would show black behind the card
     clone.style.borderRadius = '0 !important';
+    clone.style.overflow = 'hidden !important';
+
+    // Get all elements for background and highlighting fixes
     const allElements = clone.querySelectorAll('*');
-    allElements.forEach(el => {
-      (el as HTMLElement).style.borderRadius = '0 !important';
-    });
 
     // Fix all text-related elements - remove gradients and highlighting
     // Target all elements with potential gradient or highlight text
