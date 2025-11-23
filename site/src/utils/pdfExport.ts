@@ -46,16 +46,23 @@ function prepareCardForCapture(cardElement: HTMLElement): () => void {
   // Save original styles for restoration
   const originalStyles = new Map<HTMLElement, Partial<CSSStyleDeclaration>>();
   const elementsToRestore: HTMLElement[] = [];
+  const elementsToRemove: HTMLElement[] = [];
 
   // Make the card visible (in case it's hidden)
   const saveStyle = (el: HTMLElement) => {
-    const saved: Partial<CSSStyleDeclaration> = {
+    const anyStyle = el.style as any;
+    const saved = {
       opacity: el.style.opacity,
       transform: el.style.transform,
       display: el.style.display,
       visibility: el.style.visibility,
       borderRadius: el.style.borderRadius,
-      userSelect: (el.style as any).userSelect,
+      userSelect: anyStyle.userSelect,
+      background: el.style.background,
+      backgroundClip: el.style.backgroundClip,
+      webkitBackgroundClip: anyStyle.webkitBackgroundClip,
+      webkitTextFillColor: anyStyle.webkitTextFillColor,
+      mozBackgroundClip: anyStyle.mozBackgroundClip,
     };
     originalStyles.set(el, saved);
     elementsToRestore.push(el);
@@ -69,33 +76,85 @@ function prepareCardForCapture(cardElement: HTMLElement): () => void {
   cardElement.style.display = 'block';
   cardElement.style.visibility = 'visible';
 
-  // Remove border radius for sharp corners
+  // Remove border radius for sharp corners - handle pseudo-elements via CSS injection
   cardElement.style.borderRadius = '0';
 
   // Remove text selection effects
   cardElement.style.userSelect = 'none';
 
-  // Also update all child elements to remove border-radius and text highlighting
+  // Remove share button from export
+  const shareButton = cardElement.querySelector('.share-button-wrapper');
+  if (shareButton) {
+    (shareButton as HTMLElement).style.display = 'none';
+    elementsToRemove.push(shareButton as HTMLElement);
+  }
+
+  // Inject CSS to remove all border-radius and text highlighting effects
+  const styleId = 'pdf-export-styles-' + Math.random().toString(36).substr(2, 9);
+  const style = document.createElement('style');
+  style.id = styleId;
+  style.textContent = `
+    [data-pdf-export] * {
+      border-radius: 0 !important;
+      -webkit-background-clip: unset !important;
+      background-clip: unset !important;
+      -webkit-text-fill-color: unset !important;
+    }
+
+    [data-pdf-export] *::before,
+    [data-pdf-export] *::after {
+      border-radius: 0 !important;
+    }
+  `;
+  document.head.appendChild(style);
+  cardElement.setAttribute('data-pdf-export', 'true');
+
+  // Also update all child elements to remove highlighting effects
   cardElement.querySelectorAll('*').forEach((el) => {
     const htmlEl = el as HTMLElement;
     saveStyle(htmlEl);
     htmlEl.style.borderRadius = '0';
     (htmlEl.style as any).userSelect = 'none';
+
+    // Remove gradient text effects
+    htmlEl.style.background = 'transparent';
+    (htmlEl.style as any).webkitBackgroundClip = 'unset';
+    htmlEl.style.backgroundClip = 'unset';
+    (htmlEl.style as any).webkitTextFillColor = 'unset';
+    (htmlEl.style as any).mozBackgroundClip = 'unset';
   });
 
   // Return restoration function
   return () => {
     elementsToRestore.forEach((el) => {
-      const saved = originalStyles.get(el);
+      const saved = originalStyles.get(el) as any;
       if (saved) {
+        const anyStyle = el.style as any;
         if (saved.opacity !== undefined) el.style.opacity = saved.opacity;
         if (saved.transform !== undefined) el.style.transform = saved.transform;
         if (saved.display !== undefined) el.style.display = saved.display;
         if (saved.visibility !== undefined) el.style.visibility = saved.visibility;
         if (saved.borderRadius !== undefined) el.style.borderRadius = saved.borderRadius;
-        if (saved.userSelect !== undefined) (el.style as any).userSelect = saved.userSelect;
+        if (saved.userSelect !== undefined) anyStyle.userSelect = saved.userSelect;
+        if (saved.background !== undefined) el.style.background = saved.background;
+        if (saved.backgroundClip !== undefined) el.style.backgroundClip = saved.backgroundClip;
+        if (saved.webkitBackgroundClip !== undefined) anyStyle.webkitBackgroundClip = saved.webkitBackgroundClip;
+        if (saved.webkitTextFillColor !== undefined) anyStyle.webkitTextFillColor = saved.webkitTextFillColor;
+        if (saved.mozBackgroundClip !== undefined) anyStyle.mozBackgroundClip = saved.mozBackgroundClip;
       }
     });
+
+    // Restore share button visibility
+    elementsToRemove.forEach(el => {
+      el.style.display = '';
+    });
+
+    // Remove temporary styles
+    cardElement.removeAttribute('data-pdf-export');
+    const styleEl = document.getElementById(styleId);
+    if (styleEl && styleEl.parentNode) {
+      styleEl.parentNode.removeChild(styleEl);
+    }
   };
 }
 

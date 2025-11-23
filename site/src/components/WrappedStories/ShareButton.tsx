@@ -196,13 +196,21 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           aria-expanded={isDropdownOpen}
           aria-haspopup="menu"
         >
-          <img
-            src="/linkedin-logo.png"
-            alt="LinkedIn"
-            className="linkedin-logo-btn"
-          />
-          <span>Share</span>
-          {isExporting && <span className="spinner" />}
+          {isExporting ? (
+            <>
+              <span className="spinner" />
+              <span>Exporting...</span>
+            </>
+          ) : (
+            <>
+              <img
+                src="/linkedin-logo.png"
+                alt="LinkedIn"
+                className="linkedin-logo-btn"
+              />
+              <span>Share</span>
+            </>
+          )}
         </button>
       </div>
 
