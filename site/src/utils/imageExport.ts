@@ -17,6 +17,66 @@ async function loadHtml2Canvas() {
 }
 
 /**
+ * Remove highlighting/background effects on text and elements
+ * Strips all ::selection, gradients, and highlight effects from CSS
+ */
+function removeHighlightingEffects(element: HTMLElement): void {
+  // Create a global style override that targets all elements without IDs
+  const styleId = 'export-no-selection-' + Math.random().toString(36).substr(2, 9);
+
+  // Create new style with aggressive overrides for selection and highlighting
+  const style = document.createElement('style');
+  style.id = styleId;
+  style.innerHTML = `
+    /* Global override for all selection highlighting */
+    *::selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    *::-moz-selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    /* Override pseudo-element selection */
+    *::before::selection,
+    *::after::selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    *::-moz-selection::before,
+    *::-moz-selection::after {
+      background: transparent !important;
+      color: inherit !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  // Aggressive inline style overrides - directly modify element and all children
+  const allElements = [element, ...Array.from(element.querySelectorAll('*'))] as HTMLElement[];
+
+  allElements.forEach(el => {
+    // Disable user selection completely
+    el.style.userSelect = 'none !important' as any;
+    (el.style as any).webkitUserSelect = 'none !important';
+    (el.style as any).msUserSelect = 'none !important';
+    (el.style as any).mozUserSelect = 'none !important';
+
+    // Remove any highlight-related inline styles
+    el.style.backgroundColor = '';
+    el.style.color = '';
+
+    // Force remove highlight color if set
+    if (el.style.cssText.includes('highlight')) {
+      el.style.cssText = el.style.cssText.replace(/highlight[^;]*;?/gi, '');
+    }
+  });
+}
+
+/**
  * Export a single card as PNG image
  * @param element The card element to export
  * @returns A blob containing the PNG image
@@ -36,16 +96,68 @@ export async function exportCardAsImage(element: HTMLElement): Promise<Blob> {
     const shareButtons = clone.querySelectorAll('.share-button-wrapper, .share-button, [class*="share"]');
     shareButtons.forEach(btn => btn.remove());
 
-    // Fix metric values by overriding only the problematic gradient properties
-    const metricValues = clone.querySelectorAll('.metric-value');
-    metricValues.forEach(el => {
+    // Ensure clone is visible (in case original element was hidden)
+    clone.style.opacity = '1';
+    clone.style.transform = 'scale(1)';
+    clone.style.visibility = 'visible';
+    clone.style.display = 'block';
+
+    // Remove highlighting effects (text selection, highlights, etc.)
+    removeHighlightingEffects(clone);
+
+    // Remove border-radius for sharp corners (all elements)
+    clone.style.borderRadius = '0 !important';
+    const allElements = clone.querySelectorAll('*');
+    allElements.forEach(el => {
+      (el as HTMLElement).style.borderRadius = '0 !important';
+    });
+
+    // Fix all text-related elements - remove gradients and highlighting
+    // Target all elements with potential gradient or highlight text
+    const textElements = clone.querySelectorAll('[style*="background"], [style*="gradient"], [style*="fill-color"], .metric-value, .card-title, .engagement-value, .stat-value, [class*="value"], [class*="title"], [class*="metric"]');
+    textElements.forEach(el => {
       const element = el as HTMLElement;
-      // Keep the class for other CSS properties, but override the gradient/transparency
+
+      // Remove all background-related styles that might cause highlighting
       element.style.setProperty('background', 'transparent', 'important');
+      element.style.setProperty('backgroundImage', 'none', 'important');
+      element.style.setProperty('backgroundClip', 'unset', 'important');
+
+      // Remove webkit-specific gradient text styles
       (element.style as any).setProperty('-webkit-background-clip', 'unset', 'important');
       (element.style as any).setProperty('-webkit-text-fill-color', 'unset', 'important');
-      element.style.setProperty('background-clip', 'unset', 'important');
+      (element.style as any).setProperty('-moz-background-clip', 'unset', 'important');
+
+      // Set explicit white color to override any text color
       element.style.setProperty('color', 'rgba(255, 255, 255, 0.95)', 'important');
+
+      // Remove box-shadow and text-shadow that might create highlighting effect
+      element.style.setProperty('textShadow', 'none', 'important');
+      element.style.setProperty('boxShadow', 'none', 'important');
+    });
+
+    // Extra aggressive pass: target ALL elements and remove highlighting-related properties
+    allElements.forEach(el => {
+      const htmlEl = el as HTMLElement;
+
+      // Remove any background that isn't transparent or parent-related
+      if (htmlEl.style.background && !htmlEl.style.background.includes('transparent') && !htmlEl.style.background.includes('none')) {
+        htmlEl.style.background = 'transparent !important';
+      }
+
+      // Remove highlight-like colors (common highlight colors in HSL/RGB)
+      const computedStyle = window.getComputedStyle(htmlEl);
+      const bgColor = computedStyle.backgroundColor;
+
+      // If background is a highlight-like color, remove it
+      if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
+        const isLightColor = bgColor.includes('rgb(0, 102, 204)') ||
+                           bgColor.includes('rgb(10, 102, 194)') ||
+                           bgColor.includes('rgb(0, 120, 215)');
+        if (isLightColor) {
+          htmlEl.style.backgroundColor = 'transparent !important';
+        }
+      }
     });
 
     // Get dimensions

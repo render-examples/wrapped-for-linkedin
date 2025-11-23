@@ -33,8 +33,8 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     return null;
   }
 
-  const currentCard = cards[currentCardIndex];
   const totalCards = cards.length;
+  const currentCard = cards[currentCardIndex];
 
   // Clear auto-play timer
   const clearAutoPlayTimer = useCallback(() => {
@@ -180,13 +180,17 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <StoryCard
-          card={currentCard}
-          isActive={true}
-          cardIndex={currentCardIndex}
-          cardRef={cardRefsRef.current[currentCardIndex]}
-          allCards={cardRefsRef.current}
-        />
+        {/* Render all cards - CSS makes only active one visible */}
+        {cards.map((card, index) => (
+          <StoryCard
+            key={card.id}
+            card={card}
+            isActive={index === currentCardIndex}
+            cardIndex={index}
+            cardRef={cardRefsRef.current[index]}
+            allCards={cardRefsRef.current}
+          />
+        ))}
       </div>
 
       <div className="story-controls">

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '../../utils/imageExport';
-import { exportCardsAsPDF } from '../../utils/pdfExport';
+import { exportCardsAsPDFFromImages } from '../../utils/pdfExportV2';
 import { DownloadInstructions } from './DownloadInstructions';
 import '../../styles/ShareButton.css';
 
@@ -102,20 +102,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
   /**
    * Handle PDF export of all cards
+   * Waits for all cards to be rendered as they auto-play through
    */
   const handleExportAllCards = useCallback(async () => {
     if (!allCards || allCards.length === 0) {
       setError('No cards available for PDF export');
-      return;
-    }
-
-    // Filter out null refs and extract elements
-    const cardElements = allCards
-      .map(ref => ref.current)
-      .filter((el): el is Exclude<typeof el, null | undefined> => el !== null && el !== undefined);
-
-    if (cardElements.length === 0) {
-      setError('Card elements not found');
       return;
     }
 
@@ -124,10 +115,39 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setIsDropdownOpen(false);
 
     try {
+      // Collect all card elements - some might not be refs yet, so wait for them
+      const cardElements: HTMLElement[] = [];
+
+      // First, add any already-rendered cards from the refs
+      for (const ref of allCards) {
+        if (ref && ref.current) {
+          cardElements.push(ref.current);
+        }
+      }
+
+      // If we don't have all cards yet, we need to wait for them to be rendered
+      if (cardElements.length < allCards.length) {
+        // Wait a bit for all refs to be populated
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Try again to get all card elements
+        cardElements.length = 0;
+        for (const ref of allCards) {
+          if (ref && ref.current) {
+            cardElements.push(ref.current);
+          }
+        }
+      }
+
+      if (cardElements.length === 0) {
+        setError('Card elements not found. Make sure cards are displayed first.');
+        return;
+      }
+
       const year = new Date().getFullYear();
       const filename = `linkedin-wrapped-${year}.pdf`;
 
-      await exportCardsAsPDF(cardElements, filename);
+      await exportCardsAsPDFFromImages(cardElements, filename);
 
       // Show instructions
       setShowInstructions(true);
