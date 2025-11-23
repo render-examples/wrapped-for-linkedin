@@ -153,17 +153,14 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
   }
 
   // Card 5: Engagements
-  if (data.discovery_data?.total_engagements && data.discovery_data?.total_impressions) {
-    const engagementRate = (
-      (data.discovery_data.total_engagements / data.discovery_data.total_impressions) * 100
-    ).toFixed(2);
+  if (data.discovery_data?.total_engagements) {
     cards.push({
       id: 'engagement-rate',
       type: 'engagement-rate',
       title: 'Engagement Expert',
       data: {
-        value: `${engagementRate}%`,
-        label: 'Average Engagement Rate',
+        value: formatNumber(data.discovery_data.total_engagements),
+        label: 'Total Engagements',
         icon: '❤️',
         context: 'Your audience loves your content',
         profileId: 'engage',
