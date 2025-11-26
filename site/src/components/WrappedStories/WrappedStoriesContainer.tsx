@@ -14,7 +14,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   autoPlayDuration = 5000,
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [userManuallyPaused, setUserManuallyPaused] = useState(false);
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -117,6 +117,13 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }
   }, [isAutoPlaying, clearAutoPlayTimer, startAutoPlay]);
 
+  // Pause autoplay callback to be called from child components (e.g., ShareButton)
+  const handlePauseAutoPlay = useCallback(() => {
+    clearAutoPlayTimer();
+    setIsAutoPlaying(false);
+    setUserManuallyPaused(true);
+  }, [clearAutoPlayTimer]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -197,6 +204,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             cardRef={cardRefsRef.current[index]}
             allCards={cardRefsRef.current}
             summaryMetrics={summaryMetrics}
+            onPauseAutoplay={handlePauseAutoPlay}
           />
         ))}
       </div>

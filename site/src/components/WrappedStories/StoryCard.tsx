@@ -12,6 +12,7 @@ interface StoryCardProps {
     impressions: string;
     membersReached: string;
   };
+  onPauseAutoplay?: () => void;
 }
 
 export const StoryCard: React.FC<StoryCardProps> = ({
@@ -21,6 +22,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   cardRef: externalCardRef,
   allCards,
   summaryMetrics,
+  onPauseAutoplay,
 }) => {
   const internalCardRef = useRef<HTMLDivElement>(null);
   const cardRef = externalCardRef || internalCardRef;
@@ -155,6 +157,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
             cardRef={cardRef as React.RefObject<HTMLDivElement>}
             allCards={allCards}
             summaryMetrics={summaryMetrics}
+            onPauseAutoplay={onPauseAutoplay}
           />
         </div>
       </div>

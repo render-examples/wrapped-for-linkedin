@@ -16,6 +16,7 @@ interface ShareButtonProps {
     impressions: string;
     membersReached: string;
   };
+  onPauseAutoplay?: () => void;
 }
 
 type ExportOption = 'current-card' | 'all-cards' | null;
@@ -30,6 +31,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   cardRef,
   allCards = [],
   summaryMetrics,
+  onPauseAutoplay,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -190,8 +192,12 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const handleToggleDropdown = useCallback(() => {
     if (!isExporting) {
       setIsDropdownOpen(prev => !prev);
+      // Pause autoplay when share button is clicked
+      if (!isDropdownOpen && onPauseAutoplay) {
+        onPauseAutoplay();
+      }
     }
-  }, [isExporting]);
+  }, [isExporting, isDropdownOpen, onPauseAutoplay]);
 
   return (
     <div className="share-button-wrapper">
