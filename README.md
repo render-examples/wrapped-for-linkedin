@@ -1,65 +1,62 @@
 # LinkedIn Wrapped
 
-LinkedIn Wrapped transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and identify when your audience is most active.
+LinkedIn Wrapped transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and check out your year in review.
 
-**Note:** This is now a fully client-side application - your data is processed entirely in your browser. No backend server is required!
+**Note:** This is a fully client-side application. Your data is processed entirely in your browser.
 
 Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [Venkata Naga Sai Kumar Bysani](https://www.linkedin.com/in/saibysani18/).
 
+🫶 _Made with love for the LinkedIn data community_
+
 ## ✨ Features
 
+- **🎨 Shareable cards** - Beautiful graphics that are ready to share on LinkedIn
 - **📊 Top posts analytics** - See your highest-performing posts ranked by impressions, engagement rate, and comments
 - **👥 Audience demographics** - Visualize your followers and engagers by industry, seniority, location, and company size
-- **📈 Year-over-year growth** - Track how your LinkedIn presence has evolved throughout 2025
-- **🔒 Privacy-first** - All data processing happens locally in your browser - your analytics never leave your device
-- **🎨 Shareable cards** - Generate beautiful, branded graphics ready to share on LinkedIn
 
 ## 🚀 Quickstart
 
 ### Prerequisites
 
-- LinkedIn account with creator mode or company page access
+- LinkedIn account
 - Modern web browser (Chrome, Firefox, Safari, Edge)
+- Node.js 20.19+ or 22.12+ or 23.x+ (with npm)
 
 ### Run LinkedIn Wrapped locally
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/Ho1yShif/linkedin-wrapped.git
-   cd linkedin-wrapped/site
-   ```
-
-1. Install dependencies
-   ```bash
-   npm install
-   ```
-
-1. Start the development server
-   ```bash
-   npm run dev
-   ```
-
-1. Open your browser to `http://localhost:5173`
-
-1. Follow instructions in the browser to upload your LinkedIn analytics CSV file and explore your data!
-
-### Build for production
+**Option 1: Using the preview script (recommended)**
 
 ```bash
-npm run build
-npm run preview
+git clone https://github.com/Ho1yShif/linkedin-wrapped.git
+cd linkedin-wrapped
+npm install  # Install dependencies in site/
+./bin/preview.sh
 ```
 
-The production-ready files are in the `dist/` directory and can be deployed as a static site to any hosting platform (GitHub Pages, Netlify, Vercel, etc.).
+Open your browser to `http://localhost:5173`
+
+**Option 2: Manual setup**
+
+```bash
+git clone https://github.com/Ho1yShif/linkedin-wrapped.git
+cd linkedin-wrapped/site
+npm install
+npm run dev
+```
+
+### Get your LinkedIn wrapped
+
+1. Export your [LinkedIn analytics](https://www.linkedin.com/analytics/creator) as an Excel file after changing the date range to `Past 365 days` and switching to `Engagement mode`.
+   - See detailed instructions on the [LinkedIn Wrapped landing page](https://linkedin-wrapped.onrender.com)
+1. Upload the file to LinkedIn Wrapped in the browser.
+1. Explore and share your LinkedIn Wrapped dashboard!
 
 ## 🤝 Contribute
 
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-🫶 _Made with love for the LinkedIn data community_
+1. Create your feature branch
+1. Commit your changes
+1. Push to the branch
+1. Open a pull request
