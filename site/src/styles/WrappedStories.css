@@ -402,7 +402,7 @@
 
 .peak-post-embed-container {
   width: 100%;
-  height: clamp(120px, 16vh, 200px);
+  height: clamp(72px, 9.6vh, 120px);
   overflow: hidden;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);

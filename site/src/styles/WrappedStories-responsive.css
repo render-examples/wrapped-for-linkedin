@@ -177,7 +177,7 @@
   }
 
   .peak-post-embed-container {
-    height: clamp(100px, 16vh, 160px);
+    height: clamp(60px, 9.6vh, 96px);
   }
 
   .peak-post-metrics {
@@ -305,7 +305,7 @@
 
   .peak-post-embed-container {
     border-radius: 10px;
-    height: clamp(100px, 15vh, 180px);
+    height: clamp(60px, 9vh, 108px);
     margin-bottom: 0.75rem;
   }
 
@@ -328,7 +328,7 @@
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     flex-wrap: nowrap !important;
-    padding-top: 2rem;
+    padding-top: 0.5rem;
   }
 
   .peak-metric {
@@ -538,22 +538,22 @@
   }
 
   .peak-performer-content .peak-post-embed-wrapper .peak-post-embed-container {
-    height: 250px !important;
-    min-height: 250px !important;
-    max-height: 325px !important;
+    height: calc(15vh - 10px) !important;
+    min-height: calc(15vh - 10px) !important;
+    max-height: calc(20vh - 10px) !important;
     border-radius: 8px;
   }
 
   .peak-post-embed-container {
-    height: 250px !important;
-    min-height: 250px !important;
-    max-height: 325px !important;
+    height: calc(15vh - 10px) !important;
+    min-height: calc(15vh - 10px) !important;
+    max-height: calc(20vh - 10px) !important;
     border-radius: 8px;
   }
 
   .peak-post-iframe {
-    height: 250px !important;
-    min-height: 250px !important;
+    height: 150px !important;
+    min-height: 150px !important;
   }
 
   .peak-post-fallback {
@@ -660,7 +660,7 @@
   }
 
   .peak-post-embed-container {
-    height: clamp(180px, 16vh, 80px) !important;
+    height: clamp(108px, 9.6vh, 48px) !important;
     margin-bottom: 1rem;
   }
 
@@ -809,7 +809,7 @@
   }
 
   .peak-post-embed-container {
-    height: clamp(80px, 13vh, 120px);
+    height: clamp(48px, 7.8vh, 72px);
     border-radius: 6px;
   }
 
