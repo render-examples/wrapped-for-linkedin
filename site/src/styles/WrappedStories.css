@@ -120,7 +120,7 @@
   position: relative;
   z-index: 5;
   padding-top: 0.75rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0.05rem;
   overflow: visible;
 }
 
@@ -199,10 +199,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1.2rem;
+    gap: 0.6rem;
     width: 100%;
     min-height: 0;
     overflow: visible;
+    margin-bottom: 0.25rem;
   }.card-icon {
   font-size: clamp(2.5rem, 10vw, 4rem);
   line-height: 1;
@@ -211,7 +212,7 @@
 }
 
 .card-value {
-  font-size: clamp(1.8rem, 8vw, 3.5rem);
+  font-size: clamp(1.6rem, 7vw, 3rem);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -246,12 +247,12 @@
   .summary-metrics {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 0.8rem;
     width: 100%;
     max-width: 90%;
   }.metric-row {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -260,8 +261,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
+  gap: 0.4rem;
+  padding: 0.8rem;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -338,7 +339,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   width: 100%;
   max-width: 90%;
   flex: 0 1 auto;
@@ -476,6 +477,7 @@
   gap: 1rem;
   width: 100%;
   margin-top: auto;
+  margin-bottom: 0.25rem;
   flex-shrink: 0;
 }
 
@@ -552,7 +554,7 @@
   .story-viewport {
     aspect-ratio: 9 / 14;
     margin-bottom: 1rem;
-    min-height: 450px;
+    min-height: 600px;
   }
 
   .story-card {
@@ -578,7 +580,7 @@
   }
 
   .card-value {
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(1.8rem, 5.5vw, 2.6rem);
   }
 
   .card-label {
@@ -588,6 +590,55 @@
   .control-button {
     padding: 0.7rem 1.3rem;
     font-size: 0.9rem;
+  }
+}
+
+/* Small Desktop View (Tablets 768px-1024px) */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .wrapped-stories-container {
+    padding: 1.25rem;
+    margin-bottom: 3rem;
+  }
+
+  .story-viewport {
+    aspect-ratio: 9 / 14;
+    margin-bottom: 1.5rem;
+    min-height: 650px;
+  }
+
+  .story-card {
+    border-radius: 18px;
+    padding: 1.5rem;
+  }
+
+  .card-content-wrapper {
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: clamp(1.3rem, 3.5vw, 1.6rem);
+  }
+
+  .card-circular-logo {
+    margin-top: 0.5rem;
+  }
+
+  .card-icon {
+    font-size: clamp(3rem, 8vw, 3.8rem);
+  }
+
+  .card-value {
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+  }
+
+  .card-label {
+    font-size: 1rem;
+  }
+
+  .control-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -634,6 +685,18 @@
     padding: 1.5rem;
   }
 
+  .card-content-wrapper {
+    padding-bottom: 0.75rem;
+  }
+
+  .card-body {
+    margin-bottom: 0.25rem;
+  }
+
+  .card-footer {
+    margin-bottom: 0.01rem;
+  }
+
   .card-title {
     font-size: 1.5rem;
   }
@@ -643,7 +706,7 @@
   }
 
   .card-value {
-    font-size: 2.8rem;
+    font-size: 2.4rem;
   }
 
   .card-label {
@@ -688,6 +751,19 @@
   .peak-post-context {
     font-size: 0.8rem;
   }
+
+  /* Summary Metrics - Mobile */
+  .metric {
+    padding: 0.6rem;
+  }
+
+  .metric-value {
+    font-size: 1.4rem;
+  }
+
+  .metric-label {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -705,6 +781,18 @@
     padding: 1rem;
   }
 
+  .card-content-wrapper {
+    padding-bottom: 0.5rem;
+  }
+
+  .card-body {
+    margin-bottom: 0.25rem;
+  }
+
+  .card-footer {
+    margin-bottom: 0.3rem;
+  }
+
   .card-header {
     flex-direction: column;
     align-items: center;
@@ -720,11 +808,24 @@
   }
 
   .card-value {
-    font-size: 2.2rem;
+    font-size: 1.9rem;
   }
 
   .card-label {
     font-size: 0.9rem;
+  }
+
+  /* Summary Metrics - Small Mobile */
+  .metric {
+    padding: 0.5rem;
+  }
+
+  .metric-value {
+    font-size: 1.2rem;
+  }
+
+  .metric-label {
+    font-size: 0.7rem;
   }
 
   .control-button {
