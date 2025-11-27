@@ -88,17 +88,15 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setExportType('current-card');
 
     try {
-      const imageBlob = await exportCardAsImage(cardRef.current);
+      const imageDataUrl = await exportCardAsImage(cardRef.current);
 
-      // Download image
-      const url = URL.createObjectURL(imageBlob);
+      // Download image from data URL
       const link = document.createElement('a');
-      link.href = url;
+      link.href = imageDataUrl;
       link.download = `linkedin-wrapped-${cardId}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
 
       // Show instructions
       setShowInstructions(true);
