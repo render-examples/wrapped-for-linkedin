@@ -58,7 +58,7 @@
   opacity: 0.85;
 }
 
-.cache-clear-btn {
+.cache-indicator .cache-clear-btn {
   flex-shrink: 0;
   background: rgba(29, 185, 84, 0.2);
   border: 1px solid rgba(29, 185, 84, 0.4);
@@ -67,7 +67,7 @@
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,10 +76,9 @@
   font-weight: 600;
 }
 
-.cache-clear-btn:hover {
+.cache-indicator .cache-clear-btn:hover {
   background: rgba(29, 185, 84, 0.3);
   border-color: rgba(29, 185, 84, 0.6);
-  transform: none;
 }
 
 @media (max-width: 768px) {

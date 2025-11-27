@@ -660,7 +660,7 @@
   }
 
   .peak-post-embed-container {
-    height: clamp(230px, 24vh, 260px) !important;
+    height: clamp(180px, 16vh, 80px) !important;
     margin-bottom: 1rem;
   }
 

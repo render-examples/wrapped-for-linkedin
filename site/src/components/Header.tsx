@@ -1,5 +1,4 @@
 import '../styles/Header.css';
-import '../styles/CacheIndicator.css';
 
 interface HeaderProps {
   onLogoClick?: () => void;
