@@ -79,7 +79,9 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
         <summary className="disclaimer-summary">𝒊 &nbsp; Why do metrics differ between exports and LinkedIn? </summary>
         <div className="disclaimer-content">
           <p>
-            Your LinkedIn analytics export includes more engagement types than what's publicly visible on posts. Export totals include reactions, comments, shares, reposts, and content clicks, while LinkedIn posts only display reactions and comments by default.
+            Metric differences can occur for a few reasons. Your LinkedIn analytics export covers the last 365 days as per the instructions, so older posts may show only engagements and impressions from within that window—not historical data from before the period began.
+
+            Additionally, your export includes more engagement types than what's publicly visible on LinkedIn. The export totals include reactions, comments, shares, reposts, and clicks, whereas LinkedIn posts typically display only reactions and comments.
           </p>
         </div>
       </details>
