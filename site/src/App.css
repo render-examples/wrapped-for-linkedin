@@ -168,8 +168,16 @@ body {
     width: 100%;
   }
 
+  .app-container {
+    padding-top: 3rem;
+  }
+
   .app-main {
-    padding: 1rem;
+    padding: 0;
+  }
+
+  .unified-dashboard {
+    padding: 0;
   }
 
   .tab-navigation {
