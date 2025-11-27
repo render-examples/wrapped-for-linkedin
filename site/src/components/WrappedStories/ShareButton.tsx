@@ -46,14 +46,23 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   useEffect(() => {
     if (isDropdownOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      // Position dropdown below the button, centered horizontally with the button
-      const top = rect.bottom + 10; // 10px below button
-      const left = rect.left + (rect.width / 2) - 140; // Center dropdown (280px / 2)
+      const isMobile = window.innerWidth <= 480;
 
-      // Keep dropdown within viewport
-      const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
+      if (isMobile) {
+        // On mobile, center the menu in viewport
+        const top = '50%';
+        const left = '50%';
+        setDropdownPosition({ top, left });
+      } else {
+        // On desktop, position below button
+        const top = rect.bottom + 10; // 10px below button
+        const left = rect.left + (rect.width / 2) - 140; // Center dropdown (280px / 2)
 
-      setDropdownPosition({ top: `${top}px`, left: `${adjustedLeft}px` });
+        // Keep dropdown within viewport
+        const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
+
+        setDropdownPosition({ top: `${top}px`, left: `${adjustedLeft}px` });
+      }
     }
   }, [isDropdownOpen]);
 
@@ -230,36 +239,39 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
       {/* Dropdown Menu - Rendered as Portal to escape stacking context */}
       {isDropdownOpen && !isExporting && createPortal(
-        <div
-          className="share-dropdown-menu"
-          role="menu"
-          style={dropdownPosition}
-          ref={dropdownRef}
-        >
-          <button
-            className="dropdown-option"
-            onClick={() => handleExportOption('current-card')}
-            role="menuitem"
+        <>
+          <div className="share-dropdown-backdrop" onClick={() => setIsDropdownOpen(false)} />
+          <div
+            className="share-dropdown-menu"
+            role="menu"
+            style={dropdownPosition}
+            ref={dropdownRef}
           >
-            <span className="option-icon">📄</span>
-            <div className="option-content">
-              <div className="option-title">Current card</div>
-              <div className="option-description">Export current card as a PNG</div>
-            </div>
-          </button>
+            <button
+              className="dropdown-option"
+              onClick={() => handleExportOption('current-card')}
+              role="menuitem"
+            >
+              <span className="option-icon">📄</span>
+              <div className="option-content">
+                <div className="option-title">Current card</div>
+                <div className="option-description">Export current card as a PNG</div>
+              </div>
+            </button>
 
-          <button
-            className="dropdown-option"
-            onClick={() => handleExportOption('all-cards')}
-            role="menuitem"
-          >
-            <span className="option-icon">📂</span>
-            <div className="option-content">
-              <div className="option-title">All cards</div>
-              <div className="option-description">Export all cards as a single PDF file</div>
-            </div>
-          </button>
-        </div>,
+            <button
+              className="dropdown-option"
+              onClick={() => handleExportOption('all-cards')}
+              role="menuitem"
+            >
+              <span className="option-icon">📂</span>
+              <div className="option-content">
+                <div className="option-title">All cards</div>
+                <div className="option-description">Export all cards as a single PDF file</div>
+              </div>
+            </button>
+          </div>
+        </>,
         document.body
       )}
 

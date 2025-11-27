@@ -293,10 +293,34 @@
     padding: 0.6rem 0.8rem;
   }
 
+  .share-dropdown-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   .share-dropdown-menu {
-    min-width: 100vw;
-    left: 50%;
-    transform: translateX(-50%);
+    min-width: calc(100vw - 20px);
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 10px;
+    max-width: calc(100vw - 20px);
   }
 
   .dropdown-option {
