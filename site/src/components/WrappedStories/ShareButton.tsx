@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '../../utils/imageExport';
-import { exportCardsAsPDFFromImages } from '../../utils/pdfExport';
+import { exportCardsAsPDFBatch } from '../../utils/pdfExport';
 import { DownloadInstructions } from './DownloadInstructions';
+import { ExportProgress } from './ExportProgress';
 import type { ShareableCard } from '../../types/wrappedStories';
+import type { ExportProgress as ExportProgressType } from '../../types/export';
 import '../../styles/ShareButton.css';
 
 interface ShareButtonProps {
@@ -39,8 +41,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [exportType, setExportType] = useState<ExportOption>(null);
   const [error, setError] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
+  const [exportProgress, setExportProgress] = useState<ExportProgressType | null>(null);
+  const [showExportProgress, setShowExportProgress] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Update dropdown position when it opens
   useEffect(() => {
@@ -119,7 +124,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   }, [cardRef, cardId]);
 
   /**
-   * Handle PDF export of all cards
+   * Handle PDF export of all cards using optimized batch processing
    * Waits for all cards to be rendered as they auto-play through
    */
   const handleExportAllCards = useCallback(async () => {
@@ -132,6 +137,9 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setError(null);
     setIsDropdownOpen(false);
     setExportType('all-cards');
+    setShowExportProgress(true);
+
+    abortControllerRef.current = new AbortController();
 
     try {
       // Collect all card elements - some might not be refs yet, so wait for them
@@ -166,16 +174,31 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       const year = new Date().getFullYear();
       const filename = `linkedin-wrapped-${year}.pdf`;
 
-      await exportCardsAsPDFFromImages(cardElements, filename);
+      // Use optimized batch export with progress tracking
+      await exportCardsAsPDFBatch(cardElements, filename, {
+        onProgress: (progress) => {
+          setExportProgress(progress);
+        },
+        onStageChange: (stage) => {
+          setExportProgress((prev) => prev ? { ...prev, stage } : null);
+        },
+      });
+
+      setShowExportProgress(false);
 
       // Show instructions
       setShowInstructions(true);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
-      setError(errorMessage);
-      console.error('PDF export failed:', err);
+      if (err instanceof Error && err.message === 'Export cancelled') {
+        setError(null);
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
+        setError(errorMessage);
+        console.error('PDF export failed:', err);
+      }
     } finally {
       setIsExporting(false);
+      setShowExportProgress(false);
     }
   }, [allCards]);
 
@@ -280,6 +303,20 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         <div className="share-feedback error">
           ❌ {error}
         </div>
+      )}
+
+      {/* Export Progress Modal - Rendered as Portal to escape stacking context */}
+      {exportProgress && createPortal(
+        <ExportProgress
+          progress={exportProgress}
+          isVisible={showExportProgress}
+          onCancel={() => {
+            abortControllerRef.current?.abort();
+            setShowExportProgress(false);
+            setIsExporting(false);
+          }}
+        />,
+        document.body
       )}
 
       {/* Download Instructions Modal - Rendered as Portal to escape stacking context */}

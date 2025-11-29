@@ -8,9 +8,12 @@
  * - Batched DOM operations
  * - Direct conversion to PNG via html-to-image
  * - Clean separation of concerns with imageExport and pdfExport
+ * - Image caching to avoid re-rendering unchanged cards
+ * - Content hashing for cache invalidation
  */
 
 import { toPng } from 'html-to-image';
+import { imageCache } from './imageCache';
 
 /**
  * Prepare a cloned element for export by cleaning up styles and removing unwanted elements
@@ -89,12 +92,40 @@ function prepareElementForExport(clone: HTMLElement): HTMLElement {
 
 /**
  * Export a single card as PNG image using html-to-image
+ * Checks cache first to avoid re-rendering unchanged cards
  * @param element The card element to export
  * @param backgroundColor Optional background color for the PNG (defaults to dark)
+ * @param useCache Optional flag to enable caching (default: true)
+ * @param cardId Optional card ID for cache key (uses element ID if available)
  * @returns A promise that resolves to a data URL string
  */
-export async function exportCardAsImage(element: HTMLElement, backgroundColor: string = '#0F0F0F'): Promise<string> {
+export async function exportCardAsImage(
+  element: HTMLElement,
+  backgroundColor: string = '#0F0F0F',
+  useCache: boolean = true,
+  cardId?: string
+): Promise<string> {
   try {
+    // Generate stable cache key using element content hash
+    let id = cardId || element.id;
+    if (!id) {
+      // Use element's innerHTML hash for stable identification
+      const contentHash = hashContent(element.innerHTML);
+      id = `card-${contentHash}`;
+    }
+    const cacheKey = `${id}-${backgroundColor.replace('#', '')}`;
+
+    // Check cache first
+    if (useCache) {
+      const cachedImage = imageCache.get(cacheKey);
+      if (cachedImage) {
+        console.log(`[IMAGE] Cache hit for card ${id}`);
+        return cachedImage.dataUrl;
+      }
+    }
+
+    console.log(`[IMAGE] Cache miss for card ${id}, rendering...`);
+
     // Clone the element to avoid modifying the original
     const clone = element.cloneNode(true) as HTMLElement;
 
@@ -133,9 +164,21 @@ export async function exportCardAsImage(element: HTMLElement, backgroundColor: s
       // Convert to PNG using html-to-image with high resolution
       const dataUrl = await toPng(preparedClone, {
         cacheBust: true,
-        pixelRatio: 2,
+        pixelRatio: 1.5,
         backgroundColor,
       });
+
+      // Store in cache
+      if (useCache) {
+        const size = dataUrl.length; // Approximate size in bytes
+        imageCache.set(cacheKey, {
+          dataUrl,
+          timestamp: Date.now(),
+          backgroundColor,
+          size,
+        });
+        console.log(`[IMAGE] Cached card ${id} (size: ${(size / 1024).toFixed(2)}KB)`);
+      }
 
       return dataUrl;
     } finally {
@@ -148,6 +191,22 @@ export async function exportCardAsImage(element: HTMLElement, backgroundColor: s
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to export card as image: ${errorMessage}`);
   }
+}
+
+/**
+ * Generate a stable hash of content for cache key generation
+ * Uses a simple hash function to create consistent identifiers
+ * @param content The content to hash
+ * @returns A hex hash string
+ */
+function hashContent(content: string): string {
+  let hash = 0;
+  for (let i = 0; i < content.length; i++) {
+    const char = content.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(16).substring(0, 8);
 }
 
 /**
