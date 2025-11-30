@@ -16,7 +16,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [userManuallyPaused, setUserManuallyPaused] = useState(false);
   const [isNavigatingBackward, setIsNavigatingBackward] = useState(false);
+  const [swipeArrowDirection, setSwipeArrowDirection] = useState<'left' | 'right' | null>(null);
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const swipeArrowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousCardIndexRef = useRef(0);
 
   // Create refs for all cards for PDF export
@@ -159,6 +161,14 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   // Touch/swipe handling
   const touchStartXRef = useRef<number | null>(null);
 
+  // Clear swipe arrow animation
+  const clearSwipeArrowTimer = useCallback(() => {
+    if (swipeArrowTimerRef.current) {
+      clearTimeout(swipeArrowTimerRef.current);
+      swipeArrowTimerRef.current = null;
+    }
+  }, []);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
   };
@@ -172,10 +182,20 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
 
     if (Math.abs(difference) > threshold) {
       if (difference > 0) {
+        setSwipeArrowDirection('left');
         handleNext();
       } else {
+        setSwipeArrowDirection('right');
         handlePrevious();
       }
+
+      // Clear previous timer
+      clearSwipeArrowTimer();
+
+      // Hide arrow after animation completes
+      swipeArrowTimerRef.current = setTimeout(() => {
+        setSwipeArrowDirection(null);
+      }, 600);
     }
 
     touchStartXRef.current = null;
@@ -187,8 +207,11 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       startAutoPlay();
     }
 
-    return () => clearAutoPlayTimer();
-  }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer]);
+    return () => {
+      clearAutoPlayTimer();
+      clearSwipeArrowTimer();
+    };
+  }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer, clearSwipeArrowTimer]);
 
   return (
     <div className="wrapped-stories-container">
@@ -197,6 +220,18 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Swipe Arrow Indicators */}
+        {swipeArrowDirection && (
+          <>
+            {swipeArrowDirection === 'left' && (
+              <div className="swipe-arrow swipe-arrow-left">→</div>
+            )}
+            {swipeArrowDirection === 'right' && (
+              <div className="swipe-arrow swipe-arrow-right">←</div>
+            )}
+          </>
+        )}
+
         {/* Render all cards - CSS makes only active one visible */}
         {cards.map((card, index) => (
           <StoryCard

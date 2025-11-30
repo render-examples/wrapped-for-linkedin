@@ -122,6 +122,56 @@
   }
 }
 
+/* Swipe Arrow Indicators */
+.swipe-arrow {
+  position: absolute;
+  top: 50%;
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  z-index: 15;
+  transform: translateY(-50%);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.swipe-arrow-left {
+  right: 1rem;
+  animation: slideArrowLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.swipe-arrow-right {
+  left: 1rem;
+  animation: slideArrowRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideArrowLeft {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(0);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(20px);
+  }
+}
+
+@keyframes slideArrowRight {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(0);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+}
+
 /* Story Card */
 .story-card {
   position: absolute;
