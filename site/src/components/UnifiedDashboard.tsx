@@ -3,6 +3,7 @@ import { SpotifyDashboard } from './SpotifyDashboard';
 import { TopPostsDisplay } from './TopPostsDisplay';
 import { DemographicsView } from './DemographicsView';
 import { WrappedStoriesContainer } from './WrappedStories/WrappedStoriesContainer';
+import { FinalMessage } from './FinalMessage';
 import { generateShareableCards } from '../utils/cardDataMapper';
 import type { EngagementMetrics, TopPost, DemographicInsights } from '@types';
 import type { ParsedExcelData } from '../utils/excel/types';
@@ -71,6 +72,9 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
           )}
         </div>
       )}
+
+      {/* Final Message - That's a wrap! */}
+      <FinalMessage />
     </div>
   );
 };

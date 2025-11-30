@@ -1,0 +1,73 @@
+.final-message {
+  text-align: left;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.final-message-title {
+  font-family: var(--font-title, 'Avenir Next', Avenir, -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-accent, #0A66C2);
+  margin: 0;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #0A66C2 0%, #0D7EBA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.final-message-subtitle {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  padding-top: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .final-message-container {
+    padding: 4rem 1.5rem;
+    min-height: 50vh;
+  }
+
+  .final-message-title {
+    font-size: 2.5rem;
+  }
+
+  .final-message-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .final-message-container {
+    padding: 3rem 1rem;
+    min-height: 40vh;
+  }
+
+  .final-message-title {
+    font-size: 2rem;
+  }
+
+  .final-message-subtitle {
+    font-size: 1rem;
+  }
+}
