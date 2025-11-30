@@ -61,7 +61,7 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
       {/* Fallback content if no discovery data */}
       {!discoveryData && !demographics && (
         <div className="fallback-section">
-          <h1 className="fallback-title">Your LinkedIn Year in Review</h1>
+          <h1 className="fallback-title">Your LinkedIn year in review</h1>
 
           {topPosts.length > 0 ? (
             <TopPostsDisplay posts={topPosts} />
