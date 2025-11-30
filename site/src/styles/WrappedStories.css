@@ -18,6 +18,24 @@
   z-index: 100;
 }
 
+/* Card Progress Wrapper - Inside Card */
+.card-progress-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 20;
+  border-radius: 20px 20px 0 0;
+  padding: 2rem;
+}
+
+.card-progress-wrapper .progress-bars {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+}
+
 .progress-bars {
   display: flex;
   gap: 0.5rem;
@@ -26,11 +44,16 @@
 
 .progress-bar {
   flex: 1;
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.3);
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.25);
   border-radius: 2px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.card-progress-wrapper .progress-bar {
+  height: 2.5px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .progress-bar:hover {
@@ -149,7 +172,7 @@
   pointer-events: auto;
   position: relative;
   z-index: 5;
-  padding-top: 0.75rem;
+  padding-top: 3.5rem;
   padding-bottom: 0.05rem;
   overflow: visible;
   flex: 1 1 auto;
@@ -607,7 +630,7 @@
   }
 
   .card-content-wrapper {
-    padding-top: 0.5rem;
+    padding-top: 2.75rem;
     padding-bottom: 0.75rem;
   }
 
@@ -657,7 +680,7 @@
   }
 
   .card-content-wrapper {
-    padding-top: 0.75rem;
+    padding-top: 3rem;
     padding-bottom: 1rem;
   }
 
@@ -718,12 +741,16 @@
   }
 
   .card-content-wrapper {
-    padding-top: 0.5rem;
+    padding-top: 2.5rem;
     padding-bottom: 0.5rem;
   }
 
   .card-body {
     gap: 0.75rem;
+  }
+
+  .card-progress-wrapper {
+    padding: 0.5rem;
   }
 
   .card-title {
@@ -783,7 +810,7 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .wrapped-stories-container {
-    padding: 0.5rem;
+    padding: 1.75rem 0.5rem 0.5rem 0.5rem;
     margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -821,7 +848,7 @@
 
   .card-content-wrapper {
     padding-bottom: 0.5rem;
-    padding-top: 0.5rem;
+    padding-top: 3.5rem;
   }
 
   .card-header {
@@ -1035,6 +1062,10 @@
     padding: 2.5rem;
   }
 
+  .card-content-wrapper {
+    padding-top: 3.5rem;
+  }
+
   /* Desktop: 1024px and above */
   .card-circular-logo {
     width: clamp(75px, 12vw, 150px);
@@ -1136,12 +1167,16 @@
 
   .card-content-wrapper {
     padding-bottom: 0.3rem;
-    padding-top: 0.35rem;
+    padding-top: 2.5rem;
     gap: 0.3rem;
   }
 
   .card-header {
     margin-bottom: 0.15rem;
+  }
+
+  .card-progress-wrapper {
+    padding: 0.4rem;
   }
 
   /* Ultra-Small Mobile: 320px and below */

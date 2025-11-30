@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ShareButton } from './ShareButton';
+import { StoryProgress } from './StoryProgress';
 import type { ShareableCard } from '../../types/wrappedStories';
 
 interface StoryCardProps {
@@ -13,6 +14,12 @@ interface StoryCardProps {
     membersReached: string;
   };
   onPauseAutoplay?: () => void;
+  currentCardIndex: number;
+  totalCards: number;
+  onJumpToCard: (index: number) => void;
+  isAutoPlaying?: boolean;
+  autoPlayDuration?: number;
+  isNavigatingBackward?: boolean;
 }
 
 export const StoryCard: React.FC<StoryCardProps> = ({
@@ -23,6 +30,12 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   allCards,
   summaryMetrics,
   onPauseAutoplay,
+  currentCardIndex,
+  totalCards,
+  onJumpToCard,
+  isAutoPlaying = false,
+  autoPlayDuration = 5000,
+  isNavigatingBackward = false,
 }) => {
   const internalCardRef = useRef<HTMLDivElement>(null);
   const cardRef = externalCardRef || internalCardRef;
@@ -38,6 +51,18 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       role="region"
       aria-label={`Card ${cardIndex + 1}: ${card.title}`}
     >
+      {/* Progress Bars - Inside Card at Top */}
+      <div className="card-progress-wrapper">
+        <StoryProgress
+          currentCardIndex={currentCardIndex}
+          totalCards={totalCards}
+          onJumpToCard={onJumpToCard}
+          isAutoPlaying={isAutoPlaying}
+          autoPlayDuration={autoPlayDuration}
+          isNavigatingBackward={isNavigatingBackward}
+        />
+      </div>
+
       {/* Card Content */}
       <div className="card-content-wrapper">
         <div className="card-header">

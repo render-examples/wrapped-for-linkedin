@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { StoryProgress } from './StoryProgress';
 import { StoryCard } from './StoryCard';
 import type { ShareableCard } from '../../types/wrappedStories';
 import '@styles/WrappedStories.css';
@@ -193,15 +192,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
 
   return (
     <div className="wrapped-stories-container">
-      <StoryProgress
-        currentCardIndex={currentCardIndex}
-        totalCards={totalCards}
-        onJumpToCard={handleJumpToCard}
-        isAutoPlaying={isAutoPlaying}
-        autoPlayDuration={autoPlayDuration}
-        isNavigatingBackward={isNavigatingBackward}
-      />
-
       <div
         className="story-viewport"
         onTouchStart={handleTouchStart}
@@ -218,6 +208,12 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             allCards={cardRefsRef.current}
             summaryMetrics={summaryMetrics}
             onPauseAutoplay={handlePauseAutoPlay}
+            currentCardIndex={currentCardIndex}
+            totalCards={totalCards}
+            onJumpToCard={handleJumpToCard}
+            isAutoPlaying={isAutoPlaying}
+            autoPlayDuration={autoPlayDuration}
+            isNavigatingBackward={isNavigatingBackward}
           />
         ))}
       </div>
