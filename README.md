@@ -13,6 +13,9 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 - **🎨 Shareable cards** - Beautiful graphics that are ready to share on LinkedIn
 - **📊 Top posts analytics** - See your highest-performing posts ranked by impressions, engagement rate, and comments
 - **👥 Audience demographics** - Visualize your followers and engagers by industry, seniority, location, and company size
+- **📱 Instagram-inspired UX** - Swipe through cards like Instagram stories with autoplay, press-and-hold to pause, and mobile tap navigation
+- **📈 Demo data** - Try the app with sample analytics data without uploading your own file
+- **💾 Local caching** - Your data stays in your browser and is cached for quick access on return visits
 
 ## 🚀 Quickstart
 

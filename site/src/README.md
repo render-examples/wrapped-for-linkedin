@@ -24,20 +24,22 @@ The application follows a **component-driven architecture** with:
 - **Type safety**: Full TypeScript with strict mode
 - **Client-side only**: All data stays in the user's browser
 - **Responsive design**: Mobile-friendly with CSS media queries
+- **Instagram-inspired UX**: Autoplay carousel with pause, swipe navigation, and keyboard controls
 
 ## 📁 Directory structure
 
 ```
 src/
 ├── components/          # React UI components
-│   ├── WrappedStories/  # Shareable story cards
+│   ├── WrappedStories/  # Shareable story cards (Instagram Stories-style)
 │   ├── Header.tsx       # App header with navigation
 │   ├── FileUpload.tsx   # File input interface
 │   ├── UnifiedDashboard.tsx  # Main dashboard container
 │   ├── SpotifyDashboard.tsx  # Summary metrics display
 │   ├── TopPostsDisplay.tsx   # Top posts analytics
 │   ├── DemographicsView.tsx  # Audience demographics
-│   ├── AnalyticsView.tsx     # Engagement analytics
+│   ├── FinalMessage.tsx      # End of wrapped message
+│   ├── SampleDataButton.tsx  # Demo data loader
 │   ├── Loading.tsx      # Loading state
 │   ├── Error.tsx        # Error display
 │   └── CacheIndicator.tsx # Cache status
@@ -135,12 +137,14 @@ Choose export format:
 
 ### **App.tsx** (Main app container)
 - Root component that manages application state
-- Handles file upload lifecycle
+- Handles file upload and demo data loading
 - Routes between FileUpload and UnifiedDashboard views
 - Manages error states and loading indicators
+- Integrates with browser cache for data persistence
 
 ### **FileUpload.tsx** (Data input)
 - Accepts Excel files via file input or drag-and-drop
+- Includes demo data button for trying the app without uploading
 - Validates file format
 - Triggers processing pipeline
 - Shows loading state during processing
@@ -168,11 +172,20 @@ Choose export format:
 - Visual percentage bars
 
 ### **WrappedStories/** (Shareable cards)
-- **WrappedStoriesContainer.tsx**: Main container with carousel
-- **StoryCard.tsx**: Individual story card component
-- **StoryProgress.tsx**: Progress indicators
-- **ShareButton.tsx**: Export and share functionality
+- **WrappedStoriesContainer.tsx**: Main container with Instagram Stories-style carousel including autoplay, pause-on-hold, and keyboard/swipe navigation
+- **StoryCard.tsx**: Individual story card component with responsive design
+- **StoryProgress.tsx**: Progress indicators and card navigation
+- **ShareButton.tsx**: Export cards as images/PDFs and pre-filled LinkedIn share functionality
 - **DownloadInstructions.tsx**: Guide for saving cards
+- **ExportProgress.tsx**: Real-time progress indicator for batch exports
+
+### **WrappedStoriesContainer.tsx** (Wrapped Stories)
+- Instagram Stories-inspired carousel with autoplay (5s per card by default)
+- **Press-and-hold to pause**: Long-press on any card to pause autoplay (mobile)
+- **Swipe/Tap navigation**: Tap left/right or swipe on mobile to navigate
+- **Keyboard controls**: Arrow keys to navigate, Escape to pause autoplay
+- **Progress indicators**: Visual progress bars at top of each card
+- Cycles through cards with wrapping (loops back to start)
 
 ## 🔧 Data processing pipeline
 
@@ -271,16 +284,25 @@ interface AppState {
 
 Manages browser localStorage for caching:
 - Stores parsed Excel data with timestamp
-- Reuses data on return visits
+- Reuses data on return visits without re-uploading
 - Shows cache indicator in header
 - Allows manual cache clearing
+- Improves user experience for returning visitors
+
+### **Sample data hook** (`hooks/useSampleData.ts`)
+
+Manages demo data functionality:
+- Provides sample analytics data for testing
+- Loads demo data on button click
+- Allows users to explore features without uploading
 
 ## 🛠️ Utilities & helpers
 
 ### **File I/O**
 - `storageManager.ts`: Wrapper for localStorage API
-- `imageExport.ts`: Convert components to PNG using html2canvas
-- `pdfExport.ts`: Generate PDFs with jsPDF
+- `imageExport.ts`: Convert components to PNG using html2canvas with batch optimization
+- `pdfExport.ts`: Export dashboard as PDF with batch rendering for performance
+- `batchImageExporter.ts`: Batch export multiple cards as images efficiently
 
 ### **Formatting**
 - `dateFormatter.ts`: Format dates and times consistently
@@ -288,7 +310,7 @@ Manages browser localStorage for caching:
 - `shareTextTemplates.ts`: Pre-written share messages
 
 ### **Interaction**
-- `linkedinShareLink.ts`: Generate LinkedIn share URLs with pre-filled text
+- `linkedinShareLink.ts`: Generate LinkedIn share URLs with pre-filled text and wrapped link
 
 ### **Data processing**
 - `profileExtractor.ts`: Extract user info from data
