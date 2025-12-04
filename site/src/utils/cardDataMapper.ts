@@ -5,6 +5,7 @@
 import type { ShareableCard } from '@/types/wrappedStories';
 import type { ParsedExcelData } from '@utils/excel/types';
 import { calculateBestMonth } from '@utils/bestMonthCalculator';
+import { getVenueComparison, formatVenueComparison } from '@utils/venueComparison';
 
 /**
  * Format large numbers for display (e.g., 1500000 -> 1.5M)
@@ -82,17 +83,26 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
 
   // Card 2: Members Reached
   if (data.discovery_data?.members_reached) {
+    const membersReached = data.discovery_data.members_reached;
+    const venueComparison = getVenueComparison(membersReached) || undefined;
+    const venueFormatted = formatVenueComparison(membersReached);
+    const contextMessage =
+      venueFormatted
+        ? `You reached ${formatNumber(membersReached)} people. ${venueFormatted}!`
+        : 'Your network is powerful';
+
     cards.push({
       id: 'members-reached',
       type: 'members-reached',
       title: 'Network Ninja',
       data: {
-        value: formatNumber(data.discovery_data.members_reached),
+        value: formatNumber(membersReached),
         label: 'Unique Professionals Reached',
         icon: '👥',
-        context: 'Your network is powerful',
+        context: contextMessage,
         profileId: 'network',
         avatarColor: getAvatarColor('members-reached'),
+        venueComparison,
       },
       backgroundColor: '#0F0F0F',
       gradient: 'linear-gradient(135deg, #E63946 0%, #F77F88 100%)',

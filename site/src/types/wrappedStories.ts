@@ -10,7 +10,8 @@ export type CardType =
   | 'audience-industry'
   | 'audience-location'
   | 'new-followers'
-  | 'year-summary';
+  | 'year-summary'
+  | 'peak-performer';
 
 export interface CardData {
   value?: number | string;
@@ -20,6 +21,11 @@ export interface CardData {
   profileId?: string; // LinkedIn profile ID
   avatarColor?: string; // Avatar background color
   profilePhotoUrl?: string; // LinkedIn profile picture URL
+  venueComparison?: {
+    // Venue comparison for reach visualization
+    venue: string;
+    times: number;
+  };
   [key: string]: any; // Allow card-specific properties
 }
 
