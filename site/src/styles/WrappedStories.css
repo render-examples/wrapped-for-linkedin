@@ -339,6 +339,7 @@
   color: rgba(255, 255, 255, 0.85);
   max-width: 100%;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
 }
 
 .card-context {
@@ -449,7 +450,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.5rem;
+  gap: 0.2rem;
   width: 100%;
   max-width: 90%;
   flex: 1 1 auto;
@@ -889,6 +890,11 @@
     min-height: auto;
   }
 
+  .story-viewport.peak-performer-viewport {
+    aspect-ratio: 3 / 4 !important;
+    flex: 0 0 auto !important;
+  }
+
   .story-card {
     border-radius: 16px;
     padding: 1.25rem;
@@ -1093,6 +1099,37 @@
   }
 }
 
+/* iPhone SE (375px) Optimization */
+@media (max-width: 768px) and (min-width: 360px) and (max-width: 390px) {
+  .story-viewport.peak-performer-viewport {
+    aspect-ratio: 3 / 4;
+    min-height: 580px;
+  }
+
+  .card-content-wrapper {
+    padding-top: 3.5rem;
+  }
+
+  .peak-performer-content {
+    gap: 0.75rem;
+  }
+
+  .peak-post-embed-container {
+    height: clamp(80px, 12vh, 140px);
+    margin-bottom: 1rem;
+  }
+
+  .peak-post-metrics {
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .peak-metric {
+    padding: 0.75rem 0.9rem;
+    min-width: 0;
+  }
+}
+
 /* Desktop Optimization (13 inch Laptop and larger) */
 @media (min-width: 1024px) {
   .wrapped-stories-container {
@@ -1106,12 +1143,16 @@
     min-height: 800px;
   }
 
+  .story-viewport.peak-performer-viewport {
+    min-height: 950px;
+  }
+
   .story-card {
     padding: 2.5rem;
   }
 
   .card-content-wrapper {
-    padding-top: 3.5rem;
+    padding-top: 1.3rem;
   }
 
   /* Desktop: 1024px and above */
@@ -1308,7 +1349,7 @@
 
   /* Peak Performer - Ultra Small */
   .peak-performer-content {
-    gap: 0.4rem;
+    gap: 0.3rem;
     flex: 0 1 auto;
   }
 

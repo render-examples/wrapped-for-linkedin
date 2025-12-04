@@ -47,7 +47,8 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
     <>
       {/* Your <year> Wrapped - Unified Metrics Section */}
       <div className="wrapped-section">
-        <h2 className="section-title">
+        <h2 className='section-title'>Year in review</h2>
+        <h2 className="section-subtitle">
         Your {year} Wrapped
       </h2>
         <p className="section-subtitle">

@@ -272,10 +272,13 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     };
   }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer, clearSwipeArrowTimer]);
 
+  const currentCard = cards[currentCardIndex];
+  const viewportClassName = `story-viewport${currentCard?.type === 'peak-performer' ? ' peak-performer-viewport' : ''}`;
+
   return (
     <div className="wrapped-stories-container">
       <div
-        className="story-viewport"
+        className={viewportClassName}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onPointerDown={handlePointerDown}
