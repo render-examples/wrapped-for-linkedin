@@ -1,3 +1,7 @@
+# Markdown files for notes and TODOs
+TODO.md
+learn.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
