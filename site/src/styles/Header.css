@@ -27,6 +27,12 @@
   justify-content: space-between;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .linkedin-wrapped-title-container {
   display: flex;
   align-items: center;
@@ -70,6 +76,66 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Info Tooltip */
+.info-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+.info-icon {
+  font-size: 16px;
+  color: var(--primary-light);
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.info-tooltip-wrapper:hover .info-icon {
+  color: var(--text-secondary);
+}
+
+.tooltip-content {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid var(--border-color-light);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  z-index: 1001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.info-tooltip-wrapper:hover .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Tooltip arrow */
+.tooltip-content::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: rgba(26, 26, 26, 0.95);
 }
 
 /* Gift Icon */
@@ -130,6 +196,16 @@
   .cache-clear-btn {
     right: 1.5rem;
   }
+
+  .info-icon {
+    font-size: 14px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .tooltip-content {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -156,5 +232,11 @@
     padding: 0.5rem 0.7rem;
     white-space: nowrap;
     right: 1rem;
+  }
+
+  .info-icon {
+    font-size: 13px;
+    width: 16px;
+    height: 16px;
   }
 }

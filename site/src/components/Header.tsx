@@ -18,23 +18,29 @@ export function Header({ onLogoClick, onClearCache, hasCachedData = false }: Hea
   return (
     <header className="app-header">
       <div className="header-content">
-        <button
-          className="linkedin-wrapped-title-container"
-          onClick={handleHomeClick}
-          aria-label="Navigate to home"
-          title="LinkedIn Wrapped home"
-        >
-          <div className="logo-wrapper">
-            <img
-              src="/gift.png"
-              alt="Gift decoration"
-              className="gift-icon"
-            />
-            <h1 className="linkedin-wrapped-title">
-              LinkedIn Wrapped
-            </h1>
+        <div className="header-left">
+          <button
+            className="linkedin-wrapped-title-container"
+            onClick={handleHomeClick}
+            aria-label="Navigate to home"
+            title="LinkedIn Wrapped home"
+          >
+            <div className="logo-wrapper">
+              <img
+                src="/gift.png"
+                alt="Gift decoration"
+                className="gift-icon"
+              />
+              <h1 className="linkedin-wrapped-title">
+                LinkedIn Wrapped
+              </h1>
+            </div>
+          </button>
+          <div className="info-tooltip-wrapper">
+            <span className="info-icon">ⓘ</span>
+            <div className="tooltip-content">Not affiliated with LinkedIn or Microsoft</div>
           </div>
-        </button>
+        </div>
       {hasCachedData && (
         <button
           className="cache-clear-btn"

@@ -96,6 +96,23 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           <li>Upload the exported file here!</li>
         </ol>
       </div>
+
+      <div className="privacy-disclaimer">
+        <p>
+          🔒 <strong>Your data never leaves your device.</strong>
+          <br /> <br />
+          All processing happens locally in your browser.
+          We don't store, transmit, or use your LinkedIn data for anything else.{' '}
+          <br /> <br />
+          <a 
+            href="https://github.com/Ho1yShif/linkedin-wrapped/blob/main/site/src/utils/excel/excelProcessor.ts" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            View source code
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

@@ -139,6 +139,22 @@ body {
   margin-top: 3rem;
 }
 
+.app-footer p {
+  margin: 0.5rem 0;
+}
+
+.footer-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
 @keyframes pulse-slow {
   0%, 100% {
     opacity: 0.8;

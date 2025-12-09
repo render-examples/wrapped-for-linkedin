@@ -2,9 +2,12 @@
 
 LinkedIn Wrapped transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and check out your year in review.
 
-**Note:** This is a fully client-side application. Your data is processed entirely in your browser.
+LinkedIn Wrapped is a fully client-side application. Your data is processed entirely in your browser and never leaves your device.
 
 Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [Venkata Naga Sai Kumar Bysani](https://www.linkedin.com/in/saibysani18/).
+
+> [!NOTE]  
+> This project is not affiliated with, endorsed by, or connected to LinkedIn or Microsoft.
 
 🫶 _Made with love for the LinkedIn data community_
 
@@ -31,9 +34,10 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 ```bash
 git clone https://github.com/Ho1yShif/linkedin-wrapped.git
-cd linkedin-wrapped
-npm install  # Install dependencies in site/
-./bin/preview.sh
+cd site
+npm install # Install dependencies in site/
+cd ..  # Navigate back to project root
+bin/preview.sh
 ```
 
 Open your browser to `http://localhost:5173`
@@ -42,7 +46,7 @@ Open your browser to `http://localhost:5173`
 
 ```bash
 git clone https://github.com/Ho1yShif/linkedin-wrapped.git
-cd linkedin-wrapped/site
+cd site
 npm install
 npm run dev
 ```

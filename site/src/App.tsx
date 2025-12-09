@@ -99,7 +99,17 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>LinkedIn Wrapped &nbsp; | &nbsp; © 2025 Shifra Williams </p>
+        <p>
+          LinkedIn Wrapped &nbsp; | &nbsp; © 2025 Shifra Williams &nbsp; | &nbsp; 
+          <a 
+            href="https://github.com/Ho1yShif/linkedin-wrapped" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            GitHub
+          </a>
+        </p>
       </footer>
     </div>
   );
