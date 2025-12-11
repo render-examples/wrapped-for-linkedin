@@ -102,7 +102,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           We don't store, transmit, or use your LinkedIn data for anything else.{' '}
           <br /> <br />
           <a 
-            href="https://github.com/Ho1yShif/linkedin-wrapped/blob/main/site/src/utils/excel/excelProcessor.ts" 
+            href="https://github.com/Ho1yShif/wrapped-for-linkedin/blob/main/site/src/utils/excel/excelProcessor.ts" 
             target="_blank" 
             rel="noopener noreferrer"
           >

@@ -33,7 +33,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 **Option 1: Using the preview script (recommended)**
 
 ```bash
-git clone https://github.com/Ho1yShif/linkedin-wrapped.git
+git clone https://github.com/Ho1yShif/wrapped-for-linkedin.git
 cd site
 npm install # Install dependencies in site/
 cd ..  # Navigate back to project root
@@ -45,7 +45,7 @@ Open your browser to `http://localhost:5173`
 **Option 2: Manual setup**
 
 ```bash
-git clone https://github.com/Ho1yShif/linkedin-wrapped.git
+git clone https://github.com/Ho1yShif/wrapped-for-linkedin.git
 cd site
 npm install
 npm run dev

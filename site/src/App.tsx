@@ -102,7 +102,7 @@ function App() {
         <p>
           Wrapped for LinkedIn &nbsp; | &nbsp; © 2025 Shifra Williams &nbsp; | &nbsp; 
           <a 
-            href="https://github.com/Ho1yShif/linkedin-wrapped" 
+            href="https://github.com/Ho1yShif/wrapped-for-linkedin" 
             target="_blank" 
             rel="noopener noreferrer"
             className="footer-link"
