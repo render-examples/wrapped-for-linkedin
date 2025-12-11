@@ -1,6 +1,6 @@
-# LinkedIn Wrapped architecture
+# Wrapped for LinkedIn architecture
 
-This document describes how the LinkedIn Wrapped application is structured and how data flows through the system. The entire application runs client-side in the browser with no backend required.
+This document describes how the Wrapped for LinkedIn application is structured and how data flows through the system. The entire application runs client-side in the browser with no backend required.
 
 **Tech Stack:** React 18 + TypeScript + Vite + Zustand + [Render](https://render.com/) (deployment)
 

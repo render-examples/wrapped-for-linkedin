@@ -5,7 +5,7 @@ interface LoadingProps {
   message?: string;
 }
 
-export const Loading: React.FC<LoadingProps> = ({ message = 'Loading your LinkedIn Wrapped...' }) => {
+export const Loading: React.FC<LoadingProps> = ({ message = 'Loading your Wrapped for LinkedIn...' }) => {
   return (
     <div className="loading-container">
       <div className="loader">

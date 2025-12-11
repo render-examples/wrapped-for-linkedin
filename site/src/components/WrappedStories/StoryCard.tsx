@@ -72,7 +72,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
         {/* Circular Logo */}
         <img
           src="/wrapped-logo.png"
-          alt="LinkedIn Wrapped"
+          alt="Wrapped for LinkedIn"
           className="card-circular-logo"
         />
 
@@ -174,7 +174,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
         </div>
 
         <div className="card-footer">
-          <div className="branding">LinkedIn Wrapped</div>
+          <div className="branding">Wrapped for LinkedIn</div>
           <ShareButton
             cardId={card.id}
             card={card}

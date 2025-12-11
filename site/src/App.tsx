@@ -100,7 +100,7 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          LinkedIn Wrapped &nbsp; | &nbsp; © 2025 Shifra Williams &nbsp; | &nbsp; 
+          Wrapped for LinkedIn &nbsp; | &nbsp; © 2025 Shifra Williams &nbsp; | &nbsp; 
           <a 
             href="https://github.com/Ho1yShif/linkedin-wrapped" 
             target="_blank" 

@@ -33,7 +33,7 @@
   gap: 0.5rem;
 }
 
-.linkedin-wrapped-title-container {
+.wrapped-on-linkedin-title-container {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -50,15 +50,15 @@
   -webkit-user-select: none;
 }
 
-.linkedin-wrapped-title-container:hover,
-.linkedin-wrapped-title-container:focus,
-.linkedin-wrapped-title-container:active {
+.wrapped-on-linkedin-title-container:hover,
+.wrapped-on-linkedin-title-container:focus,
+.wrapped-on-linkedin-title-container:active {
   outline: none;
   background: none;
   transform: none;
 }
 
-.linkedin-wrapped-title {
+.wrapped-on-linkedin-title {
   font-family: var(--font-title, 'Avenir Next', Avenir, -apple-system, BlinkMacSystemFont, sans-serif);
   font-size: 24px;
   font-weight: 600;
@@ -67,7 +67,7 @@
   letter-spacing: -0.5px;
 }
 
-.linkedin-wrapped-title:hover {
+.wrapped-on-linkedin-title:hover {
   color: #FFFF;
 }
 
@@ -180,7 +180,7 @@
     padding: 0 1.5rem;
   }
 
-  .linkedin-wrapped-title {
+  .wrapped-on-linkedin-title {
     font-size: 18px;
   }
 
@@ -214,7 +214,7 @@
     padding: 0 1rem;
   }
 
-  .linkedin-wrapped-title {
+  .wrapped-on-linkedin-title {
     font-size: 20px;
   }
 

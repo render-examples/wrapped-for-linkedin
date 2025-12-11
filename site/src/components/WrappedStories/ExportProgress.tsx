@@ -33,7 +33,7 @@ export const ExportProgressModal: React.FC<ExportProgressProps> = ({
     <div className="export-progress-overlay">
       <div className="export-progress-modal">
         <div className="export-progress-header">
-          <h3>Exporting LinkedIn Wrapped</h3>
+          <h3>Exporting Wrapped for LinkedIn</h3>
           <p className="export-stage">{stageMessages[progress.stage]}</p>
         </div>
 

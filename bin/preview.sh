@@ -8,7 +8,7 @@ print_help() {
   cat <<-EOF
 Usage: $(basename "$0") [options]
 
-Start the LinkedIn Wrapped development server with live reload.
+Start the Wrapped for LinkedIn development server with live reload.
 
 Options:
   --port PORT   Dev server port (default: 5173)

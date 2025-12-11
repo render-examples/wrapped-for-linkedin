@@ -5,7 +5,7 @@ export interface CachedData {
   uploadDate: number;
 }
 
-const CACHE_KEY = 'linkedin-wrapped-cache';
+const CACHE_KEY = 'wrapped-for-linkedin-cache';
 
 const getCachedItem = (): CachedData | null => {
   try {

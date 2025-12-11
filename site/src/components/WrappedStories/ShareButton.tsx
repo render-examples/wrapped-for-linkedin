@@ -105,7 +105,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       // Download image from data URL
       const link = document.createElement('a');
       link.href = imageDataUrl;
-      link.download = `linkedin-wrapped-${cardId}.png`;
+      link.download = `wrapped-for-linkedin-${cardId}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -170,7 +170,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       }
 
       const year = new Date().getFullYear();
-      const filename = `linkedin-wrapped-${year}.pdf`;
+      const filename = `wrapped-for-linkedin-${year}.pdf`;
 
       // Use optimized batch export with progress tracking
       await exportCardsAsPDFBatch(cardElements, filename, {
@@ -236,7 +236,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           className="share-button"
           onClick={handleToggleDropdown}
           disabled={isExporting}
-          aria-label="Share and export LinkedIn Wrapped"
+          aria-label="Share and export Wrapped for LinkedIn"
           aria-expanded={isDropdownOpen}
           aria-haspopup="menu"
         >

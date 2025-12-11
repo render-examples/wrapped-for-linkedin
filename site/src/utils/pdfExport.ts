@@ -176,7 +176,7 @@ function addImagesToPDF(
  */
 export async function exportCardsAsPDFBatch(
   cardElements: HTMLElement[],
-  filename: string = 'linkedin-wrapped.pdf',
+  filename: string = 'wrapped-for-linkedin.pdf',
   options?: ExportOptions
 ): Promise<void> {
   if (!cardElements || cardElements.length === 0) {
