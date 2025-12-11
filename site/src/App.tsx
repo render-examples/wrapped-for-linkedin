@@ -74,6 +74,7 @@ function App() {
     resetState();
   };
   const handleLogoClick = resetState;
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="app-container">
@@ -100,7 +101,24 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Wrapped for LinkedIn &nbsp; | &nbsp; © 2025 Shifra Williams &nbsp; | &nbsp; 
+        <a 
+            href="https://x.com/render" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            X
+          </a>
+          &nbsp; &nbsp; &nbsp; &nbsp;
+          <a 
+            href="https://x.com/render" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            LinkedIn
+          </a>
+          &nbsp; &nbsp; &nbsp; &nbsp;
           <a 
             href="https://github.com/Ho1yShif/wrapped-for-linkedin" 
             target="_blank" 
@@ -109,6 +127,9 @@ function App() {
           >
             GitHub
           </a>
+        </p>
+        <p>
+          © Render {currentYear}
         </p>
       </footer>
     </div>

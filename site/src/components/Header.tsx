@@ -41,16 +41,31 @@ export function Header({ onLogoClick, onClearCache, hasCachedData = false }: Hea
             <div className="tooltip-content">Not affiliated with LinkedIn or Microsoft</div>
           </div>
         </div>
-      {hasCachedData && (
-        <button
-          className="cache-clear-btn"
-          onClick={handleClearCacheClick}
-          title="Clear cache and upload new data"
-          aria-label="Clear cached data"
-        >
-          Upload new data
-        </button>
-      )}
+        <div className="header-right">
+          <a
+            href="https://render.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="render-logo-link"
+            aria-label="Visit Render.com"
+          >
+            <img
+              src="/render-full-logo-white.png"
+              alt="Render"
+              className="render-logo"
+            />
+          </a>
+          {hasCachedData && (
+            <button
+              className="cache-clear-btn"
+              onClick={handleClearCacheClick}
+              title="Clear cache and upload new data"
+              aria-label="Clear cached data"
+            >
+              Upload new data
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );
