@@ -103,7 +103,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           <br /> <br />
           <span className="privacy-disclaimer-text">
             All processing happens locally in your browser.
-            We don't store, transmit, or use your LinkedIn data for anything else.
+            We don't store, <br /> transmit, or use your LinkedIn data for anything else.
           </span>
           <br /> <br />
           <a 

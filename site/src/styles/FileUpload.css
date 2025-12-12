@@ -125,6 +125,7 @@
   line-height: 138%; /* 24.84px */
   letter-spacing: 0.18px;
   width: fit-content;
+  margin: -0.75rem 0;
 }
 
 .divider {
