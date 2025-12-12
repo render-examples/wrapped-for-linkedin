@@ -31,7 +31,6 @@
 .demographic-category {
   background: var(--gradient-card);
   padding: 2rem;
-  border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   border: 2px solid var(--border-color-light);
   transition: none !important;
@@ -100,14 +99,12 @@
 .item-bar {
   height: 6px;
   background: rgba(0, 0, 0, 0.08);
-  border-radius: 3px;
   overflow: hidden;
 }
 
 .item-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--primary-light), var(--accent-green));
-  border-radius: 3px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

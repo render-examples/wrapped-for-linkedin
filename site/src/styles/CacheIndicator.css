@@ -1,12 +1,12 @@
 .cache-indicator {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
-  background: linear-gradient(135deg, rgba(29, 185, 84, 0.15) 0%, rgba(29, 185, 84, 0.08) 100%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
   border: 1px solid rgba(29, 185, 84, 0.3);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
+  padding: 32px;
   margin-top: 0.5rem;
   animation: slideDown 0.3s ease-out;
   width: 100%;
@@ -64,7 +64,6 @@
   border: 1px solid rgba(29, 185, 84, 0.4);
   color: var(--accent-green);
   padding: 0.5rem 0.75rem;
-  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,7 +82,7 @@
 
 @media (max-width: 768px) {
   .cache-indicator {
-    padding: 0.875rem 1rem;
+    padding: 24px;
     gap: 0.75rem;
   }
 

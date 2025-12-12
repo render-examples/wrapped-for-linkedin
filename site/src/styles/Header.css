@@ -7,7 +7,7 @@
   width: 100%;
   height: 80px;
   background: rgb(15, 15, 15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1.5px solid white;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -91,6 +91,7 @@
   letter-spacing: 0.1em;
   white-space: nowrap;
   margin-top: 2px;
+  margin-right: 0.5rem;
 }
 
 .render-logo {
@@ -106,7 +107,6 @@
   background: rgba(29, 185, 84, 0.2);
   border: 1px solid rgba(29, 185, 84, 0.4);
   color: var(--accent-green);
-  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

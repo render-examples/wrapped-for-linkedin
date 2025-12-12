@@ -1,19 +1,25 @@
 .sample-data-button {
   width: 100%;
   max-width: 600px;
-  padding: 1rem 2rem;
-  border: 2px solid var(--border-color-light);
-  border-radius: 16px;
-  background: var(--gradient-card);
+  padding: 32px;
+  border: 1.5px solid transparent;
+  border-radius: 0;
+  background: rgba(13, 13, 13, 0.88);
+  backdrop-filter: blur(16px);
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sample-data-button:hover:not(.disabled) {
-  border-color: var(--primary-light);
-  background: rgba(10, 102, 194, 0.06);
-  box-shadow: 0 0 32px rgba(10, 143, 255, 0.2);
+  background: rgba(13, 13, 13, 0.96);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  border-image: linear-gradient(135deg, #F239FF, #0A8FFF) 1;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 2px 44px 0 #F239FF;
 }
 
 .sample-data-button:disabled {
@@ -26,13 +32,16 @@
   outline-offset: 2px;
 }
 
+.sample-data-button-icon {
+  padding-right: 12px;
+}
+
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
-  border-radius: 50%;
   animation: spin 0.6s linear infinite;
   vertical-align: middle;
   margin-right: 0.5rem;
@@ -46,7 +55,7 @@
 
 @media (max-width: 600px) {
   .sample-data-button {
-    padding: 0.875rem 1.5rem;
+    padding: 24px;
     font-size: 0.95rem;
   }
 }

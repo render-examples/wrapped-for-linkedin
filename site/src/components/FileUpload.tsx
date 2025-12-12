@@ -64,39 +64,40 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
       <div className="instructions">
         <h3>Export your LinkedIn analytics</h3>
         <ol>
-          <li>Navigate to <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noreferrer">LinkedIn Analytics</a></li>
+          <li>Navigate to your  <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noreferrer">LinkedIn analytics</a> dashboard ↗</li>
           <li>Click <b>Export</b> in the top right</li>
-          <li>Upload the exported file below ⬇️</li>
+          <li>Upload the exported file below ↓</li>
         </ol>
       </div>
 
       <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isLoading || sampleData.isLoading ? 'disabled' : ''}`}>
         <input {...getInputProps()} />
         <div className="dropzone-content">
-          <div className="upload-icon">📤</div>
+          <img src="/icon-upload.svg" alt="Upload" className="upload-icon" />
           {isDragActive ? (
             <p className="dropzone-text">Drop your file here</p>
           ) : (
             <>
-              <p className="dropzone-text">Drag and drop your LinkedIn analytics file here</p>
-              <p className="dropzone-subtext">or click to select a file</p>
+              <p className="dropzone-text">Upload your LinkedIn analytics file here</p>
+              <p className="dropzone-subtext">Drag and drop or click to select a file</p>
               <p className="dropzone-formats">Excel (.xlsx) files only</p>
             </>
           )}
         </div>
       </div>
 
-      <div className="demo-section">
-        <div className="divider"><span>or</span></div>
-        <SampleDataButton
-          onClick={sampleData.loadSampleData}
-          isLoading={sampleData.isLoading}
-        />
-      </div>
+      <div className="or-divider">or</div>
+      
+      <SampleDataButton
+        onClick={sampleData.loadSampleData}
+        isLoading={sampleData.isLoading}
+      />
 
       <div className="privacy-disclaimer">
         <p>
-          🔒 <strong>Your data never leaves your device</strong>
+          <img src="/icon-shield.svg" alt="Shield" className="shield-icon"/>
+          <br/>
+          <strong>Your data never leaves your device</strong>
           <br /> <br />
           All processing happens locally in your browser.
           We don't store, transmit, or use your LinkedIn data for anything else.{' '}
@@ -106,7 +107,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
             target="_blank" 
             rel="noopener noreferrer"
           >
-            View source code
+            View source code on GitHub ↗
           </a>
         </p>
       </div>
