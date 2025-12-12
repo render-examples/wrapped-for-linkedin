@@ -154,7 +154,7 @@ body {
 }
 
 .app-footer {
-  background-color: #1A1A1A;
+  background-color: var(--Background-Primary, #0D0D0D);
   border-top: 1px solid var(--border-color-light);
   padding: 2rem 2rem 2rem 4rem;
   color: #FFFFFF;
