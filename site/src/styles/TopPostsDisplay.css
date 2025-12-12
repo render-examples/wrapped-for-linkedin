@@ -45,7 +45,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(247, 155, 254, 0.6);
+  background: rgba(247, 155, 254, 0.3);
   z-index: -1;
 }
 
