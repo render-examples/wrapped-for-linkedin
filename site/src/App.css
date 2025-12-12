@@ -106,8 +106,8 @@ body {
 
 /* Upload New Data Button - Below Header */
 .upload-new-data-btn {
-  position: fixed;
-  top: 96px; /* 80px header + 16px gap */
+  position: absolute;
+  top: 16px; /* 16px gap from top of content */
   right: 2rem;
   z-index: 999;
   padding: 0.7rem 1.5rem;
@@ -248,7 +248,7 @@ body {
   }
 
   .upload-new-data-btn {
-    top: 86px; /* 70px header + 16px gap */
+    top: 16px; /* 16px gap from top of content */
     right: 1.5rem;
     font-size: 0.85rem;
     padding: 0.6rem 1.2rem;
@@ -305,7 +305,7 @@ body {
 
 @media (max-width: 480px) {
   .upload-new-data-btn {
-    top: 81px; /* 65px header + 16px gap */
+    top: 16px; /* 16px gap from top of content */
     right: 1rem;
     font-size: 0.8rem;
     padding: 0.6rem 1rem;

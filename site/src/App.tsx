@@ -113,18 +113,18 @@ function App() {
         hasCachedData={cache.data !== null}
       />
 
-      {state.engagement && (
-        <button
-          className="upload-new-data-btn"
-          onClick={handleClearCache}
-          aria-label="Upload new data"
-          title="Upload new data"
-        >
-          Upload new data
-        </button>
-      )}
-
       <main className="app-main">
+        {state.engagement && (
+          <button
+            className="upload-new-data-btn"
+            onClick={handleClearCache}
+            aria-label="Upload new data"
+            title="Upload new data"
+          >
+            Upload new data
+          </button>
+        )}
+        
         {state.error && <ErrorDisplay error={state.error} onRetry={handleRetry} />}
 
         {loading && <Loading />}
