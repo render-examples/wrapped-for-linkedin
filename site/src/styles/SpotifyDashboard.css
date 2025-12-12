@@ -96,18 +96,6 @@
   overflow-wrap: break-word;
 }
 
-.spotify-card-unit {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
-  font-weight: 500;
-  margin-top: 0.25rem;
-  transition: color 0.2s ease;
-}
-
-.metric-card:hover .spotify-card-unit {
-  color: #FFFF;
-}
-
 .card-accent {
   width: 100%;
   height: 3px;
@@ -151,10 +139,6 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
   .spotify-card-label {
     font-size: 1.68rem;
   }
@@ -165,23 +149,6 @@
 }
 
 @media (max-width: 768px) {
-  .spotify-dashboard {
-    padding: 1.5rem 0;
-  }
-
-  .hero-section {
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-
   .wrapped-section {
     margin: 0 0 2.5rem 0;
     padding: 0 1rem;
@@ -225,29 +192,9 @@
   .spotify-card-value {
     font-size: 2.4rem;
   }
-
-  .spotify-card-unit {
-    font-size: 0.75rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .spotify-dashboard {
-    padding: 1rem 0;
-  }
-
-  .hero-section {
-    padding: 0 0.75rem;
-  }
-
-  .hero-title {
-    font-size: 1.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 0.875rem;
-  }
-
   .wrapped-section {
     margin: 0 0 1.5rem 0;
     padding: 0 0.75rem;
@@ -290,10 +237,6 @@
 
   .spotify-card-value {
     font-size: 2.5rem;
-  }
-
-  .spotify-card-unit {
-    font-size: 0.7rem;
   }
 }
 

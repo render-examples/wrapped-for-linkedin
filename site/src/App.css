@@ -104,13 +104,41 @@ body {
 
 /* Fixed header styles moved to Header.css */
 
-.app-subtitle {
-  font-family: var(--font-body);
-  font-size: 1.5rem;
-  opacity: 0.95;
+/* Upload New Data Button - Below Header */
+.upload-new-data-btn {
+  position: fixed;
+  top: 96px; /* 80px header + 16px gap */
+  right: 2rem;
+  z-index: 999;
+  padding: 0.7rem 1.5rem;
+  background: rgba(13, 13, 13, 0.88);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.95rem;
   font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  animation: slideInFromTop 0.4s ease-out;
+}
+
+.upload-new-data-btn:hover {
+  background: rgba(13, 13, 13, 0.96);
+  border-color: var(--text-pink);
+  box-shadow: 0 0 10px rgba(247, 155, 254, 0.6), 0 0 40px rgba(247, 155, 254, 0.3);
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .app-main {
@@ -123,52 +151,6 @@ body {
   position: relative;
   z-index: 1;
   /* Fixed header is 80px, but app-container has padding-top: 80px */
-}
-
-.tab-navigation {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.tab-button {
-  background: none;
-  border: none;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-}
-
-.tab-button:hover {
-  color: var(--primary-light);
-}
-
-.tab-button.active {
-  color: var(--primary-light);
-  border-bottom-color: var(--primary-light);
-  background: rgba(10, 143, 255, 0.05);
-}
-
-.tab-content {
-  animation: tab-fadeIn 0.3s ease;
-}
-
-@keyframes tab-fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .app-footer {
@@ -265,16 +247,12 @@ body {
     padding: 2rem 1rem;
   }
 
-  .app-title {
-    font-size: 2.5rem;
-  }
-
-  .app-subtitle {
-    font-size: 1rem;
-  }
-
-  .reset-button {
-    width: 100%;
+  .upload-new-data-btn {
+    top: 86px; /* 70px header + 16px gap */
+    right: 1.5rem;
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+    letter-spacing: 0.3px;
   }
 
   .app-container {
@@ -287,15 +265,6 @@ body {
 
   .unified-dashboard {
     padding: 0;
-  }
-
-  .tab-navigation {
-    flex-direction: column;
-  }
-
-  .tab-button {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
   }
 
   .app-footer {
@@ -335,6 +304,14 @@ body {
 }
 
 @media (max-width: 480px) {
+  .upload-new-data-btn {
+    top: 81px; /* 65px header + 16px gap */
+    right: 1rem;
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+    letter-spacing: 0.3px;
+  }
+
   .app-container {
     padding-top: 65px;
   }

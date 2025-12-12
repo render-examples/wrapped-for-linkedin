@@ -121,30 +121,6 @@
   margin: -0.75rem 0;
 }
 
-.divider {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--border-color-light), transparent);
-}
-
-.divider-text {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .instructions,
 .privacy-disclaimer {
   width: 100%;
@@ -267,16 +243,6 @@
 
   .dropzone-text {
     font-size: 1.1rem;
-  }
-
-
-  .divider {
-    margin: 1rem 0;
-  }
-
-  .divider::before,
-  .divider::after {
-    height: 1px;
   }
 
   .instructions,

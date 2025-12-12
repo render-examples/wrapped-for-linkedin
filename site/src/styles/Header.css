@@ -105,28 +105,6 @@
   flex-shrink: 0;
 }
 
-/* Cache Clear Button */
-.cache-clear-btn {
-  padding: 0.6rem 1.5rem;
-  background: rgba(29, 185, 84, 0.2);
-  border: 1px solid rgba(29, 185, 84, 0.4);
-  color: var(--accent-green);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 600;
-}
-
-.cache-clear-btn:hover {
-  background: rgba(29, 185, 84, 0.3);
-  border-color: rgba(29, 185, 84, 0.6);
-}
-
-.cache-clear-btn:active {
-  background: rgba(29, 185, 84, 0.4);
-  border-color: rgba(29, 185, 84, 0.7);
-}
-
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .app-header {
@@ -163,12 +141,6 @@
 
   .logo-wrapper {
     gap: 0.4rem;
-  }
-
-  .cache-clear-btn {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.7rem;
-    white-space: nowrap;
   }
 
   .render-logo {

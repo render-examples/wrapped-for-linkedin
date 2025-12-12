@@ -49,11 +49,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .final-message-container {
-    padding: 4rem 1.5rem;
-    min-height: 50vh;
-  }
-
   .final-message-title {
     font-size: 2.5rem;
   }
@@ -64,11 +59,6 @@
 }
 
 @media (max-width: 480px) {
-  .final-message-container {
-    padding: 3rem 1rem;
-    min-height: 40vh;
-  }
-
   .final-message-title {
     font-size: 2rem;
   }
