@@ -39,7 +39,14 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
       <div className="download-instructions-modal">
         {/* Header */}
         <div className="instructions-header">
-          <h3 className="instructions-title">✅ Download complete</h3>
+          <h3 className="instructions-title">
+            <img 
+              src="/images/share/check.png" 
+              alt="Check" 
+              className="instructions-check-icon"
+            />
+            Download complete
+          </h3>
           <button
             className="instructions-close-btn"
             onClick={onDismiss}
@@ -97,15 +104,6 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
             />
             Share on LinkedIn
           </button>
-
-          {onDismiss && (
-            <button
-              className="btn-dismiss"
-              onClick={onDismiss}
-            >
-              Maybe later
-            </button>
-          )}
         </div>
       </div>
     </div>

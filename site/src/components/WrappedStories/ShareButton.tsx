@@ -3,9 +3,7 @@ import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '@utils/imageExport';
 import { exportCardsAsPDFBatch } from '@utils/pdfExport';
 import { DownloadInstructions } from '@components/WrappedStories/DownloadInstructions';
-import { ExportProgressModal } from '@components/WrappedStories/ExportProgress';
 import type { ShareableCard } from '@/types/wrappedStories';
-import type { ExportProgress as ExportProgressType } from '@/types/export';
 import '@styles/ShareButton.css';
 
 interface ShareButtonProps {
@@ -39,8 +37,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [exportType, setExportType] = useState<ExportOption>(null);
   const [error, setError] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
-  const [exportProgress, setExportProgress] = useState<ExportProgressType | null>(null);
-  const [showExportProgress, setShowExportProgress] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -135,7 +131,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setError(null);
     setIsDropdownOpen(false);
     setExportType('all-cards');
-    setShowExportProgress(true);
 
     abortControllerRef.current = new AbortController();
 
@@ -172,17 +167,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       const year = new Date().getFullYear();
       const filename = `wrapped-for-linkedin-${year}.pdf`;
 
-      // Use optimized batch export with progress tracking
-      await exportCardsAsPDFBatch(cardElements, filename, {
-        onProgress: (progress) => {
-          setExportProgress(progress);
-        },
-        onStageChange: (stage) => {
-          setExportProgress((prev) => prev ? { ...prev, stage } : null);
-        },
-      });
-
-      setShowExportProgress(false);
+      // Use optimized batch export
+      await exportCardsAsPDFBatch(cardElements, filename);
 
       // Show instructions
       setShowInstructions(true);
@@ -196,7 +182,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       }
     } finally {
       setIsExporting(false);
-      setShowExportProgress(false);
     }
   }, [allCards]);
 
@@ -273,9 +258,9 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               onClick={() => handleExportOption('current-card')}
               role="menuitem"
             >
-              <span className="option-icon">📄</span>
+              <img src="/images/share/png-file.png" alt="PNG" className="option-icon" style={{ height: '2rem' }} />
               <div className="option-content">
-                <div className="option-title">Current card</div>
+                <div className="option-title">PNG</div>
                 <div className="option-description">Export current card as a PNG</div>
               </div>
             </button>
@@ -285,10 +270,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               onClick={() => handleExportOption('all-cards')}
               role="menuitem"
             >
-              <span className="option-icon">📂</span>
+              <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" style={{ height: '2rem' }} />
               <div className="option-content">
-                <div className="option-title">All cards</div>
-                <div className="option-description">Export all cards as a single PDF file</div>
+                <div className="option-title">PDF</div>
+                <div className="option-description">Export all cards as a single PDF</div>
               </div>
             </button>
           </div>
@@ -301,20 +286,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         <div className="share-feedback error">
           ❌ {error}
         </div>
-      )}
-
-      {/* Export Progress Modal - Rendered as Portal to escape stacking context */}
-      {exportProgress && createPortal(
-        <ExportProgressModal
-          progress={exportProgress}
-          isVisible={showExportProgress}
-          onCancel={() => {
-            abortControllerRef.current?.abort();
-            setShowExportProgress(false);
-            setIsExporting(false);
-          }}
-        />,
-        document.body
       )}
 
       {/* Download Instructions Modal - Rendered as Portal to escape stacking context */}

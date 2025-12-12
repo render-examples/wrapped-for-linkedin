@@ -58,13 +58,9 @@
 }
 
 .share-button:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 6px 20px rgba(10, 102, 194, 0.3);
+  background: var(--Background-Primary,#0D0D0D);
+  opacity: 0.5;
   transform: none;
-}
-
-.share-button:active:not(:disabled) {
-  box-shadow: 0 2px 8px rgba(10, 102, 194, 0.2);
 }
 
 .share-button:disabled {
@@ -116,14 +112,12 @@
 
 .share-feedback.success {
   background-color: rgba(40, 167, 69, 0.2);
-  border: 1px solid rgba(40, 167, 69, 0.4);
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .share-feedback.error {
   background-color: rgba(220, 53, 69, 0.2);
-  border: 1px solid rgba(220, 53, 69, 0.4);
   color: rgba(255, 200, 200, 0.95);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -143,7 +137,6 @@
 .share-dropdown-menu {
   position: fixed;
   background: rgba(20, 20, 20, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   min-width: 280px;
@@ -174,7 +167,6 @@
   padding: 1rem;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -208,14 +200,14 @@
 
 .option-title {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.95);
 }
 
 .option-description {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* Mobile Responsive */

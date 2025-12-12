@@ -24,7 +24,6 @@
   right: 0;
   width: 100%;
   z-index: 20;
-  border-radius: 20px 20px 0 0;
   padding: 2rem;
   pointer-events: auto;
 }
@@ -45,7 +44,6 @@
   flex: 1;
   height: 2px;
   background-color: rgba(255, 255, 255, 0.25);
-  border-radius: 2px;
   overflow: hidden;
   cursor: pointer;
 }
@@ -88,7 +86,6 @@
   height: 100%;
   width: 0%;
   background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
 }
 
 @keyframes progressFill {
@@ -429,7 +426,6 @@
   gap: 0.75rem;
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -1522,11 +1518,8 @@
 
 /* Download Instructions Modal */
 .download-instructions-modal {
-  background: rgba(20, 20, 20, 0.98);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
+  background: var(--Background-Primary, #0D0D0D);
   backdrop-filter: blur(12px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   max-width: 650px;
   width: 100%;
   animation: modal-slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1562,6 +1555,15 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.instructions-check-icon {
+  height: 2rem;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .instructions-close-btn {
@@ -1594,8 +1596,8 @@
 }
 
 .instructions-text {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.2rem;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.6;
 }
@@ -1608,8 +1610,8 @@
 }
 
 .instruction-step {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.2rem;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.5;
 }
@@ -1617,8 +1619,6 @@
 /* Instruction Images */
 .instruction-image {
   max-width: 100%;
-  height: auto;
-  border-radius: 8px;
   margin-top: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
@@ -1640,22 +1640,17 @@
 .instructions-disclaimer {
   padding: 1rem;
   background: linear-gradient(135deg, rgba(10, 102, 194, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
-  border-radius: 8px;
-  border: 1px solid #0A66C2;
+  border: 1px solid var(--text-pink);
 }
 
 .disclaimer-text {
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   color: #c9e0f5;
   margin: 0;
-  line-height: 1.5;
 }
 
 /* Instructions Actions */
 .instructions-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 0.75rem;
   padding: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
@@ -1667,51 +1662,25 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: linear-gradient(135deg, rgba(10, 102, 194, 0.8), rgba(10, 102, 194, 0.6));
-  border: 1px solid rgba(10, 102, 194, 0.5);
-  border-radius: 8px;
+  background: var(--pink-blue-gradient);
+  opacity: 0.76;
   color: rgba(255, 255, 255, 0.95);
+  font-family: 'Roobert', sans-serif;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  flex: 1;
+  width: 100%;
 }
 
 .btn-share-linkedin:hover {
-  background: linear-gradient(135deg, rgba(10, 102, 194, 0.9), rgba(10, 102, 194, 0.7));
-  border-color: rgba(10, 102, 194, 0.7);
+  opacity: 1;
   transform: none;
-}
-
-.btn-share-linkedin:active {
-  background: linear-gradient(135deg, rgba(10, 102, 194, 0.8), rgba(10, 102, 194, 0.6));
 }
 
 .btn-linkedin-icon {
   width: 1.2rem;
   height: 1.2rem;
   object-fit: contain;
-}
-
-.btn-dismiss {
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-  font-size: 0.9rem;
-  cursor: pointer;
-  flex: 1;
-}
-
-.btn-dismiss:hover {
-  background: #696666;
-  transform: none;
-}
-
-.btn-dismiss:active {
-  background: transparent;
 }
 
 /* Mobile Responsive - Instructions */
@@ -1743,20 +1712,11 @@
 
   .instructions-actions {
     padding: 1.25rem;
-    gap: 0.6rem;
-    flex-direction: row;
   }
 
   .btn-share-linkedin {
     padding: 1rem;
-    font-size: 0.9rem;
-    flex: 1;
-  }
-
-  .btn-dismiss {
-    padding: 1rem;
-    font-size: 0.85rem;
-    flex: 1;
+    font-size: 1.2rem;
   }
 }
 
@@ -1766,7 +1726,6 @@
   }
 
   .download-instructions-modal {
-    border-radius: 16px 16px 0 0;
     max-width: 100%;
     max-height: 80vh;
   }
@@ -1798,25 +1757,16 @@
 
   .instructions-actions {
     padding: 1rem;
-    gap: 0.5rem;
-    flex-direction: row;
   }
 
   .btn-share-linkedin {
     padding: 1rem;
-    font-size: 0.85rem;
+    font-size: 1.2rem;
     gap: 0.6rem;
-    flex: 1;
   }
 
   .btn-linkedin-icon {
     width: 1rem;
     height: 1rem;
-  }
-
-  .btn-dismiss {
-    padding: 1rem;
-    font-size: 0.8rem;
-    flex: 1;
   }
 }
