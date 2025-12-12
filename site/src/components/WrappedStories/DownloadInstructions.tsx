@@ -64,6 +64,8 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
 
           <div className="instructions-steps">
             <p className="instruction-step">1. <b>Open LinkedIn.</b> Click the button below to open LinkedIn with a prepared post.</p>
+            <p className="instruction-step"><strong>Note:</strong> Close the link preview by clicking <strong>X</strong> before attaching media.</p>
+            <img src="/images/share/close-embed.png" alt="Close the link embed" className="instruction-image" />
             {exportType === 'current-card' ? (
               <>
                 <p className="instruction-step">2. <b>Attach your card.</b> Click the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).</p>
