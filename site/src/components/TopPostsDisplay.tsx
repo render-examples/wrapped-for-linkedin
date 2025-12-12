@@ -127,7 +127,9 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
 
               <div className="top-post-stats">
                 <div className="top-post-stat-box">
-                  <div className="top-post-stat-icon">❤️</div>
+                  <div className="top-post-stat-icon">
+                    <img src="/images/dashboard/heart.png" alt="Engagements" />
+                  </div>
                   <div className="top-post-stat-info">
                     <div className="top-post-stat-value">{formatEngagements(post.engagements)}</div>
                     <div className="top-post-stat-label">Engagements</div>
@@ -135,7 +137,9 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
                 </div>
                 {post.impressions && post.impressions > 0 && (
                   <div className="top-post-stat-box">
-                    <div className="top-post-stat-icon">✨</div>
+                    <div className="top-post-stat-icon">
+                      <img src="/images/dashboard/sparkle.png" alt="Impressions" />
+                    </div>
                     <div className="top-post-stat-info">
                       <div className="top-post-stat-value">{formatEngagements(post.impressions)}</div>
                       <div className="top-post-stat-label">Impressions</div>

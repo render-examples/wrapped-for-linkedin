@@ -71,7 +71,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 
         {/* Circular Logo */}
         <img
-          src="/wrapped-logo.png"
+          src="/images/dashboard/wrapped-logo.png"
           alt="Wrapped for LinkedIn"
           className="card-circular-logo"
         />

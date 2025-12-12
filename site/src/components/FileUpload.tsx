@@ -76,7 +76,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           <>
           <p className="dropzone-text">Upload your LinkedIn analytics file here</p>
           </>
-          <img src="/icon-upload.svg" alt="Upload" className="upload-icon" />
+          <img src="/images/upload/icon-upload.svg" alt="Upload" className="upload-icon" />
           {isDragActive ? (
             <p className="dropzone-text">Drop your file here</p>
           ) : (
@@ -97,7 +97,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
 
       <div className="privacy-disclaimer">
         <p>
-          <img src="/icon-shield.svg" alt="Shield" className="shield-icon"/>
+          <img src="/images/upload/icon-shield.svg" alt="Shield" className="shield-icon"/>
           <br/>
           <strong>Your data never leaves your device</strong>
           <br /> <br />

@@ -60,15 +60,15 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
             {exportType === 'current-card' ? (
               <>
                 <p className="instruction-step">2. <b>Attach your card.</b> Click the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).</p>
-                <img src="/add-media.png" alt="Click the image icon" className="instruction-image" />
+                <img src="/images/share/add-media.png" alt="Click the image icon" className="instruction-image" />
               </>
             ) : (
               <>
                 <p className="instruction-step">2. <b>Attach your cards.</b> Click the <b>+</b> icon at the bottom of the post modal to expand options. Click the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.
                 </p>
                 <div className="instruction-images-column">
-                  <img src="/more.png" alt="Click the plus icon to expand options" className="instruction-image" />
-                  <img src="/add-a-document.png" alt="Click the document icon to upload" className="instruction-image" />
+                  <img src="/images/share/more.png" alt="Click the plus icon to expand options" className="instruction-image" />
+                  <img src="/images/share/add-a-document.png" alt="Click the document icon to upload" className="instruction-image" />
                 </div>
               </>
             )}
@@ -91,7 +91,7 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
             aria-label="Share on LinkedIn with prepared text"
           >
             <img
-              src="/linkedin-logo.png"
+              src="/images/dashboard/linkedin-logo.png"
               alt="LinkedIn"
               className="btn-linkedin-icon"
             />

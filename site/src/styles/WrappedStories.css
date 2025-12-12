@@ -633,10 +633,15 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease;
+  outline: none;
+}
+
+.control-button:focus {
+  outline: none;
 }
 
 .control-button:hover {
-  background: rgba(13, 13, 13, 0.66);
+  background: rgba(13, 13, 13, 0.88);
   transform: none !important;
 }
 
@@ -650,14 +655,14 @@
   backdrop-filter: blur(8px);
   border: none;
   color: transparent;
-  background-image: url('/pause.svg');
+  background-image: url('/images/dashboard/pause.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
 }
 
 .control-button.autoplay-button.playing:hover {
-  background-color: rgba(13, 13, 13, 0.88);
+  background: rgba(13, 13, 13, 0.88);
 }
 
 .control-button.autoplay-button:not(.playing) {
@@ -665,14 +670,14 @@
   backdrop-filter: blur(8px);
   border: none;
   color: transparent;
-  background-image: url('/play.png');
+  background-image: url('/images/dashboard/play.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
 }
 
 .control-button.autoplay-button:not(.playing):hover {
-  background-color: rgba(13, 13, 13, 0.88);
+  background: rgba(13, 13, 13, 0.88);
 }
 
 /* Side Navigation Buttons */
@@ -695,15 +700,20 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease, opacity 0.2s ease;
+  outline: none;
+}
+
+.side-nav-button:focus {
+  outline: none;
 }
 
 .side-nav-button:hover {
-  background-color: rgba(13, 13, 13, 0.88);
+  background: rgba(13, 13, 13, 0.88);
 }
 
 .side-nav-prev {
   left: 0;
-  background-image: url('/arrow-left.svg');
+  background-image: url('/images/dashboard/arrow-left.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
@@ -712,7 +722,7 @@
 
 .side-nav-next {
   right: 0;
-  background-image: url('/arrow-right.svg');
+  background-image: url('/images/dashboard/arrow-right.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;

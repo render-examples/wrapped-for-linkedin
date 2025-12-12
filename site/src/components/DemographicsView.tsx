@@ -18,7 +18,7 @@ const DemographicCategory: React.FC<{
   return (
     <div className="demographic-category">
       <div className="category-header">
-        <span className="category-icon">{icon}</span>
+        <img src={icon} alt={title} className="category-icon" />
         <h3 className="category-title">{title}</h3>
       </div>
       <div className="category-items">
@@ -69,7 +69,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Job titles"
             items={demographics.job_titles}
-            icon="💼"
+            icon="/images/demographics/job-titles.png"
           />
         )}
 
@@ -77,7 +77,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Locations"
             items={demographics.locations}
-            icon="📍"
+            icon="/images/demographics/locations.png"
           />
         )}
 
@@ -85,7 +85,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Industries"
             items={demographics.industries}
-            icon="🛠️"
+            icon="/images/demographics/industries.png"
           />
         )}
 
@@ -93,7 +93,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Seniority levels"
             items={demographics.seniority}
-            icon="⭐"
+            icon="/images/demographics/seniority-levels.png"
           />
         )}
 
@@ -101,7 +101,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Company size"
             items={demographics.company_size}
-            icon="👥"
+            icon="/images/demographics/company-size.png"
           />
         )}
 
@@ -109,7 +109,7 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
           <DemographicCategory
             title="Companies"
             items={demographics.companies}
-            icon="🏢"
+            icon="/images/demographics/companies.png"
           />
         )}
       </div>

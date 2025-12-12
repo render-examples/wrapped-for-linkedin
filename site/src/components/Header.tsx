@@ -27,7 +27,7 @@ export function Header({ onLogoClick, onClearCache, hasCachedData = false }: Hea
           >
             <div className="logo-wrapper">
               <img
-                src="/title.svg"
+                src="/images/title.svg"
                 alt="Wrapped for LinkedIn"
                 className="wrapped-for-linkedin-title-svg"
               />
@@ -44,7 +44,7 @@ export function Header({ onLogoClick, onClearCache, hasCachedData = false }: Hea
           >
             <span className="render-powered-text">POWERED BY AND DEPLOYED ON</span>
             <img
-              src="/render-logo.png"
+              src="/images/render-logo.png"
               alt="Render"
               className="render-logo"
             />

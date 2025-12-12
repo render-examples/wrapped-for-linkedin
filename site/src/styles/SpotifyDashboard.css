@@ -33,7 +33,7 @@
   flex-direction: column;
   justify-content: center;
   background: var(--gradient-card);
-  border: 2px solid var(--border-color-light);
+  border: none;
 }
 
 .card-background {
@@ -44,6 +44,11 @@
   bottom: 0;
   opacity: 0;
   transition: opacity 0.2s ease;
+}
+
+.card-background.gradient {
+  background: var(--Background-Primary, #0D0D0D);
+  opacity: 1;
 }
 
 .card-content {

@@ -248,7 +248,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           ) : (
             <>
               <img
-                src="/linkedin-logo.png"
+                src="/images/dashboard/linkedin-logo.png"
                 alt="LinkedIn"
                 className="linkedin-logo-btn"
               />

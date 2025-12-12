@@ -26,15 +26,11 @@
 }
 
 .demographic-category {
-  background: var(--gradient-card);
+  background: var(--Background-Primary, #0D0D0D);
   padding: 2rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  border: 2px solid var(--border-color-light);
+  border: none;
   transition: none !important;
-}
-
-.demographic-category:hover {
-  box-shadow: 0 3px 20px rgba(10, 102, 194, 0.3) !important;
 }
 
 .category-header {
@@ -45,7 +41,10 @@
 }
 
 .category-icon {
-  font-size: 1.2rem;
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .category-title {
@@ -101,7 +100,7 @@
 
 .item-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-light), var(--accent-green));
+  background: var(--pink-blue-gradient);
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -130,5 +129,9 @@
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.6px;
+  }
+
+  .category-icon {
+    height: 0.95rem;
   }
 }

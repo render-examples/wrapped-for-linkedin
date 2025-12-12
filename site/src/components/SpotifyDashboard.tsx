@@ -63,7 +63,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
         <div className="wrapped-metrics-grid line-1">
           {/* Total impressions Card */}
           <div className="metric-card">
-            <div className="card-background gradient-1"></div>
+            <div className="card-background gradient"></div>
             <div className="card-content">
               <h3 className="spotify-card-label">Total impressions</h3>
               <div className="spotify-card-value-container">
@@ -77,7 +77,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
 
           {/* Members reached Card */}
           <div className="metric-card">
-            <div className="card-background gradient-2"></div>
+            <div className="card-background gradient"></div>
             <div className="card-content">
               <h3 className="spotify-card-label">Members reached</h3>
               <div className="spotify-card-value-container">
@@ -91,7 +91,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
 
           {/* New followers Card */}
           <div className="metric-card">
-            <div className="card-background gradient-2"></div>
+            <div className="card-background gradient"></div>
             <div className="card-content">
               <h3 className="spotify-card-label">New followers</h3>
               <div className="spotify-card-value-container">
@@ -108,7 +108,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
         <div className="wrapped-metrics-grid line-2">
           {/* Total engagements Card */}
           <div className="metric-card">
-            <div className="card-background gradient-3"></div>
+            <div className="card-background gradient"></div>
             <div className="card-content">
               <h3 className="spotify-card-label">Total engagements</h3>
               <div className="spotify-card-value-container">
@@ -123,7 +123,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
           {/* Best month Card */}
           {bestMonth && (
             <div className="metric-card">
-              <div className="card-background gradient-4"></div>
+              <div className="card-background gradient"></div>
               <div className="card-content">
                 <h3 className="spotify-card-label">Best month</h3>
                 <div className="spotify-card-value-container">
@@ -138,7 +138,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
 
           {/* Median daily impressions Card */}
           <div className="metric-card">
-            <div className="card-background gradient-1"></div>
+            <div className="card-background gradient"></div>
               <div className="card-content">
                 <h3 className="spotify-card-label">Median daily impressions</h3>
                 <div className="spotify-card-value-container">

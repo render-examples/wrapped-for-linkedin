@@ -24,7 +24,7 @@ export const SampleDataButton: React.FC<SampleDataButtonProps> = ({
       </>
     ) : (
       <>
-        <img src="/icon-profile.svg" alt="Profile" className="sample-data-button-icon"/>
+        <img src="/images/upload/icon-profile.svg" alt="Profile" className="sample-data-button-icon"/>
         <span className="sample-data-button-text">Try with sample data</span>
       </>
     )}
