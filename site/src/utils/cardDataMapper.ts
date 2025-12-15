@@ -180,12 +180,13 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
  */
 export function getCardTitles(): Record<string, string> {
   return {
-    'total-impressions': 'Impressive Influencer',
-    'top-post': 'Pinnacle Post Producer',
-    'members-reached': 'Magnificent Member Magnetizer',
-    'audience-industry': 'Incredible Industry Insider',
-    'new-followers': 'Popular Professional Personality',
-    'audience-location': 'Landmark Location Legend',
-    'year-summary': 'Legendary LinkedIn Leader',
+    'total-impressions': 'Impression Icon',
+    'members-reached': 'Network Ninja',
+    'top-post': 'Peak Performer',
+    'top-industry': 'Industry Insider',
+    'best-month': 'Engagement Expert',
+    'new-followers': 'Popular Professional',
+    'top-location': 'Local Legend',
+    'year-summary': 'Year in review',
   };
 }

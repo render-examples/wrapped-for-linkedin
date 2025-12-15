@@ -72,8 +72,7 @@ src/
 │   ├── pdfExport.ts     # Export dashboard as PDF
 │   ├── profileExtractor.ts # Extract profile info
 │   ├── shareTextTemplates.ts # Share message templates
-│   ├── storageManager.ts # Local storage wrapper
-│   └── yearExtractor.ts # Extract year from data
+│   └── storageManager.ts # Local storage wrapper
 ├── App.tsx              # Root component
 ├── main.tsx             # Entry point
 ├── index.css            # Global styles
@@ -302,8 +301,7 @@ Manages demo data functionality:
 - `batchImageExporter.ts`: Batch export multiple cards as images efficiently
 
 ### **Formatting**
-- `dateFormatter.ts`: Format dates and times consistently
-- `yearExtractor.ts`: Parse year from LinkedIn data format
+- `dateFormatter.ts`: Format dates, times, and extract years from LinkedIn data
 - `shareTextTemplates.ts`: Pre-written share messages
 
 ### **Interaction**
