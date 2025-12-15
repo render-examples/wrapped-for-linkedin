@@ -1,6 +1,6 @@
 /* Import unified section title and subtitle styles */
-@import './SectionTitles.css';
-@import './SectionSubtitles.css';
+@import '@styles/SectionTitles.css';
+@import '@styles/SectionSubtitles.css';
 
 .unified-dashboard {
   width: 100%;

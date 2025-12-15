@@ -23,7 +23,7 @@ export function useSampleData(
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
 
-      const { processExcelFile } = await import('../utils/excel/excelProcessor');
+      const { processExcelFile } = await import('@utils/excel/excelProcessor');
       const data = await processExcelFile(file);
       onDataLoaded(data);
     } catch (err) {

@@ -1,8 +1,8 @@
 /* Spotify Dashboard Styling - Unified Dark Mode Design */
 
 /* Import unified section title and subtitle styles */
-@import './SectionTitles.css';
-@import './SectionSubtitles.css';
+@import '@styles/SectionTitles.css';
+@import '@styles/SectionSubtitles.css';
 
 /* Year at a glance - Unified Section */
 .wrapped-section {

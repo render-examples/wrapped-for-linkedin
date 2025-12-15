@@ -4,7 +4,7 @@ import type { ParsedExcelData } from '@utils/excel/types';
 import { useCache } from '@/hooks/useCache';
 import { useSampleData } from '@/hooks/useSampleData';
 import { SampleDataButton } from '@components/SampleDataButton';
-import '../styles/FileUpload.css';
+import '@styles/FileUpload.css';
 
 interface FileUploadProps {
   onFileProcessed: (data: ParsedExcelData, error?: string, uploadDate?: number, isFromCache?: boolean) => void;
@@ -34,7 +34,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
     if (acceptedFiles.length === 0) return;
 
     try {
-      const { processExcelFile } = await import('../utils/excel/excelProcessor');
+      const { processExcelFile } = await import('@utils/excel/excelProcessor');
       const data = await processExcelFile(acceptedFiles[0]);
       cache.save(data);
       onFileProcessed(data, undefined, Date.now(), false);
@@ -72,7 +72,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
       <div className="instructions">
         <h3>Export your LinkedIn analytics</h3>
         <ol>
-          <li>Head to your  <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noreferrer">LinkedIn analytics</a> dashboard ↗</li>
+          <li>Head to your <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noreferrer">LinkedIn analytics dashboard</a> ↗</li>
           <li>Click <b>Export</b> in the top right</li>
           <li>Upload the exported file below ↓</li>
         </ol>

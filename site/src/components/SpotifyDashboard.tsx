@@ -4,7 +4,7 @@ import { calculateBestMonth } from '@utils/bestMonthCalculator';
 import { formatNumber, parseISODate } from '@utils/formatters';
 import type { EngagementByDay } from '@utils/excel/types';
 import type { DiscoveryData } from '@types';
-import '../styles/SpotifyDashboard.css';
+import '@styles/SpotifyDashboard.css';
 
 interface SpotifyDashboardProps {
   discovery?: DiscoveryData;

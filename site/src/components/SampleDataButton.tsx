@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/SampleDataButton.css';
+import '@styles/SampleDataButton.css';
 
 interface SampleDataButtonProps {
   onClick: () => void;

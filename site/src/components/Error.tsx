@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Error.css';
+import '@styles/Error.css';
 
 interface ErrorProps {
   error: string;

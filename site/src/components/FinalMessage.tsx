@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/FinalMessage.css';
+import '@styles/FinalMessage.css';
 
 export const FinalMessage: React.FC = () => {
   return (

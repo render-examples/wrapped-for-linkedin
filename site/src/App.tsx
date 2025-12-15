@@ -7,7 +7,7 @@ import { Header } from '@components/Header';
 import { useCache } from '@/hooks/useCache';
 import type { DemographicInsights, EngagementMetrics } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
-import './App.css';
+import '@/App.css';
 
 interface DataState {
   engagement: EngagementMetrics | null;

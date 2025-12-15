@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import type { TopPost } from '@types';
-import '../styles/TopPostsDisplay.css';
+import { formatDateString } from '@utils/dateFormatter';
+import '@styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {
   posts: TopPost[];
@@ -34,23 +35,13 @@ const generateEmbedUrl = (url: string): string | null => {
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   // Memoized formatter functions with useCallback
   const formatEngagements = useCallback((num: number): string => {
-    return num >= 1000 ? `${(num / 1000).toFixed(1)}K` : String(Math.round(num));
-  }, []);
-
-  const formatDate = useCallback((dateStr: string): string => {
-    if (!dateStr) return dateStr;
-    try {
-      const date = new Date(dateStr);
-      return isNaN(date.getTime())
-        ? dateStr
-        : date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          });
-    } catch {
-      return dateStr;
+    if (num >= 1_000_000) {
+      return `${(num / 1_000_000).toFixed(1)}M`;
     }
+    if (num >= 1_000) {
+      return `${(num / 1_000).toFixed(1)}K`;
+    }
+    return String(Math.round(num));
   }, []);
 
   if (!posts || posts.length === 0) {
@@ -101,7 +92,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
             <div key={post.url} className="post-card" onClick={handlePostClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handlePostClick()}>
               <div className="post-header">
                 <div className="post-rank-badge">{post.rank}</div>
-                <div className="post-date">{formatDate(post.publish_date)}</div>
+                <div className="post-date">{formatDateString(post.publish_date)}</div>
               </div>
 
               <div className="post-content">

@@ -26,3 +26,22 @@ export const formatFullDate = (timestamp: number): string => {
     minute: '2-digit',
   });
 };
+
+/**
+ * Format a date string as a readable date (e.g., "January 15, 2024")
+ */
+export const formatDateString = (dateStr: string): string => {
+  if (!dateStr) return dateStr;
+  try {
+    const date = new Date(dateStr);
+    return isNaN(date.getTime())
+      ? dateStr
+      : date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+  } catch {
+    return dateStr;
+  }
+};

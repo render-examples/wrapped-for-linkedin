@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import type { DemographicInsights, DemographicItem } from '@types';
-import '../styles/Demographics.css';
+import '@styles/Demographics.css';
 
 interface DemographicsViewProps {
   demographics: DemographicInsights;
