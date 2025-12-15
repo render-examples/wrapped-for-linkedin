@@ -83,7 +83,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   /**
    * Handle single card PNG export
    */
-  const handleExportCurrentCard = useCallback(async () => {
+  const handlePNGExport = useCallback(async () => {
     if (!cardRef.current) {
       setError('Card element not found');
       return;
@@ -120,7 +120,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
    * Handle PDF export of all cards using optimized batch processing
    * Waits for all cards to be rendered as they auto-play through
    */
-  const handleExportAllCards = useCallback(async () => {
+  const handlePDFExport = useCallback(async () => {
     if (!allCards || allCards.length === 0) {
       setError('No cards available for PDF export');
       return;
@@ -142,7 +142,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         }
       }
 
-      // If we don't have all cards yet, we need to wait for them to be rendered
+      // If we don't have all cards yet, wait for them to be rendered
       if (cardElements.length < allCards.length) {
         // Wait a bit for all refs to be populated
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -188,12 +188,12 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const handleExportOption = useCallback(
     (option: ExportOption) => {
       if (option === 'current-card') {
-        handleExportCurrentCard();
+        handlePNGExport();
       } else if (option === 'all-cards') {
-        handleExportAllCards();
+        handlePDFExport();
       }
     },
-    [handleExportCurrentCard, handleExportAllCards]
+    [handlePNGExport, handlePDFExport]
   );
 
   /**
