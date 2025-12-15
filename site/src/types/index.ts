@@ -12,6 +12,9 @@ export interface EngagementMetrics {
   engagementByDay?: EngagementByDay[];
 }
 
+// Re-export DiscoveryData from excel types for convenience
+export type { DiscoveryData } from '@utils/excel/types';
+
 export interface TopPost {
   rank: number;
   url: string;

@@ -27,6 +27,7 @@ function App() {
     error: null,
   });
   const cache = useCache();
+  const { clear: clearCache } = cache;
 
   // Detect hard refresh and clear cache
   useEffect(() => {
@@ -38,7 +39,7 @@ function App() {
     if (!wasSessionActive) {
       // This is either first visit or hard refresh
       // Hard refresh clears sessionStorage, so we clear localStorage too
-      cache.clear();
+      clearCache();
       sessionStorage.setItem(sessionKey, 'true');
     }
     
@@ -52,7 +53,7 @@ function App() {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [cache]);
+  }, [clearCache]);
 
 
   const handleFileProcessed = (excelData: ParsedExcelData, fileError?: string, date?: number, fromCache?: boolean) => {
@@ -95,7 +96,6 @@ function App() {
     });
   };
 
-  const handleRetry = resetState;
   const handleClearCache = () => {
     cache.clear();
     resetState();
@@ -125,7 +125,7 @@ function App() {
           </button>
         )}
         
-        {state.error && <ErrorDisplay error={state.error} onRetry={handleRetry} />}
+        {state.error && <ErrorDisplay error={state.error} onRetry={resetState} />}
 
         {loading && <Loading />}
 

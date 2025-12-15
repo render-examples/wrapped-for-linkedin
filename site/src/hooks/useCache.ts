@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { storageManager } from '@utils/storageManager';
 import type { ParsedExcelData } from '@utils/excel/types';
 
@@ -10,15 +10,22 @@ export interface CacheState {
 
 export const useCache = (onCacheLoaded?: (data: ParsedExcelData, uploadDate: number) => void) => {
   const [cache, setCache] = useState<CacheState>({ data: null, uploadDate: null, isLoaded: false });
+  const onCacheLoadedRef = useRef(onCacheLoaded);
+
+  // Keep ref up to date
+  useEffect(() => {
+    onCacheLoadedRef.current = onCacheLoaded;
+  });
 
   // Load cache on mount
   useEffect(() => {
     const cached = storageManager.load();
     if (cached) {
       setCache({ data: cached.data, uploadDate: cached.uploadDate, isLoaded: true });
-      onCacheLoaded?.(cached.data, cached.uploadDate);
+      onCacheLoadedRef.current?.(cached.data, cached.uploadDate);
     }
-  }, [onCacheLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const save = useCallback((data: ParsedExcelData) => {
     storageManager.save(data);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryCard } from '@components/WrappedStories/StoryCard';
 import type { ShareableCard } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
@@ -25,15 +25,11 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   const pressHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousCardIndexRef = useRef(0);
 
-  // Create refs for all cards for PDF export
-  const cardRefsRef = useRef<React.RefObject<HTMLDivElement>[]>([]);
-
-  // Initialize card refs array
-  if (cardRefsRef.current.length !== cards.length) {
-    cardRefsRef.current = Array.from({ length: cards.length }, (_, i) =>
-      cardRefsRef.current[i] || React.createRef<HTMLDivElement>()
-    );
-  }
+  // Create refs for all cards for PDF export using useMemo to avoid render-time mutations
+  const cardRefs = useMemo<React.RefObject<HTMLDivElement>[]>(() => 
+    Array.from({ length: cards.length }, () => React.createRef<HTMLDivElement>()) as React.RefObject<HTMLDivElement>[],
+    [cards.length]
+  );
 
   // Validate we have cards
   if (!cards || cards.length === 0) {
@@ -139,18 +135,29 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     setUserManuallyPaused(true);
   }, [clearAutoPlayTimer]);
 
+  // Store latest handlers in refs for event listeners
+  const handleNextRef = useRef(handleNext);
+  const handlePreviousRef = useRef(handlePrevious);
+  const clearAutoPlayTimerRef2 = useRef(clearAutoPlayTimer);
+
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+    handlePreviousRef.current = handlePrevious;
+    clearAutoPlayTimerRef2.current = clearAutoPlayTimer;
+  });
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'ArrowRight':
-          handleNext();
+          handleNextRef.current();
           break;
         case 'ArrowLeft':
-          handlePrevious();
+          handlePreviousRef.current();
           break;
         case 'Escape':
-          clearAutoPlayTimer();
+          clearAutoPlayTimerRef2.current();
           setIsAutoPlaying(false);
           break;
         default:
@@ -160,7 +167,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrevious, clearAutoPlayTimer]);
+  }, []); // Empty deps - event listener set up once
 
   // Touch/swipe handling
   const touchStartXRef = useRef<number | null>(null);
@@ -301,11 +308,27 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         <div
           className="click-zone click-zone-left"
           onClick={handlePrevious}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handlePrevious();
+            }
+          }}
+          tabIndex={0}
+          role="button"
           aria-label="Previous card"
         />
         <div
           className="click-zone click-zone-right"
           onClick={handleNext}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleNext();
+            }
+          }}
+          tabIndex={0}
+          role="button"
           aria-label="Next card"
         />
 
@@ -328,8 +351,8 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             card={card}
             isActive={index === currentCardIndex}
             cardIndex={index}
-            cardRef={cardRefsRef.current[index]}
-            allCards={cardRefsRef.current}
+            cardRef={cardRefs[index]}
+            allCards={cardRefs}
             summaryMetrics={summaryMetrics}
             onPauseAutoplay={handlePauseAutoPlay}
             currentCardIndex={currentCardIndex}

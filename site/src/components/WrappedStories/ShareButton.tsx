@@ -39,7 +39,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Update dropdown position when it opens
   useEffect(() => {
@@ -131,8 +130,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setError(null);
     setIsDropdownOpen(false);
     setExportType('all-cards');
-
-    abortControllerRef.current = new AbortController();
 
     try {
       // Collect all card elements - some might not be refs yet, so wait for them

@@ -5,7 +5,7 @@ import { DemographicsView } from '@components/DemographicsView';
 import { WrappedStoriesContainer } from '@components/WrappedStories/WrappedStoriesContainer';
 import { FinalMessage } from '@components/FinalMessage';
 import { generateShareableCards } from '@utils/cardDataMapper';
-import type { EngagementMetrics, TopPost, DemographicInsights } from '@types';
+import type { EngagementMetrics, TopPost, DemographicInsights, DiscoveryData } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
 import '@styles/UnifiedDashboard.css';
 
@@ -21,7 +21,7 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
   onUploadNewData,
 }) => {
   // Extract discovery data if available
-  const discoveryData = data.discovery_data as any;
+  const discoveryData: DiscoveryData | undefined = data.discovery_data;
   const topPosts: TopPost[] = data.top_posts || [];
 
   // Generate shareable cards for wrapped stories

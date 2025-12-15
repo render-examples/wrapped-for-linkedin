@@ -6,9 +6,9 @@
   min-height: 60vh;
   gap: 1.5rem;
   padding: 32px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(255, 0, 110, 0.2);
+  background: rgba(13, 13, 13, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid transparent;
   margin: 2rem 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
@@ -70,6 +70,12 @@
 }
 
 @media (max-width: 768px) {
+  .error-container {
+    background: rgba(13, 13, 13, 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
   .error-icon {
     font-size: 3rem;
   }

@@ -19,7 +19,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
 
   const sampleData = useSampleData(
     (data) => onFileProcessed(data, undefined, Date.now(), false),
-    (error) => onFileProcessed({}, error.message)
+    (error) => {
+      // Create a minimal valid ParsedExcelData structure for error handling
+      const emptyData: ParsedExcelData = {
+        discovery_data: undefined,
+        top_posts: [],
+        demographics: undefined,
+        engagement_by_day: []
+      };
+      onFileProcessed(emptyData, error.message);
+    }
   );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -33,7 +42,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
       console.error('Error processing file:', error);
-      onFileProcessed({}, errorMessage);
+      // Create a minimal valid ParsedExcelData structure for error handling
+      const emptyData: ParsedExcelData = {
+        discovery_data: undefined,
+        top_posts: [],
+        demographics: undefined,
+        engagement_by_day: []
+      };
+      onFileProcessed(emptyData, errorMessage);
     }
   }, [cache, onFileProcessed]);
 

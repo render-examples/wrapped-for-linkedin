@@ -14,7 +14,7 @@ export const Error: React.FC<ErrorProps> = ({ error, onRetry }) => {
       <p className="error-message">{error}</p>
       {onRetry && (
         <button className="retry-button" onClick={onRetry}>
-          Try Again
+          Try again
         </button>
       )}
     </div>

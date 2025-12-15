@@ -6,19 +6,7 @@ import type { ShareableCard } from '@/types/wrappedStories';
 import type { ParsedExcelData } from '@utils/excel/types';
 import { calculateBestMonth } from '@utils/bestMonthCalculator';
 import { getVenueComparison, formatVenueComparison } from '@utils/venueComparison';
-
-/**
- * Format large numbers for display (e.g., 1500000 -> 1.5M)
- */
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + 'K';
-  }
-  return num.toString();
-}
+import { formatNumber } from '@utils/formatters';
 
 /**
  * Get a profile avatar color based on card ID

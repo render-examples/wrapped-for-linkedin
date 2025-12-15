@@ -1,18 +1,10 @@
 import React from 'react';
 import { getWrappedYear } from '@utils/yearExtractor';
 import { calculateBestMonth } from '@utils/bestMonthCalculator';
+import { formatNumber, parseISODate } from '@utils/formatters';
 import type { EngagementByDay } from '@utils/excel/types';
+import type { DiscoveryData } from '@types';
 import '../styles/SpotifyDashboard.css';
-
-interface DiscoveryData {
-  start_date: string;
-  end_date: string;
-  total_impressions: number;
-  members_reached: number;
-  total_engagements?: number;
-  average_impressions_per_day?: number;
-  new_followers?: number;
-}
 
 interface SpotifyDashboardProps {
   discovery?: DiscoveryData;
@@ -23,19 +15,8 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
   discovery,
   engagementByDay,
 }) => {
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toString();
-  };
 
-  const parseISODate = (dateString: string): Date => {
-    // Parse ISO date string (YYYY-MM-DD) safely to avoid timezone issues
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  const year = discovery?.end_date ? getWrappedYear(discovery as any) : new Date().getFullYear();
+  const year = discovery?.end_date ? getWrappedYear(discovery) : new Date().getFullYear();
 
   // Calculate best month from engagement data
   const bestMonth = engagementByDay && engagementByDay.length > 0 ? calculateBestMonth(engagementByDay) : null;
