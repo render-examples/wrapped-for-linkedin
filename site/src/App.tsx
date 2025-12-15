@@ -99,7 +99,15 @@ function App() {
     cache.clear();
     resetState();
   };
-  const handleLogoClick = resetState;
+  
+  const handleLogoClick = () => {
+    // If there's any data being displayed, clear the cache
+    if (state.engagement) {
+      handleClearCache();
+    } else {
+      resetState();
+    }
+  };
   const currentYear = new Date().getFullYear();
 
   // Add keyboard shortcuts to return to homepage
