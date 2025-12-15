@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import type { TopPost } from '@types';
-import { formatDateString } from '@utils/dateFormatter';
+import { formatDateString } from '@utils/formatters';
 import '@styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {

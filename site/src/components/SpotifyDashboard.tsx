@@ -1,5 +1,5 @@
 import React from 'react';
-import { getWrappedYear } from '@utils/yearExtractor';
+import { getWrappedYear } from '@utils/formatters';
 import { calculateBestMonth } from '@utils/bestMonthCalculator';
 import { formatNumber, parseISODate } from '@utils/formatters';
 import type { EngagementByDay } from '@utils/excel/types';
