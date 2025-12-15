@@ -21,13 +21,14 @@ const EXPORT_DIMENSIONS_HEIGHT = 1350;
 
 import { toPng } from 'html-to-image';
 import { imageCache } from '@utils/imageCache';
+import hashSum from 'hash-sum';
 
 /**
  * Prepare a cloned element for export by cleaning up styles and removing unwanted elements
  * @param clone The cloned element to prepare
- * @returns The prepared clone ready for export
+ * @returns Object with prepared clone and style element for cleanup
  */
-function prepareElementForExport(clone: HTMLElement): HTMLElement {
+function prepareElementForExport(clone: HTMLElement): { clone: HTMLElement; styleElement: HTMLStyleElement } {
   // Batch DOM cleanup - remove unwanted elements
   const shareButtons = clone.querySelectorAll('.share-button-wrapper, .share-button, [class*="share"]');
   const iframeContainers = clone.querySelectorAll('.peak-post-embed-container');
@@ -53,9 +54,9 @@ function prepareElementForExport(clone: HTMLElement): HTMLElement {
 
   // Remove selection highlighting styles via global CSS injection
   const styleId = 'png-export-styles-' + Math.random().toString(36).substr(2, 9);
-  const style = document.createElement('style');
-  style.id = styleId;
-  style.innerHTML = `
+  const styleElement = document.createElement('style');
+  styleElement.id = styleId;
+  styleElement.innerHTML = `
     *::selection {
       background: transparent !important;
       color: inherit !important;
@@ -65,7 +66,7 @@ function prepareElementForExport(clone: HTMLElement): HTMLElement {
       color: inherit !important;
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(styleElement);
 
   // Single comprehensive pass through all elements for style normalization
   const allElements = [clone, ...Array.from(clone.querySelectorAll('*'))] as HTMLElement[];
@@ -94,7 +95,7 @@ function prepareElementForExport(clone: HTMLElement): HTMLElement {
     el.style.setProperty('boxShadow', 'none', 'important');
   });
 
-  return clone;
+  return { clone, styleElement };
 }
 
 /**
@@ -117,7 +118,7 @@ export async function exportCardAsImage(
     let id = cardId || element.id;
     if (!id) {
       // Use element's innerHTML hash for stable identification
-      const contentHash = hashContent(element.innerHTML);
+      const contentHash = hashSum(element.innerHTML);
       id = `card-${contentHash}`;
     }
     const cacheKey = `${id}-${backgroundColor.replace('#', '')}`;
@@ -134,7 +135,7 @@ export async function exportCardAsImage(
     const clone = element.cloneNode(true) as HTMLElement;
 
     // Prepare the clone for export
-    const preparedClone = prepareElementForExport(clone);
+    const { clone: preparedClone, styleElement } = prepareElementForExport(clone);
 
     // Get dimensions
     const rect = element.getBoundingClientRect();
@@ -185,31 +186,19 @@ export async function exportCardAsImage(
 
       return dataUrl;
     } finally {
-      // Clean up
+      // Clean up DOM elements
       if (document.body.contains(container)) {
         document.body.removeChild(container);
+      }
+      // Clean up style element to prevent memory leak
+      if (document.head.contains(styleElement)) {
+        document.head.removeChild(styleElement);
       }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to export card as image: ${errorMessage}`);
   }
-}
-
-/**
- * Generate a stable hash of content for cache key generation
- * Uses a simple hash function to create consistent identifiers
- * @param content The content to hash
- * @returns A hex hash string
- */
-function hashContent(content: string): string {
-  let hash = 0;
-  for (let i = 0; i < content.length; i++) {
-    const char = content.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash).toString(16).substring(0, 8);
 }
 
 /**
