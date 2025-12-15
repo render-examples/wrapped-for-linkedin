@@ -10,7 +10,6 @@
  * Performance optimizations:
  * - Parallel batch rendering using exportCardsAsImagesBatch
  * - Image caching to avoid re-rendering unchanged cards
- * - Progress callbacks for UI updates
  * - Streaming PDF assembly as images complete
  *
  * Benefits:
@@ -22,7 +21,6 @@
  */
 
 import { exportCardsAsImagesBatch, getOptimalConcurrency } from '@utils/batchImageExporter';
-import type { ExportProgress, ExportOptions } from '@/types/export';
 
 // PDF configuration constants
 const PDF_PAGE_MARGIN_MM = 10; // 5mm margins on each side
@@ -138,13 +136,11 @@ async function getImageDimensionsFromDataUrl(
  * @param pdf jsPDF instance
  * @param imageDataUrls Array of image data URLs
  * @param placement Pre-calculated placement object (width, height, x/y positions)
- * @param onProgress Optional callback for progress updates
  */
 function addImagesToPDF(
   pdf: any,
   imageDataUrls: string[],
-  placement: ReturnType<typeof calculateImagePlacement>,
-  onProgress?: (current: number, total: number) => void
+  placement: ReturnType<typeof calculateImagePlacement>
 ): void {
   const { pdfImageWidth, pdfImageHeight, xPosition, yPosition } = placement;
 
@@ -158,8 +154,6 @@ function addImagesToPDF(
     if (i < imageDataUrls.length - 1) {
       pdf.addPage();
     }
-
-    onProgress?.(i + 1, imageDataUrls.length);
   }
 }
 
@@ -172,43 +166,28 @@ function addImagesToPDF(
  *
  * @param cardElements Array of card DOM elements to export
  * @param filename Optional filename for the PDF
- * @param options Export options (concurrency, progress callback, etc.)
  */
 export async function exportCardsAsPDFBatch(
   cardElements: HTMLElement[],
-  filename: string = 'wrapped-for-linkedin.pdf',
-  options?: ExportOptions
+  filename: string = 'wrapped-for-linkedin.pdf'
 ): Promise<void> {
   if (!cardElements || cardElements.length === 0) {
     throw new Error('No cards provided for PDF export');
   }
 
-  const concurrency = options?.concurrency ?? getOptimalConcurrency();
+  const concurrency = getOptimalConcurrency();
 
   const jsPDF = await loadJsPDF();
 
   try {
-    options?.onStageChange?.('rendering');
-
     // Apply PDF-specific optimizations to improve layout for PDF export
     applyPDFOptimizations(cardElements);
 
     // Use batch rendering for all cards
     const imageDataUrls = await exportCardsAsImagesBatch(cardElements, {
       concurrency,
-      onProgress: (current, total) => {
-        const renderProgress: ExportProgress = {
-          current,
-          total,
-          stage: 'rendering',
-          percentComplete: Math.round((current / total) * 80), // 80% for rendering
-        };
-        options?.onProgress?.(renderProgress);
-      },
       backgroundColor: '#FFFFFF',
     });
-
-    options?.onStageChange?.('assembling');
 
     // Initialize PDF without compression during assembly for speed
     // Compression will happen automatically on save()
@@ -233,28 +212,11 @@ export async function exportCardsAsPDFBatch(
       pageHeight
     );
 
-    // Add all images to PDF with progress tracking
-    addImagesToPDF(pdf, imageDataUrls, placement, (current: number, total: number) => {
-      const assembleProgress: ExportProgress = {
-        current,
-        total,
-        stage: 'assembling',
-        percentComplete: 80 + Math.round(((current / total) * 20)),
-      };
-      options?.onProgress?.(assembleProgress);
-    });
-
-    options?.onStageChange?.('finalizing');
+    // Add all images to PDF
+    addImagesToPDF(pdf, imageDataUrls, placement);
 
     // Save the PDF
     pdf.save(filename);
-
-    options?.onProgress?.({
-      current: cardElements.length,
-      total: cardElements.length,
-      stage: 'finalizing',
-      percentComplete: 100,
-    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`PDF export failed: ${errorMessage}`);

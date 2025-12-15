@@ -178,7 +178,6 @@ Choose export format:
 - **StoryProgress.tsx**: Progress indicators and card navigation
 - **ShareButton.tsx**: Export cards as images/PDFs and pre-filled LinkedIn share functionality
 - **DownloadInstructions.tsx**: Guide for saving cards
-- **ExportProgress.tsx**: Real-time progress indicator for batch exports
 
 ### **WrappedStoriesContainer.tsx** (Wrapped Stories)
 - Instagram Stories-inspired carousel with autoplay (5s per card by default)
