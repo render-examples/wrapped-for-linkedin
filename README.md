@@ -2,14 +2,14 @@
 
 Wrapped for LinkedIn transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and check out your year in review.
 
-Wrapped for LinkedIn is a fully client-side application. Your data is processed entirely in your browser and never leaves your device.
+Wrapped for LinkedIn is a fully client-side application. Your data is processed entirely in your browser and never leaves your device. The app is powered by and deployed on [Render](https://render.com/).
 
 Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [Venkata Naga Sai Kumar Bysani](https://www.linkedin.com/in/saibysani18/).
 
 > [!NOTE]  
 > This project is not affiliated with, endorsed by, or connected to LinkedIn or Microsoft.
 
-🫶 _Made with love for the LinkedIn data community_
+🫶 _Made with love for the developer & data communities_
 
 ## ✨ Features
 
@@ -53,6 +53,7 @@ npm run dev
 
 ### Get your Wrapped for LinkedIn
 
+1. Visit the live app at [linkedin-wrapped.onrender.com](https://linkedin-wrapped.onrender.com) (powered by Render)
 1. Export your [LinkedIn analytics](https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days) as an Excel file.
    - See detailed instructions on the [Wrapped for LinkedIn landing page](https://linkedin-wrapped.onrender.com)
 1. Upload the file to Wrapped for LinkedIn in the browser.

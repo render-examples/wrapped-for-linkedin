@@ -2,7 +2,9 @@
 
 This document describes how the Wrapped for LinkedIn application is structured and how data flows through the system. The entire application runs client-side in the browser with no backend required.
 
-**Tech Stack:** React 18 + TypeScript + Vite + Zustand + [Render](https://render.com/) (deployment)
+The app is powered by and deployed on [Render](https://render.com/).
+
+**Tech Stack:** React 18 + TypeScript + Vite
 
 ## 📋 Table of contents
 
@@ -25,6 +27,7 @@ The application follows a **component-driven architecture** with:
 - **Client-side only**: All data stays in the user's browser
 - **Responsive design**: Mobile-friendly with CSS media queries
 - **Instagram-inspired UX**: Autoplay carousel with pause, swipe navigation, and keyboard controls
+- **Render deployment**: Hosted on [Render](https://render.com/) for reliable, fast global delivery
 
 ## 📁 Directory structure
 
@@ -44,9 +47,8 @@ src/
 │   ├── Error.tsx        # Error display
 │   └── CacheIndicator.tsx # Cache status
 ├── hooks/               # Custom React hooks
-│   └── useCache.ts      # Browser cache management
-├── store/               # Zustand state store
-│   └── index.ts         # Global app state
+│   ├── useCache.ts      # Browser cache management
+│   └── useSampleData.ts # Demo data functionality
 ├── styles/              # CSS module files
 │   ├── App.css
 │   ├── Components*.css  # Component-specific styles
@@ -251,41 +253,38 @@ generateShareableCards(excelData)
 
 ## 🎯 State management
 
-### **Zustand store** (`store/index.ts`)
+### **React State** (`App.tsx`)
 
-Global state management with Zustand:
+The app uses React's built-in `useState` hook for state management:
 
 ```typescript
-interface AppState {
-  // Data
-  excelData: ParsedExcelData | null;
-  analyticsData: AnalyticsData | null;
-
-  // UI State
-  loading: boolean;
-  error: string | null;
-  isShareDropdownOpen: boolean;
-  isDownloading: boolean;
-
-  // Metadata
+interface DataState {
+  engagement: EngagementMetrics | null;
+  demographics: DemographicInsights | undefined;
   uploadDate: number | null;
   isFromCache: boolean;
-  wrappedYear: number | null;
-
-  // Actions
-  setExcelData(data, uploadDate?, fromCache?): void;
-  setLoading(loading): void;
-  setError(error): void;
-  // ... more setters
+  error: string | null;
 }
+
+// In App.tsx
+const [loading, setLoading] = useState(false);
+const [state, setState] = useState<DataState>({
+  engagement: null,
+  demographics: undefined,
+  uploadDate: null,
+  isFromCache: false,
+  error: null,
+});
 ```
+
+State is managed at the root `App` component level and passed down to child components via props.
 
 ### **Cache hook** (`hooks/useCache.ts`)
 
 Manages browser localStorage for caching:
 - Stores parsed Excel data with timestamp
 - Reuses data on return visits without re-uploading
-- Shows cache indicator in header
+- Shows cache indicator
 - Allows manual cache clearing
 - Improves user experience for returning visitors
 
@@ -317,145 +316,18 @@ Manages demo data functionality:
 - `cardDataMapper.ts`: Transform data for card generation
 - `api.ts`: Mock API for future backend integration
 
-## 📝 Types & interfaces
+### **Deployment**
 
-### **Main types** (`types/index.ts`)
-
-```typescript
-// Data structures from Excel
-EngagementMetrics {
-  discovery_data: DiscoveryMetrics;
-  top_posts: TopPost[];
-  engagementByDay: DayEngagement[];
-}
-
-DemographicInsights {
-  industries: DemographicItem[];
-  locations: DemographicItem[];
-  job_titles: DemographicItem[];
-  seniority_levels: DemographicItem[];
-  company_sizes: DemographicItem[];
-}
-
-TopPost {
-  date: string;
-  content: string;
-  impressions: number;
-  engagements: number;
-  comments: number;
-  reactions: number;
-  shares: number;
-  // ... more fields
-}
-```
-
-### **Excel types** (`utils/excel/types.ts`)
-
-```typescript
-ParsedExcelData {
-  discovery_data: DiscoveryMetrics;
-  top_posts: TopPost[];
-  demographics: DemographicInsights;
-  engagement_by_day: DayEngagement[];
-}
-```
-
-### **Story types** (`types/wrappedStories.ts`)
-
-```typescript
-ShareableCard {
-  title: string;
-  description: string;
-  data: Record<string, any>;
-  metadata: CardMetadata;
-  index: number;
-  // ... rendering data
-}
-```
-
-## 🎨 Styling
-
-### **Architecture**
-- Global styles in `index.css` (CSS variables)
-- Component-scoped CSS files in `styles/`
-- Mobile-first responsive design with media queries
-- Dark theme optimized for LinkedIn aesthetic
-
-### **CSS variables**
-
-```css
-/* Colors */
---primary: #0A8FFF
---primary-light: #3FA9FF
---bg-primary: #0A0E27
---bg-secondary: #161B2F
-
-/* Typography */
---font-display: "Segoe UI", Helvetica, Arial
---font-body: -apple-system, BlinkMacSystemFont, "Segoe UI"
-
-/* Spacing */
-Standard 2px, 4px, 8px, 16px, 32px grid
-```
-
-### **Responsive breakpoints**
-
-```css
-@media (max-width: 768px)  /* Tablets */
-@media (max-width: 480px)  /* Mobile phones */
-```
-
-## 🚀 Development guide
-
-### **Setup**
-```bash
-npm install
-npm run dev  # Start Vite dev server with HMR
-```
-
-### **Building**
-```bash
-npm run build    # Production build
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-```
-
-### **Add a new feature**
-
-1. **Add types** in `types/index.ts`
-2. **Create component** in `components/`
-3. **Add styles** in `styles/ComponentName.css`
-4. **Integrate with store** if needed
-5. **Add utility functions** in `utils/` if needed
-
-### **Add a new Excel parser**
-
-1. Create `utils/excel/newSheetParser.ts`
-2. Import in `excelProcessor.ts`
-3. Add to switch/case in processor
-4. Update types in `utils/excel/types.ts`
-5. Return data in `ParsedExcelData`
-
-### **Common tasks**
-
-**Update the dashboard layout:**
-- Edit `UnifiedDashboard.tsx` component structure
-- Adjust `styles/UnifiedDashboard.css`
-
-**Add new share format:**
-- Create utility in `utils/`
-- Add button in `ShareButton.tsx`
-- Integrate with export pipeline
-
-**Modify data processing:**
-- Edit relevant parser in `utils/excel/`
-- Update types if schema changes
-- Test with sample LinkedIn export
+The app is automatically deployed to [Render](https://render.com/) when changes are pushed to the main branch. Render:
+- Builds the app using `npm run build`
+- Serves the static files from the `dist/` directory
+- Provides automatic SSL certificates
+- Offers global CDN distribution for fast loading times
 
 ## 📚 Additional resources
-
+- [Render website](https://render.com)
+- [Render docs](https://render.com/docs) 
 - [React Documentation](https://react.dev)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Zustand Documentation](https://github.com/pmndrs/zustand)
 - [Vite Guide](https://vitejs.dev/)
 - [XLSX Documentation](https://docs.sheetjs.com/)
