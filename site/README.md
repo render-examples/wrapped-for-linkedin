@@ -38,4 +38,4 @@ npm run lint
 
 ## Live App
 
-Visit [wrappedonlinkedin.onrender.com/](https://wrappedonlinkedin.onrender.com/)
+Visit [wrappedforlinkedin.onrender.com/](https://wrappedforlinkedin.onrender.com/)

@@ -53,9 +53,9 @@ npm run dev
 
 ### Get your Wrapped for LinkedIn
 
-1. Visit the live app at [wrappedonlinkedin.onrender.com/](https://wrappedonlinkedin.onrender.com/) (powered by Render)
+1. Visit the live app at [wrappedforlinkedin.onrender.com/](https://wrappedforlinkedin.onrender.com/) (powered by Render)
 1. Export your [LinkedIn analytics](https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days) as an Excel file.
-   - See detailed instructions on the [Wrapped for LinkedIn landing page](https://wrappedonlinkedin.onrender.com/)
+   - See detailed instructions on the [Wrapped for LinkedIn landing page](https://wrappedforlinkedin.onrender.com/)
 1. Upload the file to Wrapped for LinkedIn in the browser.
 1. Explore and share your Wrapped for LinkedIn dashboard!
 
