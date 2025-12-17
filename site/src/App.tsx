@@ -143,40 +143,42 @@ function App() {
 
   return (
     <div className="app-container">
-      {state.engagement && <div className="background-overlay" />}
-      
-      <Header
-        onLogoClick={handleLogoClick}
-        onClearCache={handleClearCache}
-        hasCachedData={cache.data !== null}
-      />
-
-      <main className="app-main">
-        {state.engagement && (
-          <button
-            className="upload-new-data-btn desktop-only"
-            onClick={handleClearCache}
-            aria-label="Upload new data"
-            title="Upload new data"
-          >
-            Upload new data
-          </button>
-        )}
+      <div className="landing-content">
+        {state.engagement && <div className="background-overlay" />}
         
-        {state.error && <ErrorDisplay error={state.error} onRetry={resetState} />}
+        <Header
+          onLogoClick={handleLogoClick}
+          onClearCache={handleClearCache}
+          hasCachedData={cache.data !== null}
+        />
 
-        {loading && <Loading />}
+        <main className="app-main">
+          {state.engagement && (
+            <button
+              className="upload-new-data-btn desktop-only"
+              onClick={handleClearCache}
+              aria-label="Upload new data"
+              title="Upload new data"
+            >
+              Upload new data
+            </button>
+          )}
+          
+          {state.error && <ErrorDisplay error={state.error} onRetry={resetState} />}
 
-        {!loading && !state.error && state.engagement ? (
-          <UnifiedDashboard
-            data={state.engagement}
-            demographics={state.demographics}
-            onUploadNewData={handleClearCache}
-          />
-        ) : !loading && !state.error && !state.engagement ? (
-          <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />
-        ) : null}
-      </main>
+          {loading && <Loading />}
+
+          {!loading && !state.error && state.engagement ? (
+            <UnifiedDashboard
+              data={state.engagement}
+              demographics={state.demographics}
+              onUploadNewData={handleClearCache}
+            />
+          ) : !loading && !state.error && !state.engagement ? (
+            <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />
+          ) : null}
+        </main>
+      </div>
 
       <footer className="app-footer">
         <div className="footer-disclaimer-row">

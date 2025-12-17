@@ -67,18 +67,24 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-top: 80px;
   background: var(--Background-Primary, #0D0D0D);
+}
+
+.landing-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 80px;
   position: relative;
 }
 
-.app-container::before {
+.landing-content::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 100vh;
+  bottom: 0;
   background: url('/images/background.svg') no-repeat center top;
   background-size: cover;
   pointer-events: none;
@@ -90,7 +96,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 100vh;
+  bottom: 0;
   background: linear-gradient(180deg, 
     rgba(13, 13, 13, 0.50) 0%, 
     rgba(13, 13, 13, 0.75) 70%,
@@ -163,7 +169,6 @@ body {
   padding: 2rem 2rem 2rem 4rem;
   color: #FFFFFF;
   font-size: 1.1rem;
-  margin-top: 1.5rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -255,7 +260,7 @@ body {
     display: none !important;
   }
 
-  .app-container {
+  .landing-content {
     padding-top: 70px;
   }
 
@@ -311,7 +316,7 @@ body {
     display: none !important;
   }
 
-  .app-container {
+  .landing-content {
     padding-top: 65px;
   }
 }
