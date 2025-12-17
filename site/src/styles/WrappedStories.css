@@ -1666,7 +1666,7 @@
 
 /* Instructions Actions */
 .instructions-actions {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 0.25rem 1.5rem;
   flex-shrink: 0;
 }
 
@@ -1724,7 +1724,7 @@
   }
 
   .instructions-actions {
-    padding: 1.25rem;
+    padding: 1.25rem 1.25rem 0.25rem 1.25rem;
   }
 
   .btn-share-linkedin {
@@ -1769,7 +1769,7 @@
   }
 
   .instructions-actions {
-    padding: 1rem;
+    padding: 1rem 1rem 0.25rem 1rem;
   }
 
   .btn-share-linkedin {

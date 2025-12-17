@@ -64,7 +64,7 @@ export function getLinkedInShareConfig(
 
   return {
     shareUrl: generatedShareUrl,
-    instructions: 'Click the button below to share on LinkedIn. The text will be copied to your clipboard for posting.',
+    instructions: 'Click the button above to share on LinkedIn. The text will be copied to your clipboard for posting.',
   };
 }
 

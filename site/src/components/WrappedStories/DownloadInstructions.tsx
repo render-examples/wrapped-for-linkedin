@@ -56,42 +56,6 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="instructions-content">
-          <p className="instructions-text">
-            Follow these steps to share your Wrapped for LinkedIn:
-          </p>
-
-          <div className="instructions-steps">
-            <p className="instruction-step">1. <b>Open LinkedIn.</b> Click the button below to open LinkedIn with a prepared post.</p>
-            <p className="instruction-step"><strong>Note:</strong> Close the link preview by clicking <strong>X</strong> before attaching media.</p>
-            <img src="/images/share/close-embed.png" alt="Close the link embed" className="instruction-image" />
-            {exportType === 'current-card' ? (
-              <>
-                <p className="instruction-step">2. <b>Attach your card.</b> Click the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).</p>
-                <img src="/images/share/add-media.png" alt="Click the image icon" className="instruction-image" />
-              </>
-            ) : (
-              <>
-                <p className="instruction-step">2. <b>Attach your cards.</b> Click the <b>+</b> icon at the bottom of the post modal to expand options. Click the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.
-                </p>
-                <div className="instruction-images-column">
-                  <img src="/images/share/more.png" alt="Click the plus icon to expand options" className="instruction-image" />
-                  <img src="/images/share/add-a-document.png" alt="Click the document icon to upload" className="instruction-image" />
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Disclaimer */}
-          <div className="instructions-disclaimer">
-            <p className="disclaimer-text">
-              𝒊 &nbsp; &nbsp; We can't automatically attach the file to your LinkedIn post without violating LinkedIn's terms of service.
-              These manual steps ensure we stay compliant and respect LinkedIn's policies.
-            </p>
-          </div>
-        </div>
-
         {/* Actions */}
         <div className="instructions-actions">
           <button
@@ -107,6 +71,44 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
             Share on LinkedIn
           </button>
         </div>
+
+        {/* Content */}
+        <div className="instructions-content">
+          <p className="instructions-text">
+            Follow these steps to share your Wrapped for LinkedIn:
+          </p>
+
+          <div className="instructions-steps">
+            <p className="instruction-step">1. <b>Open LinkedIn.</b> Click the button above to open LinkedIn with a prepared post.</p>
+            <p className="instruction-step"><strong>Note:</strong> Close the link preview by clicking <strong>X</strong> before attaching media.</p>
+            <img src="/images/share/close-embed.png" alt="Close the link embed" className="instruction-image" />
+            {exportType === 'current-card' ? (
+              <>
+                <p className="instruction-step">2. <b>Attach your card.</b> Click the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).</p>
+                <img src="/images/share/add-media.png" alt="Click the image icon" className="instruction-image" />
+              </>
+            ) : (
+              <>
+                <p className="instruction-step">2. <b>Attach your cards.</b> Click the <b>+</b> icon at the bottom of the post modal to expand options. Click the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.
+                </p>
+                <div className="instruction-images-column">
+                  <img src="/images/share/more.png" alt="Click the plus icon to expand options" className="instruction-image" />
+                  <img src="/images/share/add-a-document.png" alt="Click the document icon to upload" className="instruction-image" />
+                </div>
+                <p><b>Name it.</b>Give your LinkedIn PDF a name like "wrapped".</p>
+              </>
+            )}
+          </div>
+
+          {/* Disclaimer */}
+          <div className="instructions-disclaimer">
+            <p className="disclaimer-text">
+              𝒊 &nbsp; &nbsp; We can't automatically attach the file to your LinkedIn post without violating LinkedIn's terms of service.
+              These manual steps ensure we stay compliant and respect LinkedIn's policies.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );
