@@ -76,6 +76,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           <li>Click <b>Export</b> in the top right</li>
           <li>Upload the exported file below ↓</li>
         </ol>
+        <a 
+          href="https://www.youtube.com/watch?v=fpvWoG_PB00"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="watch-demo-button"
+        >
+          Watch demo ↗
+        </a>
       </div>
 
       <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isLoading || sampleData.isLoading ? 'disabled' : ''}`}>

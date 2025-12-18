@@ -138,6 +138,8 @@
 .instructions {
   text-align: center;
   flex-direction: column;
+  position: relative;
+  padding-bottom: 72px;
 }
 
 .instructions h3 {
@@ -170,7 +172,36 @@
   letter-spacing: 0.18px;
 }
 
-.instructions a,
+.watch-demo-button {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 12px 20px;
+  border: 1.5px solid transparent;
+  border-radius: 0px;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-family: Roobert;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 105%;
+  letter-spacing: -0.32px;
+  transition: all 0.3s ease;
+}
+
+.watch-demo-button:hover {
+  background: rgba(13, 13, 13, 0.88);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  border-image: linear-gradient(135deg, #F239FF, #0A8FFF) 1;
+  box-shadow: 0 2px 24px 0 rgba(242, 57, 255, 0.3);
+  text-decoration: none;
+}
+
+.instructions a:not(.watch-demo-button),
 .privacy-disclaimer a {
   color: var(--Pink-300, #F79BFE);
   text-decoration: none;
@@ -183,7 +214,7 @@
   transition: all 0.3s ease;
 }
 
-.instructions a:hover,
+.instructions a:not(.watch-demo-button):hover,
 .privacy-disclaimer a:hover {
   text-decoration: underline;
 }
@@ -262,6 +293,10 @@
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
+
+  .instructions {
+    padding-bottom: 56px;
+  }
   
   .or-divider {
     background: rgba(13, 13, 13, 0.75);
@@ -279,8 +314,15 @@
     margin-bottom: 0.75rem;
   }
 
-  .instructions a {
+  .instructions a:not(.watch-demo-button) {
     font-size: 14px;
+  }
+
+  .watch-demo-button {
+    font-size: 14px;
+    padding: 10px 16px;
+    bottom: 12px;
+    right: 12px;
   }
 
   .dropzone-text {
