@@ -1,5 +1,7 @@
 # Wrapped for LinkedIn
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/wrapped-for-linkedin)
+
 Wrapped for LinkedIn transforms your LinkedIn activity into an engaging, visual story inspired by Spotify Wrapped. Discover your most impactful posts, understand who's engaging with your content, and check out your year in review.
 
 Wrapped for LinkedIn is a fully client-side application. Your data is processed entirely in your browser and never leaves your device. The app is powered by and deployed on [Render](https://render.com/).
@@ -8,7 +10,6 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 > [!NOTE]  
 > This project is not affiliated with, endorsed by, or connected to LinkedIn or Microsoft.
-
 🫶 _Made with love for the developer community_
 
 ## ✨ Features
