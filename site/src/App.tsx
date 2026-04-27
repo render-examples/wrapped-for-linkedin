@@ -207,7 +207,7 @@ function App() {
             </a>
             &nbsp; &nbsp; &nbsp; &nbsp;
             <a 
-              href="https://github.com/Ho1yShif/wrapped-for-linkedin" 
+              href="https://github.com/render-examples/wrapped-for-linkedin" 
               target="_blank" 
               rel="noopener noreferrer"
               className="footer-link"

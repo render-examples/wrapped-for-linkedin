@@ -123,7 +123,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           </span>
           <br /> <br />
           <a 
-            href="https://github.com/Ho1yShif/wrapped-for-linkedin/blob/main/site/src/utils/excel/excelProcessor.ts" 
+            href="https://github.com/render-examples/wrapped-for-linkedin/blob/main/site/src/utils/excel/excelProcessor.ts" 
             target="_blank" 
             rel="noopener noreferrer"
           >
