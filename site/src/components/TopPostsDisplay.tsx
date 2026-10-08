@@ -1,36 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import type { TopPost } from '@types';
 import { formatDateString } from '@utils/formatters';
+import { getLinkedInEmbedUrl } from '@utils/linkedinEmbed';
 import '@styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {
   posts: TopPost[];
 }
-
-interface PostWithEmbedUrl extends TopPost {
-  embedUrl: string | null;
-}
-
-// Clean up LinkedIn URL to be embeddable
-const getCleanLinkedInUrl = (url: string): string => {
-  try {
-    // Remove any trailing slashes and query parameters
-    return url.split('?')[0].replace(/\/$/, '');
-  } catch {
-    return url;
-  }
-};
-
-// Generate embed URL from LinkedIn post URL
-const generateEmbedUrl = (url: string): string | null => {
-  try {
-    const cleanUrl = getCleanLinkedInUrl(url);
-    const postId = cleanUrl.split('/').pop();
-    return postId ? `https://www.linkedin.com/embed/feed/update/${postId}` : null;
-  } catch {
-    return null;
-  }
-};
 
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   // Memoized formatter functions with useCallback
@@ -52,8 +28,8 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   const displayedPosts = useMemo(() => {
     return posts.slice(0, 6).map(post => ({
       ...post,
-      embedUrl: generateEmbedUrl(post.url)
-    })) as PostWithEmbedUrl[];
+      embedUrl: getLinkedInEmbedUrl(post.url)
+    }));
   }, [posts]);
 
   return (
