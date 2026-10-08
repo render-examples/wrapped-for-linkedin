@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { ShareButton } from '@components/WrappedStories/ShareButton';
 import { StoryProgress } from '@components/WrappedStories/StoryProgress';
 import type { ShareableCard } from '@/types/wrappedStories';
+import { getLinkedInEmbedUrl } from '@utils/linkedinEmbed';
 
 interface StoryCardProps {
   card: ShareableCard;
@@ -38,6 +39,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 }) => {
   const internalCardRef = useRef<HTMLDivElement>(null);
   const cardRef = externalCardRef || internalCardRef;
+  const peakEmbedUrl = card.data.url ? getLinkedInEmbedUrl(card.data.url) : null;
 
   return (
     <div
@@ -132,10 +134,10 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 
               {/* LinkedIn Post Embed */}
               <div className="peak-post-embed-wrapper">
-                {card.data.url ? (
+                {peakEmbedUrl ? (
                   <div className="peak-post-embed-container">
                     <iframe
-                      src={`https://www.linkedin.com/embed/feed/update/${card.data.url.split('/').pop()}`}
+                      src={peakEmbedUrl}
                       height="300"
                       width="100%"
                       allowFullScreen
