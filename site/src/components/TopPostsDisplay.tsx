@@ -20,17 +20,17 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
     return String(Math.round(num));
   }, []);
 
-  if (!posts || posts.length === 0) {
-    return null;
-  }
-
   // Memoize displayed posts and embed URLs calculation
   const displayedPosts = useMemo(() => {
-    return posts.slice(0, 6).map(post => ({
+    return (posts ?? []).slice(0, 6).map(post => ({
       ...post,
       embedUrl: getLinkedInEmbedUrl(post.url)
     }));
   }, [posts]);
+
+  if (!posts || posts.length === 0) {
+    return null;
+  }
 
   return (
     <div className="top-posts-section">
