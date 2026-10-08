@@ -51,6 +51,12 @@ describe('getLinkedInEmbedUrl', () => {
     ).toBe(`${EMBED}urn:li:activity:7273484794833833984`);
   });
 
+  it('keeps an encoded question mark in the slug', () => {
+    expect(
+      getLinkedInEmbedUrl('https://www.linkedin.com/posts/someone_why-not%3F-share-7485528159346622464-sQj-')
+    ).toBe(`${EMBED}urn:li:share:7485528159346622464`);
+  });
+
   it('returns null when the URL has no post ID', () => {
     expect(getLinkedInEmbedUrl('https://www.linkedin.com/in/shifra-williams')).toBeNull();
     expect(getLinkedInEmbedUrl('')).toBeNull();

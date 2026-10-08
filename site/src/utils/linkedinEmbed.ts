@@ -17,7 +17,7 @@ const decode = (url: string): string => {
  * Returns null when the URL does not contain a post ID.
  */
 export function getLinkedInEmbedUrl(postUrl: string): string | null {
-  const cleanUrl = decode(postUrl).split('?')[0].replace(/\/$/, '');
+  const cleanUrl = decode(postUrl.split('?')[0]);
   const match = cleanUrl.match(URN_PATTERN) ?? cleanUrl.match(SLUG_PATTERN);
   if (!match) {
     return null;

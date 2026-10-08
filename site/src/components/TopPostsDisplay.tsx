@@ -8,10 +8,6 @@ interface TopPostsDisplayProps {
   posts: TopPost[];
 }
 
-interface PostWithEmbedUrl extends TopPost {
-  embedUrl: string | null;
-}
-
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   // Memoized formatter functions with useCallback
   const formatEngagements = useCallback((num: number): string => {
@@ -33,7 +29,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
     return posts.slice(0, 6).map(post => ({
       ...post,
       embedUrl: getLinkedInEmbedUrl(post.url)
-    })) as PostWithEmbedUrl[];
+    }));
   }, [posts]);
 
   return (
