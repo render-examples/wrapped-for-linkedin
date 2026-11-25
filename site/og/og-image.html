@@ -125,14 +125,12 @@
         gap: 20px;
       }
 
+      /* Same shape as the BadgeEmblem component. */
       .badge-art {
-        display: grid;
-        place-items: center;
+        display: block;
         width: 76px;
-        height: 76px;
-        border: 1px solid var(--accent-fill);
-        background: var(--art-surface);
-        font-size: 38px;
+        flex-shrink: 0;
+        color: var(--accent-fill);
       }
 
       .badge-name {
@@ -164,7 +162,18 @@
           <p class="tile-value">1.2M</p>
         </div>
         <div class="tile badge">
-          <div class="badge-art">💎</div>
+          <svg class="badge-art" viewBox="0 0 100 120" fill="currentColor" aria-hidden="true">
+            <path d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z" />
+            <path d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z" />
+            <path d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z" fill="#fff" fill-opacity="0.45" />
+            <path d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z" fill="#fff" fill-opacity="0.45" />
+            <path d="M 50.00 6.00 A 8.15 8.15 0 0 1 64.54 8.89 A 8.15 8.15 0 0 1 76.87 17.13 A 8.15 8.15 0 0 1 85.11 29.46 A 8.15 8.15 0 0 1 88.00 44.00 A 8.15 8.15 0 0 1 85.11 58.54 A 8.15 8.15 0 0 1 76.87 70.87 A 8.15 8.15 0 0 1 64.54 79.11 A 8.15 8.15 0 0 1 50.00 82.00 A 8.15 8.15 0 0 1 35.46 79.11 A 8.15 8.15 0 0 1 23.13 70.87 A 8.15 8.15 0 0 1 14.89 58.54 A 8.15 8.15 0 0 1 12.00 44.00 A 8.15 8.15 0 0 1 14.89 29.46 A 8.15 8.15 0 0 1 23.13 17.13 A 8.15 8.15 0 0 1 35.46 8.89 A 8.15 8.15 0 0 1 50.00 6.00 Z" />
+            <circle cx="50" cy="44" r="29" fill="none" stroke="#fff" stroke-opacity="0.4" stroke-width="1.5" />
+            <!-- Phosphor Diamond icon, fill weight, centered on the seal. -->
+            <svg x="32" y="26" width="36" height="36" viewBox="0 0 256 256" fill="#fff">
+              <path d="M240,128a15.85,15.85,0,0,1-4.67,11.28l-96.05,96.06a16,16,0,0,1-22.56,0h0l-96-96.06a16,16,0,0,1,0-22.56l96.05-96.06a16,16,0,0,1,22.56,0l96.05,96.06A15.85,15.85,0,0,1,240,128Z" />
+            </svg>
+          </svg>
           <div>
             <p class="badge-name">Millionaire</p>
             <p class="mono">1M+ total impressions</p>
