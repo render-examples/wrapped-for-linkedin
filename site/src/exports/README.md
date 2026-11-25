@@ -48,6 +48,12 @@ The function exports 8 cards at a time. If any card fails, the function throws o
 
 Each page is 216 mm wide and has the same aspect ratio as the card, so the card fills the page with no margin. The function loads jsPDF only when the user exports a PDF.
 
+## Sharing on phones
+
+`navigator.share()` works only during a tap or a short time after it. A PNG export can take longer than that, so `ShareButton.tsx` renders the PNG for the current card when the share menu opens on a phone. When the user taps **PNG** and the file is ready, the share sheet opens at once. When the file is not ready, the user sees the **Your card is ready** prompt and taps again to share.
+
+The PDF export always shows the prompt, because it takes longer than the share time limit. Desktops do not render ahead. They download the file.
+
 ## Examples
 
 ```typescript

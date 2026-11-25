@@ -31,14 +31,18 @@ function getBrowserShareEnv(): ShareEnv {
 }
 
 /**
- * Use the share sheet only on touch devices that can share the file.
+ * Return true on touch devices that can share files.
  * Desktop share sheets usually do not list LinkedIn, so desktops download the file.
  */
+export function canShareFiles(env: ShareEnv = getBrowserShareEnv()): boolean {
+  return env.isTouchDevice && typeof env.canShare === 'function';
+}
+
+/**
+ * Use the share sheet only on touch devices that can share the file.
+ */
 export function getShareMode(file: File, env: ShareEnv = getBrowserShareEnv()): ShareMode {
-  if (!env.isTouchDevice || !env.canShare) {
-    return 'download';
-  }
-  return env.canShare({ files: [file] }) ? 'native' : 'download';
+  return canShareFiles(env) && env.canShare?.({ files: [file] }) ? 'native' : 'download';
 }
 
 /**

@@ -5,7 +5,8 @@ import { buildCardsPDF } from '@exports/pdfExport';
 import { getPostImage } from '@exports/postScreenshot';
 import { DownloadInstructions, type ExportType } from '@components/WrappedStories/DownloadInstructions';
 import { NativeSharePrompt } from '@components/WrappedStories/NativeSharePrompt';
-import { dataUrlToFile, downloadFile, getShareMode, type ShareMode } from '@utils/webShare';
+import { canShareFiles, dataUrlToFile, downloadFile, getShareMode, shareFile, type ShareMode } from '@utils/webShare';
+import { buildShareText } from '@utils/linkedinShareLink';
 import { Icon } from '@components/Icon';
 import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
@@ -24,6 +25,7 @@ const MENU_GAP = 10;
 const PHONE_MAX_WIDTH = 480;
 
 type MenuPosition = { top: string; left: string };
+type CardFile = { cardId: string; file: File };
 
 /**
  * Place the menu below the button and keep it in the viewport.
@@ -59,6 +61,15 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [dropdownPosition, setDropdownPosition] = useState<MenuPosition>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  // On phones, the PNG renders when the menu opens, so the PNG tap can open the share sheet at once.
+  const [prerendered, setPrerendered] = useState<CardFile | null>(null);
+  const prerenderRef = useRef<{ cardId: string; promise: Promise<File> } | null>(null);
+
+  // Drop the prerendered file when the card changes.
+  useEffect(() => {
+    prerenderRef.current = null;
+    setPrerendered(null);
+  }, [card.id]);
 
   // Close the menu on a click outside it.
   useEffect(() => {
@@ -96,23 +107,67 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setShareMode('download');
   }, [exportedFile]);
 
-  const handlePNGExport = useCallback(async () => {
-    if (!cardRef.current) {
-      setError('Card element not found');
+  /**
+   * Render the current card as a PNG file.
+   */
+  const renderCardFile = useCallback(async (): Promise<File> => {
+    const element = cardRef.current;
+    if (!element) {
+      throw new Error('Card element not found');
+    }
+    const postImage =
+      card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
+    const imageDataUrl = await exportCardAsImage(element, { postImage });
+    return dataUrlToFile(imageDataUrl, `wrapped-for-linkedin-${card.id}.png`);
+  }, [cardRef, card]);
+
+  /**
+   * Start the PNG render in the background, once per card.
+   */
+  const startPrerender = useCallback(() => {
+    const cardId = card.id;
+    if (prerenderRef.current?.cardId === cardId) {
       return;
     }
+    const promise = renderCardFile();
+    prerenderRef.current = { cardId, promise };
+    promise.then(
+      (file) => {
+        if (prerenderRef.current?.promise === promise) {
+          setPrerendered({ cardId, file });
+        }
+      },
+      () => {
+        // The normal export path shows the error. Clear the ref so that path renders again.
+        if (prerenderRef.current?.promise === promise) {
+          prerenderRef.current = null;
+        }
+      }
+    );
+  }, [card.id, renderCardFile]);
 
-    setIsExporting(true);
+  const handlePNGExport = useCallback(async () => {
     setError(null);
     setIsDropdownOpen(false);
     setExportType('current-card');
 
-    try {
-      const postImage =
-        card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
-      const imageDataUrl = await exportCardAsImage(cardRef.current, { postImage });
+    // Call share before any await. Browsers allow a share only during or just after a tap.
+    if (prerendered?.cardId === card.id) {
+      const file = prerendered.file;
+      const result = await shareFile(file, buildShareText(shareInfo));
+      if (result === 'failed') {
+        setExportedFile(file);
+        setShareMode('native');
+        setShowInstructions(true);
+      }
+      return;
+    }
 
-      deliverFile(await dataUrlToFile(imageDataUrl, `wrapped-for-linkedin-${card.id}.png`));
+    setIsExporting(true);
+
+    try {
+      const pending = prerenderRef.current?.cardId === card.id ? prerenderRef.current.promise : null;
+      deliverFile(await (pending ?? renderCardFile()));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to export card';
       setError(errorMessage);
@@ -120,7 +175,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [cardRef, card, deliverFile]);
+  }, [card.id, prerendered, shareInfo, renderCardFile, deliverFile]);
 
   /**
    * Export all cards as one PDF.
@@ -174,9 +229,12 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         setDropdownPosition(getDropdownPosition(buttonRef.current));
       }
       onPauseAutoPlay();
+      if (canShareFiles()) {
+        startPrerender();
+      }
     }
     setIsDropdownOpen(prev => !prev);
-  }, [isExporting, isDropdownOpen, onPauseAutoPlay]);
+  }, [isExporting, isDropdownOpen, onPauseAutoPlay, startPrerender]);
 
   return (
     <div className="share-button-wrapper">

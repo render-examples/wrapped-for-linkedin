@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { dataUrlToFile, getShareMode, isTouchDevice, shareFile, type ShareEnv } from './webShare';
+import { canShareFiles, dataUrlToFile, getShareMode, isTouchDevice, shareFile, type ShareEnv } from './webShare';
 
 const png = new File(['x'], 'card.png', { type: 'image/png' });
 const env = (overrides: Partial<ShareEnv> = {}): ShareEnv => ({
@@ -26,7 +26,24 @@ describe('getShareMode', () => {
   });
 });
 
+describe('canShareFiles', () => {
+  it('returns true on a touch device with canShare', () => {
+    expect(canShareFiles(env())).toBe(true);
+  });
+  it('returns false on desktop', () => {
+    expect(canShareFiles(env({ isTouchDevice: false }))).toBe(false);
+  });
+  it('returns false when canShare is missing', () => {
+    expect(canShareFiles(env({ canShare: undefined }))).toBe(false);
+  });
+});
+
 describe('shareFile', () => {
+  it('calls share in the same tick as the call', () => {
+    const e = env();
+    void shareFile(png, 't', e);
+    expect(e.share).toHaveBeenCalledTimes(1);
+  });
   it('copies the text and shares the file with the text', async () => {
     const e = env();
     expect(await shareFile(png, 'post text', e)).toBe('shared');
