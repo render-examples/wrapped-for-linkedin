@@ -1,28 +1,32 @@
-services:
-  - type: web
-    name: wrapped-for-linkedin
-    runtime: static
-    rootDir: site
-    buildCommand: npm install; npm run build
-    staticPublishPath: ./dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      # fromService gives only the private network hostname, which a browser cannot reach.
-      # Use the public URL of the screenshot service.
-      - key: VITE_SCREENSHOT_SERVICE_URL
-        value: https://wrapped-for-linkedin-screenshots.onrender.com
+projects:
+  - name: wrapped-for-linkedin
+    environments:
+      - name: production
+        services:
+          - type: web
+            name: wrapped-for-linkedin
+            runtime: static
+            rootDir: site
+            buildCommand: npm install; npm run build
+            staticPublishPath: ./dist
+            routes:
+              - type: rewrite
+                source: /*
+                destination: /index.html
+            envVars:
+              # fromService gives only the private network hostname, which a browser cannot reach.
+              # Use the public URL of the screenshot service.
+              - key: VITE_SCREENSHOT_SERVICE_URL
+                value: https://wrapped-for-linkedin-screenshots.onrender.com
 
-  - type: web
-    name: wrapped-for-linkedin-screenshots
-    runtime: docker
-    # Chromium needs about 1 GB of memory.
-    plan: standard
-    dockerfilePath: ./screenshot-service/Dockerfile
-    dockerContext: ./screenshot-service
-    healthCheckPath: /healthz
-    envVars:
-      - key: ALLOWED_ORIGIN
-        value: https://wrappedforlinkedin.onrender.com
+          - type: web
+            name: wrapped-for-linkedin-screenshots
+            runtime: docker
+            # Chromium needs about 1 GB of memory.
+            plan: standard
+            dockerfilePath: ./screenshot-service/Dockerfile
+            dockerContext: ./screenshot-service
+            healthCheckPath: /healthz
+            envVars:
+              - key: ALLOWED_ORIGIN
+                value: https://wrappedforlinkedin.onrender.com
