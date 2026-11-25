@@ -20,11 +20,6 @@ Requirements:
 EOF
 }
 
-if [[ ${1:-} == "--help" ]]; then
-  print_help
-  exit 0
-fi
-
 # Parse arguments
 PORT=5173
 while [[ $# -gt 0 ]]; do
