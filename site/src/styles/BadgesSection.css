@@ -3,12 +3,6 @@
   grid-template-columns: repeat(var(--badge-columns), minmax(0, 1fr));
 }
 
-@media (max-width: 600px) {
-  .wrapped-metrics-grid.badges-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .badge-card {
   justify-content: flex-start;
   gap: 1.5rem;
@@ -39,4 +33,10 @@
   letter-spacing: 0.045em;
   text-transform: uppercase;
   color: var(--text-faint);
+}
+
+@media (max-width: 600px) {
+  .wrapped-metrics-grid.badges-grid {
+    grid-template-columns: 1fr;
+  }
 }

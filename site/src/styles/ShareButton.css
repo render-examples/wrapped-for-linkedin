@@ -50,13 +50,7 @@
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: share-spin 0.8s linear infinite;
-}
-
-@keyframes share-spin {
-  to {
-    transform: rotate(360deg);
-  }
+  animation: spin 0.8s linear infinite;
 }
 
 .share-feedback {
@@ -75,8 +69,8 @@
 }
 
 .share-feedback.error {
-  border: 1px solid #f4b3b7;
-  color: #f4b3b7;
+  border: 1px solid var(--error);
+  color: var(--error);
 }
 
 .share-dropdown-backdrop {

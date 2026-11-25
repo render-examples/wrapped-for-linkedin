@@ -696,14 +696,14 @@
   color: var(--text-faint);
 }
 
+.instructions-close-btn:hover {
+  color: var(--text);
+}
+
 .instructions-close-icon {
   display: block;
   width: 1em;
   height: 1em;
-}
-
-.instructions-close-btn:hover {
-  color: var(--text);
 }
 
 .instructions-actions {
