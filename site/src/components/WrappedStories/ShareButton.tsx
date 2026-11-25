@@ -262,7 +262,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           />
         ) : (
           <DownloadInstructions
-            isVisible={showInstructions}
             shareInfo={shareInfo}
             exportType={exportType}
             onDismiss={() => setShowInstructions(false)}

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { buildShareText } from '@utils/linkedinShareLink';
 import { shareFile } from '@utils/webShare';
-import { Icon } from '@components/Icon';
+import { ShareModalHeader } from '@components/WrappedStories/ShareModalHeader';
 import type { ExportType } from '@components/WrappedStories/DownloadInstructions';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
@@ -44,17 +44,11 @@ export const NativeSharePrompt: React.FC<NativeSharePromptProps> = ({
   return (
     <div className="download-instructions-overlay native-share-overlay">
       <div className="download-instructions-modal">
-        <div className="instructions-header">
-          <h3 className="instructions-title">
-            <img src="/images/share/check.png" alt="Check" className="instructions-check-icon" />
-            {exportType === 'all-cards' ? 'Your cards are ready' : 'Your card is ready'}
-          </h3>
-          <button className="instructions-close-btn" onClick={onDismiss} aria-label="Close share prompt">
-            <span className="instructions-close-icon">
-              <Icon name="close" />
-            </span>
-          </button>
-        </div>
+        <ShareModalHeader
+          title={exportType === 'all-cards' ? 'Your cards are ready' : 'Your card is ready'}
+          closeLabel="Close share prompt"
+          onDismiss={onDismiss}
+        />
 
         <div className="instructions-content">
           <p className="instructions-text">

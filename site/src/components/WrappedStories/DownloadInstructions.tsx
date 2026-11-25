@@ -1,14 +1,13 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { openLinkedInShare } from '@utils/linkedinShareLink';
 import { isTouchDevice } from '@utils/webShare';
-import { Icon } from '@components/Icon';
+import { ShareModalHeader } from '@components/WrappedStories/ShareModalHeader';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
 
 export type ExportType = 'current-card' | 'all-cards';
 
 interface DownloadInstructionsProps {
-  isVisible: boolean;
   shareInfo: ShareInfo;
   exportType?: ExportType;
   onDismiss?: () => void;
@@ -19,7 +18,6 @@ interface DownloadInstructionsProps {
  * The steps are different for a PNG of one card and a PDF of all cards.
  */
 export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
-  isVisible,
   shareInfo,
   exportType = 'current-card',
   onDismiss,
@@ -28,43 +26,16 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
   const click = touch ? 'Tap' : 'Click';
   const clicking = touch ? 'tapping' : 'clicking';
 
-  const handleShareOnLinkedIn = useCallback(() => {
-    openLinkedInShare(shareInfo);
-  }, [shareInfo]);
-
-  if (!isVisible) {
-    return null;
-  }
-
   return (
     <div className="download-instructions-overlay">
       <div className="download-instructions-modal">
-        {/* Header */}
-        <div className="instructions-header">
-          <h3 className="instructions-title">
-            <img
-              src="/images/share/check.png"
-              alt="Check"
-              className="instructions-check-icon"
-            />
-            Download complete
-          </h3>
-          <button
-            className="instructions-close-btn"
-            onClick={onDismiss}
-            aria-label="Close instructions"
-          >
-            <span className="instructions-close-icon">
-              <Icon name="close" />
-            </span>
-          </button>
-        </div>
+        <ShareModalHeader title="Download complete" closeLabel="Close instructions" onDismiss={onDismiss} />
 
         {/* Actions */}
         <div className="instructions-actions">
           <button
             className="button primary btn-share-linkedin"
-            onClick={handleShareOnLinkedIn}
+            onClick={() => openLinkedInShare(shareInfo)}
             aria-label="Share on LinkedIn with prepared text"
           >
             <img
