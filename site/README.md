@@ -29,11 +29,11 @@ npm run lint
 
 ## Tech Stack
 
-- **React 18** - UI framework
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool and dev server
 - **XLSX** - Excel file parsing
-- **html2canvas & jsPDF** - Export functionality
+- **html-to-image and jsPDF** - PNG and PDF export
 - **Render** - Deployment
 
 ## Live App

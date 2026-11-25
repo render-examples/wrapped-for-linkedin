@@ -29,7 +29,7 @@ After you change `site/og/og-image.html`, run `npm run og` in `site/` and commit
 
 - Import with the path aliases in `site/tsconfig.app.json`, such as `@components`, `@utils`, and `@exports`.
 - Put Excel parsing in `site/src/utils/excel/`. Each sheet has its own parser.
-- Put styles in `site/src/styles/`, one CSS file per component. Use the shared tokens in `site/src/index.css` for colors and spacing.
+- Put styles in `site/src/styles/`, one CSS file per component. Use the shared tokens in `site/src/index.css` for colors and fonts.
 - Put tests next to the file they test, as `*.test.ts`. The site uses Vitest.
 - `site/src/README.md` describes the architecture. `site/src/exports/README.md` describes the PNG and PDF export system. Update them when you change that code.
 

@@ -1,10 +1,10 @@
 # Wrapped for LinkedIn architecture
 
-This document describes how the Wrapped for LinkedIn application is structured and how data flows through the system. The entire application runs client-side in the browser with no backend required.
+This document describes how the Wrapped for LinkedIn application is structured and how data flows through the system. The analytics file is parsed in the browser and never leaves it. A separate screenshot service (`screenshot-service/`) takes screenshots of public LinkedIn posts for exported cards. The site sends it only public post URNs.
 
 The app is powered by and deployed on [Render](https://render.com/).
 
-**Tech Stack:** React 18 + TypeScript + Vite
+**Tech Stack:** React 19 + TypeScript + Vite
 
 ## 📋 Table of contents
 
@@ -35,49 +35,56 @@ The application follows a **component-driven architecture** with:
 src/
 ├── components/          # React UI components
 │   ├── WrappedStories/  # Shareable story cards (Instagram Stories-style)
+│   │   ├── WrappedStoriesContainer.tsx # Carousel with autoplay and navigation
+│   │   ├── StoryCard.tsx           # One story card
+│   │   ├── StoryProgress.tsx       # Progress bars
+│   │   ├── ShareButton.tsx         # Export and share menu
+│   │   ├── NativeSharePrompt.tsx   # Phone share prompt
+│   │   ├── DownloadInstructions.tsx # Desktop share steps
+│   │   └── ShareModalHeader.tsx    # Header shared by the two share modals
 │   ├── Header.tsx       # App header with navigation
 │   ├── FileUpload.tsx   # File input interface
 │   ├── UnifiedDashboard.tsx  # Main dashboard container
 │   ├── SpotifyDashboard.tsx  # Summary metrics display
+│   ├── BadgesSection.tsx     # Earned badges
+│   ├── BadgeEmblem.tsx       # One badge emblem
 │   ├── TopPostsDisplay.tsx   # Top posts analytics
 │   ├── DemographicsView.tsx  # Audience demographics
 │   ├── FinalMessage.tsx      # End of wrapped message
 │   ├── SampleDataButton.tsx  # Demo data loader
-│   ├── Loading.tsx      # Loading state
+│   ├── Icon.tsx         # SVG icon set
 │   └── Error.tsx        # Error display
+├── exports/             # PNG and PDF export (see exports/README.md)
+│   ├── imageExport.ts   # Export one card as PNG
+│   ├── batchImageExporter.ts # Export many cards
+│   ├── pdfExport.ts     # Export cards as PDF
+│   ├── imageCache.ts    # LRU cache for exported images
+│   └── postScreenshot.ts # Get post screenshots from the screenshot service
 ├── hooks/               # Custom React hooks
 │   ├── useCache.ts      # Browser cache management
+│   ├── usePostStatus.ts # Check whether a post is public
 │   └── useSampleData.ts # Demo data functionality
-├── styles/              # CSS module files
-│   ├── App.css
-│   ├── Components*.css  # Component-specific styles
-│   └── WrappedStories.css
+├── styles/              # One CSS file per component
 ├── types/               # TypeScript type definitions
 │   ├── index.ts         # Main types
 │   └── wrappedStories.ts # Card generation types
 ├── utils/               # Helper functions
-│   ├── excel/           # Excel file parsing
-│   │   ├── excelProcessor.ts     # Main orchestrator
-│   │   ├── discoveryParser.ts    # Parse summary metrics
-│   │   ├── topPostsParser.ts     # Parse top posts
-│   │   ├── demographicsParser.ts # Parse audience data
-│   │   ├── followersParser.ts    # Parse follower counts
-│   │   ├── engagementParser.ts   # Parse engagement metrics
-│   │   └── types.ts              # Parser types
-│   ├── api.ts           # Mock API helpers
+│   ├── excel/           # Excel file parsing, one parser per sheet
+│   ├── badges.ts        # Badge rules
+│   ├── bestMonthCalculator.ts # Find the best month
 │   ├── cardDataMapper.ts # Map data for story cards
-│   ├── dateFormatter.ts # Date formatting helpers
-│   ├── imageExport.ts   # Export cards as images
+│   ├── formatters.ts    # Number and date formatting
+│   ├── linkedinEmbed.ts # Build LinkedIn embed URLs
 │   ├── linkedinShareLink.ts # Generate LinkedIn share URLs
-│   ├── pdfExport.ts     # Export dashboard as PDF
-│   ├── profileExtractor.ts # Extract profile info
-│   ├── shareTextTemplates.ts # Share message templates
+│   ├── postStatus.ts    # Ask the screenshot service if a post is public
+│   ├── screenshotService.ts # Client for the screenshot service
 │   ├── storageManager.ts # Local storage wrapper
 │   ├── storyTouch.ts    # Decide which taps change the story card
-│   └── webShare.ts # Share files through the system share sheet, or download them
+│   ├── venueComparison.ts # Compare reach to venue sizes
+│   └── webShare.ts      # Share files through the system share sheet, or download them
 ├── App.tsx              # Root component
 ├── main.tsx             # Entry point
-├── index.css            # Global styles
+├── index.css            # Global styles and color tokens
 └── README.md            # This file
 ```
 
@@ -131,7 +138,7 @@ cardDataMapper transforms data
     ↓
 Choose export format:
 ├── PDF → pdfExport.ts → jsPDF library
-├── Image → imageExport.ts → html2canvas library
+├── Image → imageExport.ts → html-to-image library
 ├── Phone → webShare.ts → system share sheet → LinkedIn app
 └── Desktop → download → linkedinShareLink.ts → Pre-filled share URL
 ```
@@ -142,7 +149,7 @@ Choose export format:
 - Root component that manages application state
 - Handles file upload and demo data loading
 - Routes between FileUpload and UnifiedDashboard views
-- Manages error states and loading indicators
+- Manages error states
 - Integrates with browser cache for data persistence
 
 ### **FileUpload.tsx** (Data input)
@@ -150,7 +157,6 @@ Choose export format:
 - Includes demo data button for trying the app without uploading
 - Validates file format
 - Triggers processing pipeline
-- Shows loading state during processing
 
 ### **UnifiedDashboard.tsx** (Main view)
 - Container component for all dashboard sections
@@ -164,8 +170,7 @@ Choose export format:
 - Animated statistics with formatting
 
 ### **TopPostsDisplay.tsx** (Post analytics)
-- Rankings by impressions, engagement rate, comments
-- Interactive sorting and filtering
+- Ranked by engagements, in the order of the export
 - Individual post statistics and preview
 
 ### **DemographicsView.tsx** (Audience insights)
@@ -220,7 +225,7 @@ For each sheet, delegate to specific parser:
 2. **topPostsParser.ts**
    - Processes post-level data
    - Calculates post metrics and engagement
-   - Ranks by impressions/comments
+   - Keeps the export order, which ranks posts by engagements
    - Extracts post content preview
 
 3. **demographicsParser.ts**
@@ -260,23 +265,9 @@ generateShareableCards(excelData)
 The app uses React's built-in `useState` hook for state management:
 
 ```typescript
-interface DataState {
-  engagement: EngagementMetrics | null;
-  demographics: DemographicInsights | undefined;
-  uploadDate: number | null;
-  isFromCache: boolean;
-  error: string | null;
-}
-
 // In App.tsx
-const [loading, setLoading] = useState(false);
-const [state, setState] = useState<DataState>({
-  engagement: null,
-  demographics: undefined,
-  uploadDate: null,
-  isFromCache: false,
-  error: null,
-});
+const [data, setData] = useState<ParsedExcelData | null>(null);
+const [error, setError] = useState<string | null>(null);
 ```
 
 State is managed at the root `App` component level and passed down to child components via props.
@@ -301,21 +292,25 @@ Manages demo data functionality:
 
 ### **File I/O**
 - `storageManager.ts`: Wrapper for localStorage API
-- `imageExport.ts`: Convert components to PNG using html2canvas with batch optimization
-- `pdfExport.ts`: Export dashboard as PDF with batch rendering for performance
-- `batchImageExporter.ts`: Batch export multiple cards as images efficiently
+- `exports/`: PNG and PDF export. See `exports/README.md`.
 
 ### **Formatting**
-- `dateFormatter.ts`: Format dates, times, and extract years from LinkedIn data
-- `shareTextTemplates.ts`: Pre-written share messages
+- `formatters.ts`: Format numbers and dates
+- `venueComparison.ts`: Compare reach to the capacity of a known venue
 
 ### **Interaction**
 - `linkedinShareLink.ts`: Generate LinkedIn share URLs with pre-filled text and wrapped link
+- `webShare.ts`: Share files through the system share sheet, or download them
 
 ### **Data processing**
-- `profileExtractor.ts`: Extract user info from data
 - `cardDataMapper.ts`: Transform data for card generation
-- `api.ts`: Mock API for future backend integration
+- `badges.ts`: Decide which badges the user earned
+- `bestMonthCalculator.ts`: Find the month with the most engagement
+
+### **Screenshot service**
+- `screenshotService.ts`: Client for the service. It sends only post URNs.
+- `postStatus.ts`: Ask whether a post is public
+- `exports/postScreenshot.ts`: Get a post screenshot for export
 
 ### **Deployment**
 

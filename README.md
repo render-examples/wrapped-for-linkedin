@@ -2,7 +2,7 @@
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/wrapped-for-linkedin)
 
-Wrapped for LinkedIn turns your LinkedIn analytics export into a year-in-review story, inspired by Spotify Wrapped. It shows your top posts, who engages with your content, and the badges you earned this year.
+Wrapped for LinkedIn turns your LinkedIn analytics export into a year-in-review story, inspired by Spotify Wrapped. It shows your top posts, who saw your posts, and the badges you earned this year.
 
 The app parses your analytics file in your browser, and the file never leaves your device. To add post screenshots to exported images, the app sends the URLs of your top posts to a screenshot service. The service accepts only public posts and does not log the URLs. The app runs on [Render](https://render.com/).
 
@@ -16,9 +16,9 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 ## Features
 
 - **Shareable cards**: Download story cards as PNG or PDF and post them on LinkedIn. On phones, share them to the LinkedIn app from the share sheet.
-- **Top posts**: See your posts ranked by impressions, engagement rate, and comments.
-- **Badges**: Earn badges for 1M+ impressions, a 100K+ impression post, 1,000+ new followers, or engagement in all 12 months.
-- **Audience demographics**: See your followers and engagers by industry, seniority, location, and company size.
+- **Top posts**: See your posts ranked by engagements, with their impressions.
+- **Badges**: Earn badges for 1M+ impressions, a 100K+ impression post, 1,000+ new followers, 20+ posts with 10+ engagements, or engagement in all 12 months.
+- **Audience demographics**: See who saw your posts by job title, location, industry, seniority, company size, and company.
 - **Story navigation**: Swipe through cards like Instagram stories. Cards autoplay, and you can press and hold to pause.
 - **Demo data**: Try the app with sample data before you upload your own file.
 - **Local caching**: The app caches your data in your browser, so it loads again when you return.
@@ -31,7 +31,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 ## Run locally
 
-You need Node.js 22.18 or later. Node runs the TypeScript files in `screenshot-service/` and `site/og/` directly, without a build step.
+You need Node.js 22.18 or later. Node runs the TypeScript files in `screenshot-service/`, `site/og/`, and `site/fixtures/` directly, without a build step.
 
 ```bash
 git clone https://github.com/render-examples/wrapped-for-linkedin.git
