@@ -1,5 +1,4 @@
 @import '@styles/SectionTitles.css';
-@import '@styles/SectionSubtitles.css';
 
 .demographics-view {
   padding: 0 1rem;
@@ -35,15 +34,6 @@
   width: 20px;
   height: 20px;
   object-fit: contain;
-}
-
-.category-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
 }
 
 .category-items {

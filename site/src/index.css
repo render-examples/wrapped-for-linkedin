@@ -12,6 +12,8 @@
   --accent-fill: #8a05ff;
   --art-surface: #1c0037;
   --error: #f4b3b7;
+  /* Dark backdrop behind modals and menus. */
+  --scrim: rgba(0, 0, 0, 0.7);
 
   /* Story card accents, from the Render palette. */
   --accent-purple: var(--accent);
@@ -96,7 +98,8 @@ a:focus-visible,
   outline-offset: 4px;
 }
 
-/* Mono label for section eyebrows. */
+/* Small uppercase mono label. Section eyebrows use the same style. */
+.mono-label,
 .section-eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;

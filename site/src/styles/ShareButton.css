@@ -25,7 +25,9 @@
   letter-spacing: 0.045em;
   text-transform: uppercase;
   color: var(--text);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 @media (hover: hover) {
@@ -145,22 +147,19 @@
 
 @media (max-width: 480px) {
   .share-dropdown-backdrop {
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--scrim);
   }
 
   .share-button {
     min-height: 44px;
   }
 
-  /* Show the menu as a bottom sheet. These rules override the position from getDropdownPosition. */
+  /* Show the menu as a bottom sheet. The menu has no inline position on phones. */
   .share-dropdown-menu {
-    top: auto !important;
     bottom: 0;
-    left: 0 !important;
+    left: 0;
     right: 0;
-    transform: none;
     min-width: 0;
-    max-width: none;
     border-width: 1px 0 0;
     padding-bottom: env(safe-area-inset-bottom);
     animation: slideUpSheet 0.2s ease;

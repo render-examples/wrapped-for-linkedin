@@ -22,6 +22,8 @@
   aspect-ratio: 4 / 5;
   margin: 0 auto 1.5rem;
   touch-action: pan-y;
+  /* The progress bar sizes itself in cqw, like the cards. */
+  container-type: inline-size;
 }
 
 /* Story card */
@@ -33,7 +35,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
-  background: var(--card-bg-color, var(--bg));
+  background: var(--bg);
   color: var(--text);
   text-align: left;
   overflow: hidden;
@@ -59,8 +61,8 @@
   background: var(--card-accent);
 }
 
-/* Progress bars */
-.card-progress-wrapper {
+/* Progress bar. It sits on top of the active card. */
+.story-progress-container {
   position: absolute;
   top: 3cqw;
   left: 6cqw;
@@ -78,7 +80,6 @@
   height: 2px;
   background: var(--border);
   overflow: hidden;
-  cursor: pointer;
 }
 
 .progress-bar.completed .progress-fill {
@@ -86,6 +87,7 @@
 }
 
 .progress-fill {
+  display: block;
   width: 0%;
   height: 100%;
   background: var(--text);
@@ -95,11 +97,11 @@
   animation: progressFill 0.3s ease forwards;
 }
 
-.progress-bar.active[style*='--is-autoplay: 1'] .progress-fill {
+.progress-bars.autoplay .progress-bar.active .progress-fill {
   animation: progressFill var(--auto-play-duration, 5000ms) linear forwards;
 }
 
-.progress-bar.active[style*='--is-backward: 1'] .progress-fill {
+.progress-bars.backward .progress-bar.active .progress-fill {
   width: 100%;
   animation: none;
 }
@@ -221,10 +223,6 @@
   grid-template-columns: 1fr 1fr;
   border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
-}
-
-.metric-row {
-  display: contents;
 }
 
 .metric {
@@ -487,7 +485,7 @@
   letter-spacing: -0.03em;
 }
 
-/* Export clone. The progress bars and the logo are removed before export. */
+/* Export clone. It has no progress bar, so it needs less space at the top. */
 .story-card-export .card-content-wrapper {
   padding-top: 7cqw;
 }
@@ -643,153 +641,5 @@
     position: absolute;
     right: 0;
     display: flex;
-  }
-}
-
-/* Download instructions modal */
-.download-instructions-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.download-instructions-modal {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 650px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border: 1px solid var(--border);
-  background: var(--bg);
-}
-
-.instructions-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.instructions-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
-}
-
-.instructions-check-icon {
-  width: auto;
-  height: 1.5rem;
-}
-
-.instructions-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.25rem;
-  color: var(--text-faint);
-}
-
-@media (hover: hover) {
-  .instructions-close-btn:hover {
-    color: var(--text);
-  }
-}
-
-.instructions-close-icon {
-  display: block;
-  width: 1em;
-  height: 1em;
-}
-
-.instructions-actions {
-  padding: 1.5rem 1.5rem 0;
-}
-
-.btn-share-linkedin {
-  width: 100%;
-}
-
-.btn-linkedin-icon {
-  width: 1.1rem;
-  height: 1.1rem;
-  object-fit: contain;
-}
-
-.instructions-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  color: var(--text-secondary);
-}
-
-.instructions-text,
-.instruction-step {
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.instructions-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.instruction-image {
-  max-width: 100%;
-  margin-top: 0.5rem;
-  border: 1px solid var(--border);
-}
-
-.instruction-images-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.instruction-images-column .instruction-image {
-  max-width: 500px;
-  margin-top: 0;
-}
-
-.instructions-disclaimer {
-  padding: 1rem;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-}
-
-.disclaimer-text {
-  font-size: 0.9rem;
-  color: var(--text-faint);
-}
-
-@media (max-width: 480px) {
-  .download-instructions-overlay {
-    padding: 0;
-  }
-
-  .instructions-header,
-  .instructions-content {
-    padding: 1rem;
-  }
-
-  .instructions-actions {
-    padding: 1rem 1rem 0;
-  }
-
-  .instructions-close-btn {
-    width: 44px;
-    height: 44px;
   }
 }

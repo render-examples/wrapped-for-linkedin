@@ -1,8 +1,7 @@
-import React from "react";
-import type { Badge } from "@utils/badges";
-import { BadgeEmblem } from "@components/BadgeEmblem";
-import "@styles/SpotifyDashboard.css";
-import "@styles/BadgesSection.css";
+import React from 'react';
+import type { Badge } from '@utils/badges';
+import { BadgeEmblem } from '@components/BadgeEmblem';
+import '@styles/BadgesSection.css';
 
 interface BadgesSectionProps {
   badges: Badge[];
@@ -20,19 +19,19 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({ badges }) => {
   const columns = badges.length === 4 ? 2 : Math.min(badges.length, 3);
 
   return (
-    <section className="wrapped-section badges-section">
+    <section className="wrapped-section">
       <p className="section-eyebrow">Badges</p>
       <h2 className="section-title">Add these to your headline</h2>
       <div
         className="wrapped-metrics-grid badges-grid"
-        style={{ "--badge-columns": columns } as React.CSSProperties}
+        style={{ '--badge-columns': columns } as React.CSSProperties}
       >
         {badges.map((badge) => (
           <div key={badge.id} className="metric-card badge-card">
             <BadgeEmblem icon={badge.icon} className="badge-art" />
             <div className="badge-text">
               <h3 className="badge-name">{badge.name}</h3>
-              <p className="badge-rule">{badge.description}</p>
+              <p className="mono-label">{badge.description}</p>
             </div>
           </div>
         ))}

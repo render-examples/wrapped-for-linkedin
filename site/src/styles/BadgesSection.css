@@ -1,3 +1,6 @@
+@import '@styles/SectionTitles.css';
+@import '@styles/MetricCards.css';
+
 /* One column per badge, so the grid border ends at the last card. */
 .wrapped-metrics-grid.badges-grid {
   grid-template-columns: repeat(var(--badge-columns), minmax(0, 1fr));
@@ -24,15 +27,6 @@
   line-height: 1.1;
   letter-spacing: -0.03em;
   color: var(--text);
-}
-
-.badge-rule {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.6;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
 }
 
 @media (max-width: 600px) {

@@ -1,11 +1,11 @@
-import React from "react";
-import { openLinkedInShare } from "@utils/linkedinShareLink";
-import { isTouchDevice } from "@utils/webShare";
-import { ShareModalHeader } from "@components/WrappedStories/ShareModalHeader";
-import type { ShareInfo } from "@/types/wrappedStories";
-import "@styles/WrappedStories.css";
+import React from 'react';
+import { Info } from '@phosphor-icons/react';
+import { openLinkedInShare } from '@utils/linkedinShareLink';
+import { isTouchDevice } from '@utils/webShare';
+import { ShareModal } from '@components/WrappedStories/ShareModal';
+import type { ShareInfo } from '@/types/wrappedStories';
 
-export type ExportType = "current-card" | "all-cards";
+export type ExportType = 'current-card' | 'all-cards';
 
 interface DownloadInstructionsProps {
   shareInfo: ShareInfo;
@@ -23,102 +23,93 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
   onDismiss,
 }) => {
   const touch = isTouchDevice();
-  const click = touch ? "Tap" : "Click";
-  const clicking = touch ? "tapping" : "clicking";
+  const click = touch ? 'Tap' : 'Click';
+  const clicking = touch ? 'tapping' : 'clicking';
 
   return (
-    <div className="download-instructions-overlay">
-      <div className="download-instructions-modal">
-        <ShareModalHeader
-          title="Download complete"
-          closeLabel="Close instructions"
-          onDismiss={onDismiss}
-        />
+    <ShareModal title="Download complete" closeLabel="Close instructions" onDismiss={onDismiss}>
+      <div className="instructions-actions">
+        <button
+          className="button primary btn-share-linkedin"
+          onClick={() => openLinkedInShare(shareInfo)}
+          aria-label="Share on LinkedIn with prepared text"
+        >
+          <img
+            src="/images/dashboard/linkedin-logo.png"
+            alt="LinkedIn"
+            className="btn-linkedin-icon"
+          />
+          Share on LinkedIn
+        </button>
+      </div>
 
-        <div className="instructions-actions">
-          <button
-            className="button primary btn-share-linkedin"
-            onClick={() => openLinkedInShare(shareInfo)}
-            aria-label="Share on LinkedIn with prepared text"
-          >
-            <img
-              src="/images/dashboard/linkedin-logo.png"
-              alt="LinkedIn"
-              className="btn-linkedin-icon"
-            />
-            Share on LinkedIn
-          </button>
-        </div>
+      <div className="instructions-content">
+        <p className="instructions-text">Follow these steps to share your Wrapped for LinkedIn:</p>
 
-        <div className="instructions-content">
-          <p className="instructions-text">
-            Follow these steps to share your Wrapped for LinkedIn:
+        <div className="instructions-steps">
+          <p className="instruction-step">
+            1. <b>Open LinkedIn.</b>
+            {` ${click} the button above to open LinkedIn with a prepared post.`}
           </p>
-
-          <div className="instructions-steps">
-            <p className="instruction-step">
-              1. <b>Open LinkedIn.</b>
-              {` ${click} the button above to open LinkedIn with a prepared post.`}
-            </p>
-            <p className="instruction-step">
-              <strong>Note:</strong>
-              {` Close the link preview by ${clicking} `}
-              <strong>X</strong> before attaching media.
-            </p>
-            <img
-              src="/images/share/close-embed.png"
-              alt="Close the link embed"
-              className="instruction-image"
-            />
-            {exportType === "current-card" ? (
-              <>
-                <p className="instruction-step">
-                  2. <b>Attach your card.</b>
-                  {` ${click} the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).`}
-                </p>
+          <p className="instruction-step">
+            <strong>Note:</strong>
+            {` Close the link preview by ${clicking} `}
+            <strong>X</strong> before attaching media.
+          </p>
+          <img
+            src="/images/share/close-embed.png"
+            alt="Close the link embed"
+            className="instruction-image"
+          />
+          {exportType === 'current-card' ? (
+            <>
+              <p className="instruction-step">
+                2. <b>Attach your card.</b>
+                {` ${click} the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).`}
+              </p>
+              <img
+                src="/images/share/add-media.png"
+                alt={`${click} the image icon`}
+                className="instruction-image"
+              />
+            </>
+          ) : (
+            <>
+              <p className="instruction-step">
+                2. <b>Attach your cards.</b>
+                {` ${click} the `}
+                <b>+</b>
+                {` icon at the bottom of the post modal to expand options. ${click} the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.`}
+              </p>
+              <div className="instruction-images-column">
                 <img
-                  src="/images/share/add-media.png"
-                  alt={`${click} the image icon`}
+                  src="/images/share/more.png"
+                  alt={`${click} the plus icon to expand options`}
                   className="instruction-image"
                 />
-              </>
-            ) : (
-              <>
-                <p className="instruction-step">
-                  2. <b>Attach your cards.</b>
-                  {` ${click} the `}
-                  <b>+</b>
-                  {` icon at the bottom of the post modal to expand options. ${click} the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.`}
-                </p>
-                <div className="instruction-images-column">
-                  <img
-                    src="/images/share/more.png"
-                    alt={`${click} the plus icon to expand options`}
-                    className="instruction-image"
-                  />
-                  <img
-                    src="/images/share/add-a-document.png"
-                    alt={`${click} the document icon to upload`}
-                    className="instruction-image"
-                  />
-                </div>
-                <p>
-                  <b>Name it.</b> Give your LinkedIn PDF a name like "wrapped".
-                </p>
-              </>
-            )}
-          </div>
+                <img
+                  src="/images/share/add-a-document.png"
+                  alt={`${click} the document icon to upload`}
+                  className="instruction-image"
+                />
+              </div>
+              <p className="instruction-step">
+                <b>Name it.</b>
+                {' Give your LinkedIn PDF a name like "wrapped".'}
+              </p>
+            </>
+          )}
+        </div>
 
-          <div className="instructions-disclaimer">
-            <p className="disclaimer-text">
-              𝒊 &nbsp; &nbsp; We can't automatically attach the file to your
-              LinkedIn post without violating LinkedIn's terms of service. These
-              manual steps ensure we stay compliant and respect LinkedIn's
-              policies.
-            </p>
-          </div>
+        <div className="instructions-disclaimer">
+          <p className="disclaimer-text">
+            <Info weight="fill" className="disclaimer-icon" aria-hidden="true" />
+            We can't automatically attach the file to your LinkedIn post without violating
+            LinkedIn's terms of service. These manual steps ensure we stay compliant and respect
+            LinkedIn's policies.
+          </p>
         </div>
       </div>
-    </div>
+    </ShareModal>
   );
 };

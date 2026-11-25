@@ -1,33 +1,25 @@
-import React from "react";
-import { calculateBestMonth } from "@utils/bestMonthCalculator";
-import { formatDate, formatNumber, getWrappedYear } from "@utils/formatters";
-import type { EngagementByDay } from "@utils/excel/types";
-import type { DiscoveryData } from "@types";
-import "@styles/SpotifyDashboard.css";
+import React from 'react';
+import { calculateBestMonth } from '@utils/bestMonthCalculator';
+import { formatDate, formatNumber, getWrappedYear } from '@utils/formatters';
+import type { EngagementByDay } from '@utils/excel/types';
+import type { DiscoveryData } from '@types';
+import '@styles/YearSummary.css';
 
-interface SpotifyDashboardProps {
+interface YearSummaryProps {
   discovery: DiscoveryData;
   engagementByDay?: EngagementByDay[];
 }
 
-const MetricCard: React.FC<{ label: string; value: string }> = ({
-  label,
-  value,
-}) => (
+const MetricCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="metric-card">
-    <h3 className="metric-card-label">{label}</h3>
+    <h3 className="mono-label">{label}</h3>
     <div className="metric-card-value">{value}</div>
   </div>
 );
 
-export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
-  discovery,
-  engagementByDay,
-}) => {
+export const YearSummary: React.FC<YearSummaryProps> = ({ discovery, engagementByDay }) => {
   const year = getWrappedYear(discovery);
-  const bestMonth = engagementByDay?.length
-    ? calculateBestMonth(engagementByDay)
-    : null;
+  const bestMonth = engagementByDay?.length ? calculateBestMonth(engagementByDay) : null;
 
   return (
     <div className="wrapped-section">
@@ -36,8 +28,7 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
       <p className="section-subtitle">
         {discovery.start_date && discovery.end_date && (
           <>
-            {formatDate(discovery.start_date)} –{" "}
-            {formatDate(discovery.end_date)}
+            {formatDate(discovery.start_date)} – {formatDate(discovery.end_date)}
           </>
         )}
       </p>
@@ -46,24 +37,16 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
           label="Total impressions"
           value={formatNumber(discovery.total_impressions || 0)}
         />
-        <MetricCard
-          label="Members reached"
-          value={formatNumber(discovery.members_reached || 0)}
-        />
-        <MetricCard
-          label="New followers"
-          value={formatNumber(discovery.new_followers || 0)}
-        />
+        <MetricCard label="Members reached" value={formatNumber(discovery.members_reached || 0)} />
+        <MetricCard label="New followers" value={formatNumber(discovery.new_followers || 0)} />
         <MetricCard
           label="Total engagements"
           value={formatNumber(discovery.total_engagements || 0)}
         />
-        {bestMonth && (
-          <MetricCard label="Best month" value={bestMonth.monthYear} />
-        )}
+        {bestMonth && <MetricCard label="Best month" value={bestMonth.monthYear} />}
         <MetricCard
           label="Median daily impressions"
-          value={formatNumber(discovery.average_impressions_per_day || 0)}
+          value={formatNumber(discovery.median_daily_impressions || 0)}
         />
       </div>
     </div>

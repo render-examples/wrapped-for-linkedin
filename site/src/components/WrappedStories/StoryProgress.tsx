@@ -9,6 +9,9 @@ interface StoryProgressProps {
   isNavigatingBackward: boolean;
 }
 
+/**
+ * One bar for each card. A click on a bar shows that card.
+ */
 export const StoryProgress: React.FC<StoryProgressProps> = ({
   currentCardIndex,
   totalCards,
@@ -17,37 +20,36 @@ export const StoryProgress: React.FC<StoryProgressProps> = ({
   autoPlayDuration,
   isNavigatingBackward,
 }) => {
+  const barsClassName = [
+    'progress-bars',
+    isAutoPlaying && 'autoplay',
+    isNavigatingBackward && 'backward',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div className="story-progress-container">
-      <div className="progress-bars">
-        {Array.from({ length: totalCards }).map((_, index) => (
-          <div
-            key={index}
-            className={`progress-bar ${
-              index === currentCardIndex
-                ? 'active'
-                : index < currentCardIndex
-                  ? 'completed'
-                  : ''
-            }`}
-            onClick={() => onJumpToCard(index)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                onJumpToCard(index);
-              }
-            }}
-            aria-label={`Jump to card ${index + 1}`}
-            style={{
-              '--auto-play-duration': `${autoPlayDuration}ms`,
-              '--is-autoplay': isAutoPlaying ? '1' : '0',
-              '--is-backward': isNavigatingBackward ? '1' : '0',
-            } as React.CSSProperties}
-          >
-            <div className="progress-fill" />
-          </div>
-        ))}
+      <div
+        className={barsClassName}
+        style={{ '--auto-play-duration': `${autoPlayDuration}ms` } as React.CSSProperties}
+      >
+        {Array.from({ length: totalCards }, (_, index) => {
+          const state =
+            index === currentCardIndex ? 'active' : index < currentCardIndex ? 'completed' : '';
+          return (
+            <button
+              key={index}
+              type="button"
+              className={`progress-bar ${state}`}
+              onClick={() => onJumpToCard(index)}
+              aria-label={`Card ${index + 1} of ${totalCards}`}
+              aria-current={index === currentCardIndex ? 'step' : undefined}
+            >
+              <span className="progress-fill" />
+            </button>
+          );
+        })}
       </div>
     </div>
   );

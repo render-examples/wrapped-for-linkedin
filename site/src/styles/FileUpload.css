@@ -88,13 +88,7 @@
 }
 
 .dropzone-formats {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.045em;
-  line-height: 1.6;
-  text-transform: uppercase;
   text-align: center;
-  color: var(--text-faint);
 }
 
 .privacy-disclaimer-text {
@@ -109,11 +103,6 @@
   padding: 4px 24px 6px;
   border: 1px solid var(--border);
   background: var(--bg);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
 }
 
 .instructions {
@@ -145,7 +134,9 @@
   font-size: 14px;
   text-decoration: none;
   color: var(--text);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 @media (hover: hover) {

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Icon } from '@components/Icon';
-import '@styles/WrappedStories.css';
+import '@styles/ShareModal.css';
 
 interface ShareModalHeaderProps {
   title: string;
+  titleId: string;
   closeLabel: string;
   onDismiss: () => void;
 }
@@ -11,10 +12,15 @@ interface ShareModalHeaderProps {
 /**
  * The title row of a share modal: a check mark, the title, and a close button.
  */
-export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({ title, closeLabel, onDismiss }) => (
+export const ShareModalHeader: React.FC<ShareModalHeaderProps> = ({
+  title,
+  titleId,
+  closeLabel,
+  onDismiss,
+}) => (
   <div className="instructions-header">
-    <h3 className="instructions-title">
-      <img src="/images/share/check.png" alt="Check" className="instructions-check-icon" />
+    <h3 className="instructions-title" id={titleId}>
+      <img src="/images/share/check.png" alt="" className="instructions-check-icon" />
       {title}
     </h3>
     <button className="instructions-close-btn" onClick={onDismiss} aria-label={closeLabel}>

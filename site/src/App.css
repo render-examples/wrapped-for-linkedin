@@ -77,6 +77,8 @@
 
 .footer-links {
   order: 1;
+  display: flex;
+  gap: 1.75em;
 }
 
 .footer-copyright {

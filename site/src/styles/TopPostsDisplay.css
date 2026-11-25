@@ -1,5 +1,4 @@
 @import '@styles/SectionTitles.css';
-@import '@styles/SectionSubtitles.css';
 
 .top-posts-section {
   padding: 0 1rem;
@@ -15,7 +14,7 @@
 }
 
 .faq-summary {
-  padding: 12px 16px;
+  padding: 0.75rem 1rem;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.045em;
@@ -34,7 +33,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0 16px 16px;
+  padding: 0 1rem 1rem;
 }
 
 .faq-item {
@@ -65,18 +64,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 24px;
+  padding: 1.5rem;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   background: var(--bg);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-@media (hover: hover) {
-  .post-card:hover {
-    background: var(--bg-secondary);
-  }
 }
 
 .post-header {
@@ -184,7 +175,7 @@
   color: var(--text);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .posts-container {
     grid-template-columns: 1fr;
   }
@@ -196,6 +187,6 @@
   }
 
   .post-card {
-    padding: 16px;
+    padding: 1rem;
   }
 }

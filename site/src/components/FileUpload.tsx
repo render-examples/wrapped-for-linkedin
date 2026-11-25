@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { ParsedExcelData } from '@utils/excel/types';
 import { useCache } from '@/hooks/useCache';
@@ -19,20 +19,23 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
 
   const sampleData = useSampleData(onDataLoaded, (error) => onError(error.message));
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) return;
 
-    try {
-      const { processExcelFile } = await import('@utils/excel/excelProcessor');
-      const data = await processExcelFile(acceptedFiles[0]);
-      saveToCache(data);
-      onDataLoaded(data);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
-      console.error('Error processing file:', error);
-      onError(errorMessage);
-    }
-  }, [saveToCache, onDataLoaded, onError]);
+      try {
+        const { processExcelFile } = await import('@utils/excel/excelProcessor');
+        const data = await processExcelFile(acceptedFiles[0]);
+        saveToCache(data);
+        onDataLoaded(data);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
+        console.error('Error processing file:', error);
+        onError(errorMessage);
+      }
+    },
+    [saveToCache, onDataLoaded, onError],
+  );
 
   const isDisabled = sampleData.isLoading;
 
@@ -41,23 +44,30 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
     accept: {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
+    onDropRejected: () =>
+      onError('Upload an Excel (.xlsx) file. Export it from your LinkedIn analytics.'),
     disabled: isDisabled,
   });
-
-  useEffect(() => {
-    const preloadLink = document.createElement('link');
-    preloadLink.rel = 'prefetch';
-    preloadLink.href = '/demo-data/linkedin-demo.xlsx';
-    document.head.appendChild(preloadLink);
-  }, []);
 
   return (
     <div className="file-upload-container">
       <div className="instructions">
         <h3>Export your LinkedIn analytics</h3>
         <ol>
-          <li>Head to your <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noopener noreferrer">LinkedIn analytics dashboard</a> ↗</li>
-          <li>Click <b>Export</b> in the top right</li>
+          <li>
+            Head to your{' '}
+            <a
+              href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn analytics dashboard
+            </a>{' '}
+            ↗
+          </li>
+          <li>
+            Click <b>Export</b> in the top right
+          </li>
           <li>Upload the exported file below ↓</li>
         </ol>
         <a
@@ -70,11 +80,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
         </a>
       </div>
 
-      <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}>
+      <div
+        {...getRootProps()}
+        className={`dropzone ${isDragActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
+      >
         <input {...getInputProps()} />
         <div className="dropzone-content">
           <p className="dropzone-text">Upload your LinkedIn analytics file here</p>
-          <img src="/images/upload/icon-upload.svg" alt="Upload" className="upload-icon" />
+          <img src="/images/upload/icon-upload.svg" alt="" className="upload-icon" />
           {isDragActive ? (
             <p className="dropzone-text">Drop your file here</p>
           ) : (
@@ -82,28 +95,25 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
               <p className="dropzone-subtext">
                 {touch ? 'Tap to choose a file' : 'Drag and drop or click to select a file'}
               </p>
-              <p className="dropzone-formats">Excel (.xlsx) files only</p>
+              <p className="dropzone-formats mono-label">Excel (.xlsx) files only</p>
             </>
           )}
         </div>
       </div>
 
-      <div className="or-divider">or</div>
+      <div className="or-divider mono-label">or</div>
 
-      <SampleDataButton
-        onClick={sampleData.loadSampleData}
-        isLoading={sampleData.isLoading}
-      />
+      <SampleDataButton onClick={sampleData.loadSampleData} isLoading={sampleData.isLoading} />
 
       <div className="privacy-disclaimer">
         <p>
-          <img src="/images/upload/icon-shield.svg" alt="Shield" className="shield-icon"/>
-          <br/>
+          <img src="/images/upload/icon-shield.svg" alt="" />
+          <br />
           <strong>Your analytics data never leaves your browser</strong>
           <br /> <br />
           <span className="privacy-disclaimer-text">
-            All processing happens locally. To show and export your top posts,
-            the app sends only each post's public ID to our server.
+            All processing happens locally. To show and export your top posts, the app sends only
+            each post's public ID to our server.
           </span>
           <br /> <br />
           <a

@@ -1,9 +1,7 @@
 import React from 'react';
 import type { TopPost } from '@types';
-import { Icon } from '@components/Icon';
-import { formatDateString } from '@utils/formatters';
-import { getLinkedInEmbedUrl } from '@utils/linkedinEmbed';
-import { usePostStatus } from '@/hooks/usePostStatus';
+import { PostEmbed } from '@components/PostEmbed';
+import { formatDateString, formatNumber } from '@utils/formatters';
 import '@styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {
@@ -11,16 +9,6 @@ interface TopPostsDisplayProps {
 }
 
 const MAX_DISPLAYED_POSTS = 6;
-
-function formatCount(num: number): string {
-  if (num >= 1_000_000) {
-    return `${(num / 1_000_000).toFixed(1)}M`;
-  }
-  if (num >= 1_000) {
-    return `${(num / 1_000).toFixed(1)}K`;
-  }
-  return String(Math.round(num));
-}
 
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   if (posts.length === 0) {
@@ -30,10 +18,8 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   return (
     <div className="top-posts-section">
       <div className="section-header">
-        <div>
-          <p className="section-eyebrow">Top posts</p>
-          <h2 className="section-title">What resonated most</h2>
-        </div>
+        <p className="section-eyebrow">Top posts</p>
+        <h2 className="section-title">What resonated most</h2>
       </div>
 
       <details className="metrics-faq">
@@ -41,45 +27,58 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
         <div className="faq-content">
           <div className="faq-item">
             <p className="faq-question">Why are some posts not found?</p>
-            <p className="faq-answer">LinkedIn only allows public posts to be embedded. For other posts, the app shows your stats from the file and a link to open the post on LinkedIn.</p>
+            <p className="faq-answer">
+              LinkedIn only allows public posts to be embedded. For other posts, the app shows your
+              stats from the file and a link to open the post on LinkedIn.
+            </p>
           </div>
 
           <div className="faq-item">
-            <p className="faq-question">Why don't my exported numbers match what I see on my LinkedIn posts?</p>
-            <p className="faq-answer"><strong>Time window:</strong> Your LinkedIn export captures the last 365 days of activity only. Older posts display metrics from within this rolling window, not their all-time totals.</p>
-            <p className="faq-answer"><strong>Engagement types:</strong> The export includes all engagement types (reactions, comments, shares, reposts, and clicks), while LinkedIn posts publicly show only reactions and comments.</p>
+            <p className="faq-question">
+              Why don't my exported numbers match what I see on my LinkedIn posts?
+            </p>
+            <p className="faq-answer">
+              <strong>Time window:</strong> Your LinkedIn export captures the last 365 days of
+              activity only. Older posts display metrics from within this rolling window, not their
+              all-time totals.
+            </p>
+            <p className="faq-answer">
+              <strong>Engagement types:</strong> The export includes all engagement types
+              (reactions, comments, shares, reposts, and clicks), while LinkedIn posts publicly show
+              only reactions and comments.
+            </p>
           </div>
         </div>
       </details>
 
       <div className="posts-container">
-        {posts.slice(0, MAX_DISPLAYED_POSTS).map((post) => {
-          const handlePostClick = () => {
-            window.open(post.url, '_blank');
-          };
-
-          return (
-            <div key={post.url} className="post-card" onClick={handlePostClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handlePostClick()}>
-              <div className="post-header">
-                <div className="post-rank-badge">{post.rank}</div>
-                <div className="post-date">{formatDateString(post.publish_date)}</div>
-              </div>
-
-              <div className="post-content">
-                <div className="post-embed-wrapper">
-                  <PostEmbed url={post.url} rank={post.rank} />
-                </div>
-              </div>
-
-              <div className="top-post-stats">
-                <PostStat icon="/images/dashboard/heart.png" label="Engagements" value={post.engagements} />
-                {post.impressions && post.impressions > 0 && (
-                  <PostStat icon="/images/dashboard/sparkle.png" label="Impressions" value={post.impressions} />
-                )}
-              </div>
+        {posts.slice(0, MAX_DISPLAYED_POSTS).map((post) => (
+          <div key={post.url} className="post-card">
+            <div className="post-header">
+              <div className="post-rank-badge">{post.rank}</div>
+              <div className="post-date">{formatDateString(post.publish_date)}</div>
             </div>
-          );
-        })}
+
+            <div className="post-embed-wrapper">
+              <PostEmbed url={post.url} title={`LinkedIn post #${post.rank}`} variant="list" />
+            </div>
+
+            <div className="top-post-stats">
+              <PostStat
+                icon="/images/dashboard/heart.png"
+                label="Engagements"
+                value={post.engagements}
+              />
+              {post.impressions !== undefined && post.impressions > 0 && (
+                <PostStat
+                  icon="/images/dashboard/sparkle.png"
+                  label="Impressions"
+                  value={post.impressions}
+                />
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -97,53 +96,8 @@ const PostStat: React.FC<PostStatProps> = ({ icon, label, value }) => (
       <img src={icon} alt={label} />
     </div>
     <div className="top-post-stat-info">
-      <div className="top-post-stat-value">{formatCount(value)}</div>
+      <div className="top-post-stat-value">{formatNumber(value)}</div>
       <div className="top-post-stat-label">{label}</div>
     </div>
   </div>
 );
-
-interface PostEmbedProps {
-  url: string;
-  rank: number;
-}
-
-/**
- * Show the LinkedIn embed for a public post. For a post that is not public,
- * show a trophy and a link to the post. If the check fails, keep the embed.
- */
-const PostEmbed: React.FC<PostEmbedProps> = ({ url, rank }) => {
-  const embedUrl = getLinkedInEmbedUrl(url);
-  const isPublic = usePostStatus(embedUrl ? url : undefined);
-
-  if (embedUrl && isPublic !== false) {
-    return (
-      <iframe
-        src={embedUrl}
-        height="350"
-        width="100%"
-        allowFullScreen
-        loading="lazy"
-        className="linkedin-iframe"
-        title={`LinkedIn post #${rank}`}
-      />
-    );
-  }
-
-  return (
-    <div className="post-fallback">
-      <div className="fallback-icon">
-        <Icon name={embedUrl ? 'trophy' : 'pin'} />
-      </div>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fallback-link"
-        onClick={(e) => e.stopPropagation()}
-      >
-        Open post
-      </a>
-    </div>
-  );
-};

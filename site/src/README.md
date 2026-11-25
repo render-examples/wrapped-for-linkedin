@@ -35,19 +35,22 @@ src/
 │   │   ├── ShareButton.tsx         # Export and share menu
 │   │   ├── NativeSharePrompt.tsx   # Phone share prompt
 │   │   ├── DownloadInstructions.tsx # Desktop share steps
-│   │   └── ShareModalHeader.tsx    # Header shared by the two share modals
+│   │   ├── ShareModal.tsx          # Native dialog used by the two share modals
+│   │   ├── ShareModalHeader.tsx    # Header shared by the two share modals
+│   │   └── menuPosition.ts         # Share menu position on desktop
 │   ├── Header.tsx            # App header
 │   ├── FileUpload.tsx        # File drop zone and upload steps
 │   ├── UnifiedDashboard.tsx  # Dashboard container
-│   ├── SpotifyDashboard.tsx  # Summary metrics
+│   ├── YearSummary.tsx       # Summary metrics
 │   ├── BadgesSection.tsx     # Earned badges
 │   ├── BadgeEmblem.tsx       # One badge emblem
 │   ├── TopPostsDisplay.tsx   # Top posts
+│   ├── PostEmbed.tsx         # LinkedIn post embed, or a link when the post has no embed
 │   ├── DemographicsView.tsx  # Audience demographics
 │   ├── FinalMessage.tsx      # Closing message
 │   ├── SampleDataButton.tsx  # Demo data button
 │   ├── Icon.tsx              # SVG icon set
-│   └── Error.tsx             # Error display
+│   └── ErrorDisplay.tsx      # Error display
 ├── exports/             # PNG and PDF export (see exports/README.md)
 │   ├── imageExport.ts   # Export one card as PNG
 │   ├── batchImageExporter.ts # Export many cards
@@ -56,6 +59,8 @@ src/
 │   └── postScreenshot.ts # Get post screenshots from the screenshot service
 ├── hooks/               # React hooks
 │   ├── useCache.ts      # Load, save, and clear cached data
+│   ├── useShortcutKeys.ts # Window key shortcuts that skip modals, menus, and text fields
+│   ├── useStoryNavigation.ts # Current story card and moves between cards
 │   ├── usePostStatus.ts # Check whether a post is public
 │   └── useSampleData.ts # Load the demo file
 ├── styles/              # Component styles
@@ -119,7 +124,7 @@ App
 └── UnifiedDashboard (after upload)
     ├── WrappedStoriesContainer (story cards)
     ├── BadgesSection
-    ├── SpotifyDashboard (summary metrics)
+    ├── YearSummary (summary metrics)
     ├── TopPostsDisplay
     ├── DemographicsView
     └── FinalMessage
@@ -143,12 +148,14 @@ ShareButton exports the cards
 
 - Holds the parsed data and the error message in state.
 - Shows `FileUpload` when there is no data, and `UnifiedDashboard` when there is.
-- Clears the cache when a new tab opens.
-- The logo, the Escape key, and Ctrl+Shift+R (Cmd+Shift+R on a Mac) return to the home page and clear the cache.
+- The logo and the Escape key return to the home page and clear the cache. Escape does nothing while a modal or menu is open.
+
+`main.tsx` clears the cache when a new tab opens. It does this before the first render, so `FileUpload` cannot load old data.
 
 ### FileUpload.tsx
 
 - Accepts `.xlsx` files by drop or file picker.
+- Shows an error when the file is not `.xlsx`.
 - Shows the demo data button and the export steps.
 - Loads cached data on mount, and saves uploaded data to the cache.
 
@@ -157,7 +164,7 @@ ShareButton exports the cards
 - Builds the story cards and the earned badges from the parsed data.
 - Shows each section only when its data exists.
 
-### SpotifyDashboard.tsx
+### YearSummary.tsx
 
 Shows total impressions, members reached, new followers, total engagements, best month, and median daily impressions.
 
@@ -173,9 +180,9 @@ Shows job titles, locations, industries, seniority levels, company sizes, and co
 
 - `WrappedStoriesContainer.tsx` shows one card at a time. Cards autoplay every 5 seconds by default and loop back to the start.
 - Press and hold a card to pause. Tap the left or right side, or swipe, to change cards. Taps on buttons, links, progress bars, and menus do not change the card.
-- The arrow keys change cards.
+- The arrow keys change cards, except when the focus is in a modal, menu, or text field.
 - `StoryCard.tsx` renders one card.
-- `StoryProgress.tsx` shows the progress bars.
+- `StoryProgress.tsx` shows a progress bar above the active card. The bar has one segment for each card. Each segment is a button that opens its card.
 - `ShareButton.tsx` exports cards as PNG or PDF and opens the share flow.
 - `NativeSharePrompt.tsx` opens the system share sheet on phones.
 - `DownloadInstructions.tsx` shows the steps to attach a downloaded card on desktop, or when sharing fails.
@@ -184,13 +191,13 @@ Shows job titles, locations, industries, seniority levels, company sizes, and co
 
 `processExcelFile(file)` in `utils/excel/excelProcessor.ts` reads the file into an `ArrayBuffer`, parses it with SheetJS, and calls one parser per sheet. Every sheet is optional.
 
-| Parser | Sheet | Result |
-| --- | --- | --- |
-| `discoveryParser.ts` | Discovery | Date range, total impressions, members reached, and average impressions per day |
-| `followersParser.ts` | Followers | Sum of new followers |
-| `topPostsParser.ts` | Top posts | Posts in export order, which ranks them by engagements |
-| `demographicsParser.ts` | Demographics | Items grouped by category and sorted by percentage |
-| `engagementParser.ts` | Engagement | Impressions and engagements by day, total engagements, and median daily impressions |
+| Parser                  | Sheet                                 | Result                                                                                        |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `discoveryParser.ts`    | Discovery                             | Date range, total impressions, and members reached                                            |
+| `followersParser.ts`    | Followers                             | Sum of new followers                                                                          |
+| `topPostsParser.ts`     | Top posts                             | Posts in export order, which ranks them by engagements                                        |
+| `demographicsParser.ts` | Demographics or Audience demographics | Items grouped by category and sorted by percentage. Category names can be singular or plural. |
+| `engagementParser.ts`   | Engagement                            | Impressions and engagements by day, total engagements, and median daily impressions           |
 
 `generateShareableCards(data)` in `utils/cardDataMapper.ts` turns `ParsedExcelData` into the list of story cards.
 
@@ -222,11 +229,11 @@ const [error, setError] = useState<string | null>(null);
 
 ## Styles
 
-Most components have one CSS file in `styles/`. `SectionTitles.css` and `SectionSubtitles.css` hold the section header styles that several components share. `fonts.css` loads the fonts. `index.css` defines the color and font tokens, base element styles, the shared `.button` and `.section-eyebrow` styles, and the shared keyframes.
+Most components have one CSS file in `styles/`. `SectionTitles.css` and `SectionSubtitles.css` hold the section header styles that several components share. `MetricCards.css` holds the metric card grid that `YearSummary` and `BadgesSection` share. `ShareModal.css` holds the styles for both share modals. `fonts.css` loads the fonts. `index.css` defines the color and font tokens, base element styles, the shared `.button` and `.mono-label` styles, and the shared keyframes.
 
 ## Deployment
 
-`render.yaml` at the repository root defines the static site and the screenshot service. For the site, Render runs `npm install` and `npm run build` in `site/`, then serves `site/dist/`. All paths rewrite to `index.html`. `VITE_SCREENSHOT_SERVICE_URL` gives the public URL of the screenshot service at build time.
+`render.yaml` at the repository root defines the static site and the screenshot service. For the site, Render runs `npm ci` and `npm run build` in `site/`, then serves `site/dist/`. All paths rewrite to `index.html`. `VITE_SCREENSHOT_SERVICE_URL` gives the public URL of the screenshot service at build time.
 
 ## Resources
 

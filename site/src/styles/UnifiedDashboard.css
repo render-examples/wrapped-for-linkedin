@@ -1,6 +1,3 @@
-@import '@styles/SectionTitles.css';
-@import '@styles/SectionSubtitles.css';
-
 .unified-dashboard {
   display: flex;
   flex-direction: column;

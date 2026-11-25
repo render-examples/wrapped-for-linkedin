@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useEffectEvent } from 'react';
 import { storageManager } from '@utils/storageManager';
 import type { ParsedExcelData } from '@utils/excel/types';
 
@@ -7,16 +7,14 @@ import type { ParsedExcelData } from '@utils/excel/types';
  * On mount, call `onCacheLoaded` with the saved data, if there is any.
  */
 export function useCache(onCacheLoaded?: (data: ParsedExcelData, uploadDate: number) => void) {
-  const onCacheLoadedRef = useRef(onCacheLoaded);
-
-  useEffect(() => {
-    onCacheLoadedRef.current = onCacheLoaded;
+  const handleCacheLoaded = useEffectEvent((data: ParsedExcelData, uploadDate: number) => {
+    onCacheLoaded?.(data, uploadDate);
   });
 
   useEffect(() => {
     const cached = storageManager.load();
     if (cached) {
-      onCacheLoadedRef.current?.(cached.data, cached.uploadDate);
+      handleCacheLoaded(cached.data, cached.uploadDate);
     }
   }, []);
 

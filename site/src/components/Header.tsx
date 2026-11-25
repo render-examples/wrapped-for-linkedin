@@ -33,12 +33,10 @@ export const Header: React.FC<HeaderProps> = ({ onLogoClick }) => {
             className="render-logo-link"
             aria-label="Sign up for Render"
           >
-            <span className="render-powered-text" data-mobile-text="DEPLOYED ON">POWERED BY AND DEPLOYED ON</span>
-            <img
-              src="/images/render-logo.png"
-              alt="Render"
-              className="render-logo"
-            />
+            <span className="render-powered-text" data-mobile-text="DEPLOYED ON">
+              POWERED BY AND DEPLOYED ON
+            </span>
+            <img src="/images/render-logo.png" alt="Render" className="render-logo" />
           </a>
         </div>
       </div>

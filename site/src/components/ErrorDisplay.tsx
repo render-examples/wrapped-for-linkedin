@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from '@components/Icon';
-import '@styles/Error.css';
+import '@styles/ErrorDisplay.css';
 
 interface ErrorDisplayProps {
   error: string;

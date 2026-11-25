@@ -15,11 +15,8 @@
   }
 
   /* Show the prompt as a bottom sheet. */
-  .native-share-overlay {
-    align-items: flex-end;
-  }
-
-  .native-share-overlay .download-instructions-modal {
+  .share-modal.native-share-modal {
+    margin: auto 0 0;
     border-width: 1px 0 0;
     padding-bottom: env(safe-area-inset-bottom);
     animation: slideUpSheet 0.2s ease;

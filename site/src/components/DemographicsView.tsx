@@ -22,12 +22,12 @@ const DemographicCategory: React.FC<DemographicCategoryProps> = ({ title, items,
   return (
     <div className="demographic-category">
       <div className="category-header">
-        <img src={icon} alt={title} className="category-icon" />
-        <h3 className="category-title">{title}</h3>
+        <img src={icon} alt="" className="category-icon" />
+        <h3 className="mono-label">{title}</h3>
       </div>
       <div className="category-items">
-        {topItems.map((item, index) => (
-          <div key={index} className="demographic-item">
+        {topItems.map((item) => (
+          <div key={item.name} className="demographic-item">
             <div className="item-info">
               <span className="item-name">{item.name}</span>
               <span className="item-percentage">{Math.round(item.percentage * 100)}%</span>
@@ -49,16 +49,17 @@ const CATEGORIES: { key: keyof DemographicInsights; title: string; icon: string 
   { key: 'job_titles', title: 'Job titles', icon: '/images/demographics/job-titles.png' },
   { key: 'locations', title: 'Locations', icon: '/images/demographics/locations.png' },
   { key: 'industries', title: 'Industries', icon: '/images/demographics/industries.png' },
-  { key: 'seniority', title: 'Seniority levels', icon: '/images/demographics/seniority-levels.png' },
+  {
+    key: 'seniority',
+    title: 'Seniority levels',
+    icon: '/images/demographics/seniority-levels.png',
+  },
   { key: 'company_size', title: 'Company size', icon: '/images/demographics/company-size.png' },
   { key: 'companies', title: 'Companies', icon: '/images/demographics/companies.png' },
 ];
 
 export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics }) => {
-  const hasData =
-    demographics.job_titles?.length > 0 ||
-    demographics.locations?.length > 0 ||
-    demographics.industries?.length > 0;
+  const hasData = CATEGORIES.some(({ key }) => (demographics[key]?.length ?? 0) > 0);
 
   if (!hasData) {
     return (
@@ -77,7 +78,12 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
 
       <div className="demographics-grid">
         {CATEGORIES.map(({ key, title, icon }) => (
-          <DemographicCategory key={key} title={title} items={demographics[key] ?? []} icon={icon} />
+          <DemographicCategory
+            key={key}
+            title={title}
+            items={demographics[key] ?? []}
+            icon={icon}
+          />
         ))}
       </div>
     </div>

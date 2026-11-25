@@ -1,27 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
-import { FileUpload } from "@components/FileUpload";
-import { UnifiedDashboard } from "@components/UnifiedDashboard";
-import { ErrorDisplay } from "@components/Error";
-import { Header } from "@components/Header";
-import { useCache } from "@/hooks/useCache";
-import type { ParsedExcelData } from "@utils/excel/types";
-import "@/App.css";
-
-const SESSION_KEY = "wrapped-session-active";
+import { useCallback, useState } from 'react';
+import { FileUpload } from '@components/FileUpload';
+import { UnifiedDashboard } from '@components/UnifiedDashboard';
+import { ErrorDisplay } from '@components/ErrorDisplay';
+import { Header } from '@components/Header';
+import { useCache } from '@/hooks/useCache';
+import { useShortcutKeys } from '@/hooks/useShortcutKeys';
+import type { ParsedExcelData } from '@utils/excel/types';
+import '@/App.css';
 
 function App() {
   const [data, setData] = useState<ParsedExcelData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { clear: clearCache } = useCache();
-
-  // Clear the cache when the tab has no session flag.
-  // sessionStorage lasts for the life of the tab, so this happens once per new tab.
-  useEffect(() => {
-    if (!sessionStorage.getItem(SESSION_KEY)) {
-      clearCache();
-      sessionStorage.setItem(SESSION_KEY, "true");
-    }
-  }, [clearCache]);
 
   const handleDataLoaded = (parsed: ParsedExcelData) => {
     setData(parsed);
@@ -51,34 +41,12 @@ function App() {
 
   const currentYear = new Date().getFullYear();
 
-  // Keyboard shortcuts that return to the home page.
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Escape returns to the home page.
-      if (event.key === "Escape" && data) {
-        handleClearCache();
-        return;
-      }
-
-      // Ctrl+Shift+R or Cmd+Shift+R stops the hard refresh and returns to the home page.
-      if (
-        event.key === "R" &&
-        event.shiftKey &&
-        (event.ctrlKey || event.metaKey)
-      ) {
-        event.preventDefault();
-        handleClearCache();
-        sessionStorage.clear();
-        sessionStorage.setItem(SESSION_KEY, "true");
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [data, handleClearCache]);
+  // Escape returns to the home page. It does nothing while a modal or menu has the key.
+  useShortcutKeys((event) => {
+    if (event.key === 'Escape' && data) {
+      handleClearCache();
+    }
+  });
 
   return (
     <div className="app-container">
@@ -92,7 +60,6 @@ function App() {
             <button
               className="button secondary upload-new-data-btn"
               onClick={handleClearCache}
-              aria-label="Upload new data"
               title="Upload new data"
             >
               Upload new data
@@ -103,10 +70,7 @@ function App() {
 
           {!error &&
             (data ? (
-              <UnifiedDashboard
-                data={data}
-                onUploadNewData={handleClearCache}
-              />
+              <UnifiedDashboard data={data} onUploadNewData={handleClearCache} />
             ) : (
               <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
             ))}
@@ -129,7 +93,6 @@ function App() {
             >
               X
             </a>
-            &nbsp; &nbsp; &nbsp; &nbsp;
             <a
               href="https://www.linkedin.com/company/renderco"
               target="_blank"
@@ -138,7 +101,6 @@ function App() {
             >
               LinkedIn
             </a>
-            &nbsp; &nbsp; &nbsp; &nbsp;
             <a
               href="https://github.com/render-examples/wrapped-for-linkedin"
               target="_blank"
