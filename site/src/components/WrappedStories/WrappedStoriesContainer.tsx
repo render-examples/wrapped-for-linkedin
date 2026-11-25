@@ -1,6 +1,7 @@
 import React, { createRef, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryCard } from '@components/WrappedStories/StoryCard';
 import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
+import { isCardNavigationTouch } from '@utils/storyTouch';
 import '@styles/WrappedStories.css';
 
 interface WrappedStoriesContainerProps {
@@ -165,7 +166,11 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }
   }, []);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isCardNavigationTouch(e.target as Element, e.currentTarget)) {
+      touchStartXRef.current = null;
+      return;
+    }
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
     touchStartTimeRef.current = Date.now();

@@ -73,6 +73,7 @@ src/
 │   ├── profileExtractor.ts # Extract profile info
 │   ├── shareTextTemplates.ts # Share message templates
 │   ├── storageManager.ts # Local storage wrapper
+│   ├── storyTouch.ts    # Decide which taps change the story card
 │   └── webShare.ts # Share files through the system share sheet, or download them
 ├── App.tsx              # Root component
 ├── main.tsx             # Entry point
@@ -185,6 +186,7 @@ Choose export format:
 - Instagram Stories-inspired carousel with autoplay (5s per card by default)
 - **Press-and-hold to pause**: Long-press on any card to pause autoplay (mobile)
 - **Swipe/Tap navigation**: Tap left/right or swipe on mobile to navigate
+- Taps on buttons, links, progress bars, and menus do not change the card
 - **Keyboard controls**: Arrow keys to navigate, Escape to pause autoplay
 - **Progress indicators**: Visual progress bars at top of each card
 - Cycles through cards with wrapping (loops back to start)
