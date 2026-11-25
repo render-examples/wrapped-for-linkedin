@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import type { Browser } from 'playwright';
 import {
   classifyEmbedResponse,
   clipAboveActionBar,
@@ -74,6 +75,21 @@ describe('fetchPostStatus', () => {
     const status = await fetchPostStatus(URN, async () => new Response(html));
     assert.equal(status, 'error');
   });
+
+  it('runs at most 8 checks at the same time', async () => {
+    let running = 0;
+    let maxRunning = 0;
+    const slowFetch = async () => {
+      running++;
+      maxRunning = Math.max(maxRunning, running);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      running--;
+      return new Response(POST_HTML);
+    };
+    const results = await Promise.all(Array.from({ length: 12 }, () => fetchPostStatus(URN, slowFetch)));
+    assert.equal(maxRunning, 8);
+    assert.ok(results.every((status) => status === 'public'));
+  });
 });
 
 describe('isAllowedRequestUrl', () => {
@@ -106,9 +122,53 @@ describe('isAllowedRequestUrl', () => {
   });
 });
 
+/** A browser whose pages never load. Closing the context rejects the pending page calls. */
+function hangingBrowser() {
+  const closed: number[] = [];
+  let contexts = 0;
+  const browser = {
+    newContext: async () => {
+      const id = contexts++;
+      let fail: (error: Error) => void = () => {};
+      return {
+        route: async () => {},
+        newPage: async () => ({
+          goto: () => new Promise((_resolve, reject) => (fail = reject)),
+        }),
+        close: async () => {
+          closed.push(id);
+          fail(new Error('Target closed'));
+        },
+      };
+    },
+  };
+  return { launch: async () => browser as unknown as Browser, closed };
+}
+
 describe('takePostScreenshot', () => {
   it('returns error when the browser does not start', async () => {
-    const result = await takePostScreenshot(URN, () => Promise.reject(new Error('launch failed')));
+    const result = await takePostScreenshot(URN, {
+      launch: () => Promise.reject(new Error('launch failed')),
+    });
     assert.deepEqual(result, { status: 'error' });
+  });
+
+  it('returns error and closes the context when the deadline passes', async () => {
+    const { launch, closed } = hangingBrowser();
+    const result = await takePostScreenshot(URN, { launch, deadlineMs: 50 });
+    assert.deepEqual(result, { status: 'error' });
+    assert.deepEqual(closed, [0]);
+  });
+
+  it('gives the page slot to the next task after the deadline', async () => {
+    const { launch, closed } = hangingBrowser();
+    const started = Date.now();
+    // Two pages run at a time, so the third task waits for a slot.
+    const results = await Promise.all(
+      Array.from({ length: 3 }, () => takePostScreenshot(URN, { launch, deadlineMs: 50 }))
+    );
+    assert.ok(results.every((result) => result.status === 'error'));
+    assert.equal(closed.length, 3);
+    assert.ok(Date.now() - started < 1000);
   });
 });

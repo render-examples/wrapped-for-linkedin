@@ -173,7 +173,7 @@ export function createApp({
     res.status(404).end();
   });
 
-  // Send 503 when too many screenshots wait, and 500 for other errors.
+  // Send 503 when too many screenshots or status checks wait, and 500 for other errors.
   // Do not log the error. It can contain the URN.
   app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (res.headersSent) {

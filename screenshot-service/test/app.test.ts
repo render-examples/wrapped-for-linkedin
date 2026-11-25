@@ -184,6 +184,23 @@ describe('screenshot service', () => {
     assert.equal((await get(`/post-image?urn=${PUBLIC_URN}`)).status, 200);
   });
 
+  it('returns 503 and caches nothing when too many status checks wait', async () => {
+    let busy = true;
+    const { get } = await start({
+      checkStatus: async () => {
+        if (busy) {
+          throw new LimiterBusyError();
+        }
+        return 'public';
+      },
+    });
+    const response = await get(`/post-status?urn=${PUBLIC_URN}`);
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    busy = false;
+    assert.equal((await get(`/post-status?urn=${PUBLIC_URN}`)).status, 200);
+  });
+
   it('returns 500 for an unexpected error and logs only the status code', async (t) => {
     const consoleError = t.mock.method(console, 'error', () => {});
     const { get, logs } = await start({

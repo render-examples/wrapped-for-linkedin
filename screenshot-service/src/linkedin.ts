@@ -18,6 +18,11 @@ const MAX_CONCURRENT_PAGES = 2;
 // Screenshot requests that wait for a page. More requests get a 503.
 const MAX_QUEUED_PAGES = 8;
 const QUEUE_TIMEOUT_MS = 20_000;
+// The time limit for one whole screenshot. The step timeouts above can add up to more.
+const SCREENSHOT_DEADLINE_MS = 20_000;
+// A status check uses no browser, so more of them can run at the same time.
+const MAX_CONCURRENT_STATUS_CHECKS = 8;
+const MAX_QUEUED_STATUS_CHECKS = 32;
 // An embed page is about 25 KB.
 const MAX_EMBED_HTML_BYTES = 1024 * 1024;
 // The embed page loads only from these hosts and their subdomains.
@@ -63,11 +68,22 @@ async function readTextWithLimit(response: Response, maxBytes: number): Promise<
   return Buffer.concat(chunks).toString('utf8');
 }
 
+const runWithStatusLimit = createLimiter({
+  limit: MAX_CONCURRENT_STATUS_CHECKS,
+  maxQueue: MAX_QUEUED_STATUS_CHECKS,
+  queueTimeoutMs: QUEUE_TIMEOUT_MS,
+});
+
 /**
  * Fetch the embed HTML without a browser and classify it.
  * A redirect is an error, so the request cannot leave LinkedIn.
+ * Rejects with LimiterBusyError when too many checks wait.
  */
-export async function fetchPostStatus(urn: string, fetchFn: typeof fetch = fetch): Promise<PostStatus> {
+export function fetchPostStatus(urn: string, fetchFn: typeof fetch = fetch): Promise<PostStatus> {
+  return runWithStatusLimit(() => fetchAndClassify(urn, fetchFn));
+}
+
+async function fetchAndClassify(urn: string, fetchFn: typeof fetch): Promise<PostStatus> {
   try {
     const response = await fetchFn(embedUrlForUrn(urn), {
       redirect: 'manual',
@@ -165,30 +181,57 @@ const runWithPageLimit = createLimiter({
   queueTimeoutMs: QUEUE_TIMEOUT_MS,
 });
 
+type ScreenshotOptions = {
+  // For tests.
+  launch?: () => Promise<Browser>;
+  deadlineMs?: number;
+};
+
 /**
  * Take a screenshot of the post in a new browser context.
+ * Returns error if the screenshot takes longer than the deadline.
  * Rejects with LimiterBusyError when too many screenshots wait for a page.
- * `launch` is for tests.
  */
 export function takePostScreenshot(
   urn: string,
-  launch: () => Promise<Browser> = getBrowser
+  { launch = getBrowser, deadlineMs = SCREENSHOT_DEADLINE_MS }: ScreenshotOptions = {}
 ): Promise<ScreenshotResult> {
   return runWithPageLimit(async () => {
     let context: BrowserContext | undefined;
-    try {
+    let expired = false;
+    let timer: NodeJS.Timeout | undefined;
+
+    const capture = async (): Promise<ScreenshotResult> => {
       const browser = await launch();
-      context = await browser.newContext({
+      const newContext = await browser.newContext({
         viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
         deviceScaleFactor: DEVICE_SCALE_FACTOR,
       });
-      await context.route('**/*', (route) =>
+      context = newContext;
+      if (expired) {
+        // The deadline passed while the context opened. The finally block below already ran.
+        await newContext.close().catch(() => {});
+        return { status: 'error' };
+      }
+      await newContext.route('**/*', (route) =>
         isAllowedRequestUrl(route.request().url()) ? route.continue() : route.abort()
       );
-      return await capturePost(await context.newPage(), urn);
-    } catch {
-      return { status: 'error' };
+      return await capturePost(await newContext.newPage(), urn);
+    };
+
+    const deadline = new Promise<ScreenshotResult>((resolve) => {
+      timer = setTimeout(() => {
+        expired = true;
+        resolve({ status: 'error' });
+      }, deadlineMs);
+    });
+
+    try {
+      return await Promise.race([capture().catch((): ScreenshotResult => ({ status: 'error' })), deadline]);
     } finally {
+      clearTimeout(timer);
+      expired = true;
+      // Closing the context stops the Playwright calls that still run.
       await context?.close().catch(() => {});
     }
   });
