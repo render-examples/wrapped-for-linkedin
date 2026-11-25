@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Wrapped for LinkedIn OG image</title>
+    <!-- Render with `npm run og`. The page is 1200 × 630, the Open Graph image size. -->
+    <style>
+      @font-face {
+        font-family: 'Roobert';
+        src: url('../public/FONTS/Roobert_OTF/Roobert-Light.otf') format('opentype');
+        font-weight: 300;
+      }
+      @font-face {
+        font-family: 'Roobert';
+        src: url('../public/FONTS/Roobert_OTF/Roobert-SemiBold.otf') format('opentype');
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: 'PP Neue Montreal';
+        src: url('../public/FONTS/PPNeueMontreal OTF/PPNeueMontreal-Regular.otf') format('opentype');
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'PP Neue Montreal Mono';
+        src: url('../public/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2') format('woff2');
+        font-weight: 400;
+      }
+
+      :root {
+        --bg: #0d0d0d;
+        --border: #303030;
+        --text: #fff;
+        --text-secondary: #c7c7c7;
+        --text-faint: #b3b3b3;
+        --accent: #c29eff;
+        --accent-fill: #8a05ff;
+        --art-surface: #1c0037;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'PP Neue Montreal', Arial, sans-serif;
+      }
+
+      .frame {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 64px;
+        height: 100%;
+        padding: 64px 72px;
+        border-top: 8px solid var(--accent);
+      }
+
+      .mono {
+        font-family: 'PP Neue Montreal Mono', monospace;
+        font-size: 18px;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+
+      .copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      h1 {
+        margin-top: 28px;
+        font-family: 'Roobert', Arial, sans-serif;
+        font-size: 96px;
+        font-weight: 600;
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .tagline {
+        margin-top: 24px;
+        font-size: 30px;
+        color: var(--text-secondary);
+      }
+
+      .url {
+        color: var(--accent);
+      }
+
+      .tiles {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-left: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        align-self: center;
+      }
+
+      .tile {
+        padding: 28px;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .tile-value {
+        margin-top: 24px;
+        font-family: 'Roobert', Arial, sans-serif;
+        font-size: 104px;
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .badge {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .badge-art {
+        display: grid;
+        place-items: center;
+        width: 76px;
+        height: 76px;
+        border: 1px solid var(--accent-fill);
+        background: var(--art-surface);
+        font-size: 38px;
+      }
+
+      .badge-name {
+        font-family: 'Roobert', Arial, sans-serif;
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      .badge .mono {
+        margin-top: 6px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="copy">
+        <div>
+          <p class="mono">Year in review</p>
+          <h1>Wrapped for LinkedIn</h1>
+          <p class="tagline">Your LinkedIn year in review</p>
+        </div>
+        <p class="mono url">wrappedforlinkedin.onrender.com</p>
+      </div>
+      <div class="tiles">
+        <div class="tile">
+          <p class="mono">Total impressions</p>
+          <p class="tile-value">1.2M</p>
+        </div>
+        <div class="tile badge">
+          <div class="badge-art">💎</div>
+          <div>
+            <p class="badge-name">Millionaire</p>
+            <p class="mono">1M+ total impressions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
