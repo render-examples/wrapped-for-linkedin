@@ -16,8 +16,8 @@ export const BadgesSection: React.FC<BadgesSectionProps> = ({ badges }) => {
     return null;
   }
 
-  // 4 badges show as 2 rows of 2. Fewer badges show in one row.
-  const columns = badges.length === 4 ? 2 : badges.length;
+  // 4 badges show as 2 rows of 2. 5 badges show as a row of 3 and a row of 2. Fewer badges show in one row.
+  const columns = badges.length === 4 ? 2 : Math.min(badges.length, 3);
 
   return (
     <section className="wrapped-section badges-section">

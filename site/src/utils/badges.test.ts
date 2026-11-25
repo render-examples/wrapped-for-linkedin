@@ -4,6 +4,8 @@ import {
   COMMUNITY_BUILDER_FOLLOWERS,
   GRINDSET_MONTHS,
   MILLIONAIRE_IMPRESSIONS,
+  THOUGHT_LEADER_ENGAGEMENTS,
+  THOUGHT_LEADER_POSTS,
   VIRAL_POST_IMPRESSIONS,
   getEarnedBadges,
 } from './badges';
@@ -31,6 +33,16 @@ const topPost = (impressions: number): ParsedExcelData => ({
       impressions,
     },
   ],
+});
+
+const engagedPosts = (count: number, engagements: number): ParsedExcelData => ({
+  top_posts: Array.from({ length: count }, (_, i) => ({
+    rank: i + 1,
+    url: `https://www.linkedin.com/feed/update/urn:li:share:${i + 1}`,
+    publish_date: '2026-03-01',
+    engagements,
+    impressions: 100,
+  })),
 });
 
 const activeMonths = (count: number): ParsedExcelData => ({
@@ -75,6 +87,18 @@ describe('getEarnedBadges', () => {
     ).toEqual(['community-builder']);
   });
 
+  it('earns Thought leader with 20 posts at 10+ engagements', () => {
+    expect(
+      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS - 1, THOUGHT_LEADER_ENGAGEMENTS)),
+    ).toEqual([]);
+    expect(
+      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS - 1)),
+    ).toEqual([]);
+    expect(
+      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS)),
+    ).toEqual(['thought-leader']);
+  });
+
   it('earns Grindset with engagement in 12 months', () => {
     expect(earnedIds(activeMonths(GRINDSET_MONTHS - 1))).toEqual([]);
     expect(earnedIds(activeMonths(GRINDSET_MONTHS))).toEqual(['grindset']);
@@ -93,7 +117,10 @@ describe('getEarnedBadges', () => {
   it('returns earned badges in rank order', () => {
     const data: ParsedExcelData = {
       ...discovery({ total_impressions: 2_000_000, new_followers: 5_000 }),
-      ...topPost(200_000),
+      top_posts: [
+        ...topPost(200_000).top_posts!,
+        ...engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS).top_posts!,
+      ],
       ...activeMonths(12),
     };
     expect(earnedIds(data)).toEqual(BADGES.map((badge) => badge.id));

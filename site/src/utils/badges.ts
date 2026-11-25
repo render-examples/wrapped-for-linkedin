@@ -9,10 +9,12 @@ import type { ParsedExcelData } from '@utils/excel/types';
 export const MILLIONAIRE_IMPRESSIONS = 1_000_000;
 export const VIRAL_POST_IMPRESSIONS = 100_000;
 export const COMMUNITY_BUILDER_FOLLOWERS = 1_000;
+export const THOUGHT_LEADER_POSTS = 20;
+export const THOUGHT_LEADER_ENGAGEMENTS = 10;
 export const GRINDSET_MONTHS = 12;
 
 export interface Badge {
-  id: 'millionaire' | 'viral' | 'community-builder' | 'grindset';
+  id: 'millionaire' | 'viral' | 'community-builder' | 'thought-leader' | 'grindset';
   name: string;
   // The rule, as shown to the user.
   description: string;
@@ -20,6 +22,17 @@ export interface Badge {
   shareSentence: string;
   icon: IconName;
   isEarned: (data: ParsedExcelData) => boolean;
+}
+
+/**
+ * Count the posts with at least the Thought leader engagement count.
+ * The export lists only the top 50 posts by engagement. Posts that are only in the
+ * impressions list have 0 engagements here, so the count can be low only when it is already 50.
+ */
+function countEngagedPosts(data: ParsedExcelData): number {
+  return (data.top_posts ?? []).filter(
+    (post) => post.engagements >= THOUGHT_LEADER_ENGAGEMENTS,
+  ).length;
 }
 
 /**
@@ -64,6 +77,15 @@ export const BADGES: Badge[] = [
     icon: 'handshake',
     isEarned: (data) =>
       (data.discovery_data?.new_followers ?? 0) >= COMMUNITY_BUILDER_FOLLOWERS,
+  },
+  {
+    id: 'thought-leader',
+    name: 'Thought leader',
+    description: '20+ posts with 10+ engagements',
+    shareSentence:
+      'I wrote 20+ posts that got 10+ engagements each this year. Did you?',
+    icon: 'thought',
+    isEarned: (data) => countEngagedPosts(data) >= THOUGHT_LEADER_POSTS,
   },
   {
     id: 'grindset',
