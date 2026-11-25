@@ -7,7 +7,7 @@ interface ErrorProps {
   onRetry?: () => void;
 }
 
-export const Error: React.FC<ErrorProps> = ({ error, onRetry }) => {
+export const ErrorDisplay: React.FC<ErrorProps> = ({ error, onRetry }) => {
   return (
     <div className="error-container">
       <div className="error-icon">

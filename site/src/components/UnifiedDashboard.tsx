@@ -8,38 +8,25 @@ import { BadgesSection } from '@components/BadgesSection';
 import { getEarnedBadges } from '@utils/badges';
 import { generateShareableCards } from '@utils/cardDataMapper';
 import { formatNumber, getWrappedYear } from '@utils/formatters';
-import type { EngagementMetrics, DemographicInsights } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {
-  data: EngagementMetrics;
-  demographics?: DemographicInsights;
+  data: ParsedExcelData;
   onUploadNewData?: () => void;
 }
 
-export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
-  data,
-  demographics,
-  onUploadNewData,
-}) => {
-  const discoveryData = data.discovery_data;
+export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, onUploadNewData }) => {
+  const { discovery_data: discoveryData, demographics, engagement_by_day: engagementByDay } = data;
   const topPosts = data.top_posts ?? [];
 
-  const excelData = useMemo<ParsedExcelData>(() => ({
-    discovery_data: discoveryData,
-    top_posts: data.top_posts,
-    demographics,
-    engagement_by_day: data.engagementByDay,
-  }), [discoveryData, data.top_posts, demographics, data.engagementByDay]);
-
   const wrappedCards = useMemo(
-    () => (discoveryData ? generateShareableCards(excelData) : []),
-    [discoveryData, excelData]
+    () => (discoveryData ? generateShareableCards(data) : []),
+    [discoveryData, data]
   );
 
-  const earnedBadges = useMemo(() => getEarnedBadges(excelData), [excelData]);
+  const earnedBadges = useMemo(() => getEarnedBadges(data), [data]);
 
   const shareInfo = useMemo<ShareInfo>(() => ({
     impressions: formatNumber(discoveryData?.total_impressions || 0),
@@ -65,7 +52,7 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
       {discoveryData && (
         <SpotifyDashboard
           discovery={discoveryData}
-          engagementByDay={data.engagementByDay}
+          engagementByDay={engagementByDay}
         />
       )}
 

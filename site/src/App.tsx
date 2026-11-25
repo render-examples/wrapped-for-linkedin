@@ -1,35 +1,17 @@
 import { useState, useEffect } from 'react';
 import { FileUpload } from '@components/FileUpload';
 import { UnifiedDashboard } from '@components/UnifiedDashboard';
-import { Loading } from '@components/Loading';
-import { Error as ErrorDisplay } from '@components/Error';
+import { ErrorDisplay } from '@components/Error';
 import { Header } from '@components/Header';
 import { useCache } from '@/hooks/useCache';
-import type { DemographicInsights, EngagementMetrics } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
 import '@/App.css';
-
-interface DataState {
-  engagement: EngagementMetrics | null;
-  demographics: DemographicInsights | undefined;
-  uploadDate: number | null;
-  isFromCache: boolean;
-  error: string | null;
-}
-
-const INITIAL_STATE: DataState = {
-  engagement: null,
-  demographics: undefined,
-  uploadDate: null,
-  isFromCache: false,
-  error: null,
-};
 
 const SESSION_KEY = 'wrapped-session-active';
 
 function App() {
-  const [loading, setLoading] = useState(false);
-  const [state, setState] = useState<DataState>(INITIAL_STATE);
+  const [data, setData] = useState<ParsedExcelData | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { clear: clearCache } = useCache();
 
   // Clear the cache when the tab has no session flag.
@@ -53,30 +35,15 @@ function App() {
     };
   }, [clearCache]);
 
-  const handleFileProcessed = (excelData: ParsedExcelData, fileError?: string, date?: number, fromCache?: boolean) => {
-    setLoading(false);
-
-    if (fileError) {
-      setState(prev => ({ ...prev, error: fileError }));
-      return;
-    }
-
-    setState({
-      engagement: {
-        discovery_data: excelData.discovery_data,
-        top_posts: excelData.top_posts,
-        engagementByDay: excelData.engagement_by_day,
-      },
-      demographics: excelData.demographics,
-      uploadDate: date ?? Date.now(),
-      isFromCache: fromCache ?? false,
-      error: null,
-    });
+  const handleDataLoaded = (parsed: ParsedExcelData) => {
+    setData(parsed);
+    setError(null);
     window.scrollTo(0, 0);
   };
 
   const resetState = () => {
-    setState(INITIAL_STATE);
+    setData(null);
+    setError(null);
     window.scrollTo(0, 0);
   };
 
@@ -87,7 +54,7 @@ function App() {
 
   const handleLogoClick = () => {
     // If the dashboard shows data, also clear the cache.
-    if (state.engagement) {
+    if (data) {
       handleClearCache();
     } else {
       resetState();
@@ -100,7 +67,7 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Escape returns to the home page.
-      if (event.key === 'Escape' && state.engagement) {
+      if (event.key === 'Escape' && data) {
         handleClearCache();
         return;
       }
@@ -124,17 +91,17 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [state.engagement, clearCache]);
+  }, [data, clearCache]);
 
   return (
     <div className="app-container">
       <div className="landing-content">
-        {state.engagement && <div className="background-overlay" />}
+        {data && <div className="background-overlay" />}
 
         <Header onLogoClick={handleLogoClick} />
 
         <main className="app-main">
-          {state.engagement && (
+          {data && (
             <button
               className="button secondary upload-new-data-btn"
               onClick={handleClearCache}
@@ -145,18 +112,12 @@ function App() {
             </button>
           )}
 
-          {state.error && <ErrorDisplay error={state.error} onRetry={resetState} />}
+          {error && <ErrorDisplay error={error} onRetry={resetState} />}
 
-          {loading && <Loading />}
-
-          {!loading && !state.error && (state.engagement ? (
-            <UnifiedDashboard
-              data={state.engagement}
-              demographics={state.demographics}
-              onUploadNewData={handleClearCache}
-            />
+          {!error && (data ? (
+            <UnifiedDashboard data={data} onUploadNewData={handleClearCache} />
           ) : (
-            <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />
+            <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
           ))}
         </main>
       </div>

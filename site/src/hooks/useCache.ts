@@ -24,7 +24,6 @@ export const useCache = (onCacheLoaded?: (data: ParsedExcelData, uploadDate: num
       setCache({ data: cached.data, uploadDate: cached.uploadDate, isLoaded: true });
       onCacheLoadedRef.current?.(cached.data, cached.uploadDate);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
 
   const save = useCallback((data: ParsedExcelData) => {

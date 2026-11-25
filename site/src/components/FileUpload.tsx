@@ -7,29 +7,17 @@ import { SampleDataButton } from '@components/SampleDataButton';
 import { isTouchDevice } from '@utils/webShare';
 import '@styles/FileUpload.css';
 
-// Passed with an error, so the caller always gets a valid ParsedExcelData.
-const EMPTY_DATA: ParsedExcelData = {
-  discovery_data: undefined,
-  top_posts: [],
-  demographics: undefined,
-  engagement_by_day: [],
-};
-
 interface FileUploadProps {
-  onFileProcessed: (data: ParsedExcelData, error?: string, uploadDate?: number, isFromCache?: boolean) => void;
-  isLoading?: boolean;
+  onDataLoaded: (data: ParsedExcelData) => void;
+  onError: (message: string) => void;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading = false }) => {
+export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError }) => {
   const touch = isTouchDevice();
-  const { save: saveToCache } = useCache((data, uploadDate) => {
-    onFileProcessed(data, undefined, uploadDate, true);
-  });
+  // Show the dashboard from the cache when there is cached data.
+  const { save: saveToCache } = useCache(onDataLoaded);
 
-  const sampleData = useSampleData(
-    (data) => onFileProcessed(data, undefined, Date.now(), false),
-    (error) => onFileProcessed(EMPTY_DATA, error.message)
-  );
+  const sampleData = useSampleData(onDataLoaded, (error) => onError(error.message));
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -38,15 +26,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
       const { processExcelFile } = await import('@utils/excel/excelProcessor');
       const data = await processExcelFile(acceptedFiles[0]);
       saveToCache(data);
-      onFileProcessed(data, undefined, Date.now(), false);
+      onDataLoaded(data);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
       console.error('Error processing file:', error);
-      onFileProcessed(EMPTY_DATA, errorMessage);
+      onError(errorMessage);
     }
-  }, [saveToCache, onFileProcessed]);
+  }, [saveToCache, onDataLoaded, onError]);
 
-  const isDisabled = isLoading || sampleData.isLoading;
+  const isDisabled = sampleData.isLoading;
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
