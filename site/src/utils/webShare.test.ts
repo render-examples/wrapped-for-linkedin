@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { canShareFiles, dataUrlToFile, getShareMode, isTouchDevice, shareFile, type ShareEnv } from './webShare';
+import {
+  canShareFiles,
+  dataUrlToFile,
+  getShareMode,
+  isTouchDevice,
+  shareFile,
+  type ShareEnv,
+} from './webShare';
 
 const png = new File(['x'], 'card.png', { type: 'image/png' });
 const env = (overrides: Partial<ShareEnv> = {}): ShareEnv => ({
@@ -83,7 +90,9 @@ describe('isTouchDevice', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('returns true when the primary pointer is coarse', () => {
-    vi.stubGlobal('window', { matchMedia: (query: string) => ({ matches: query === '(pointer: coarse)' }) });
+    vi.stubGlobal('window', {
+      matchMedia: (query: string) => ({ matches: query === '(pointer: coarse)' }),
+    });
     expect(isTouchDevice()).toBe(true);
   });
 

@@ -7,7 +7,11 @@ import type { ParsedExcelData } from '@utils/excel/types';
 import { parseDiscovery } from '@utils/excel/discoveryParser';
 import { parseTopPosts } from '@utils/excel/topPostsParser';
 import { parseDemographics } from '@utils/excel/demographicsParser';
-import { parseEngagement, calculateTotalEngagements, calculateMedianDailyImpressions } from '@utils/excel/engagementParser';
+import {
+  parseEngagement,
+  calculateTotalEngagements,
+  calculateMedianDailyImpressions,
+} from '@utils/excel/engagementParser';
 import { parseFollowers } from '@utils/excel/followersParser';
 
 /**
@@ -50,7 +54,9 @@ export async function processExcelFile(file: File): Promise<ParsedExcelData> {
       // The daily rows replace the DISCOVERY sheet values for these two metrics.
       if (discoveryData) {
         discoveryData.total_engagements = calculateTotalEngagements(engagementByDay);
-        discoveryData.average_impressions_per_day = Math.round(calculateMedianDailyImpressions(engagementByDay));
+        discoveryData.median_daily_impressions = Math.round(
+          calculateMedianDailyImpressions(engagementByDay),
+        );
       }
     }
 
@@ -58,7 +64,7 @@ export async function processExcelFile(file: File): Promise<ParsedExcelData> {
   } catch (error) {
     console.error('Error processing Excel file:', error);
     throw new Error(
-      `Failed to process Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to process Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
   }
 }

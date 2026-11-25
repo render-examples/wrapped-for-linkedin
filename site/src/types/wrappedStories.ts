@@ -44,7 +44,6 @@ type StoryBadge = Pick<Badge, 'id' | 'name' | 'description' | 'icon'>;
 interface CardBase {
   id: string;
   title: string;
-  backgroundColor: string;
   // CSS color for the card's accent.
   accent: string;
 }

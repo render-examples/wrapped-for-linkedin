@@ -72,4 +72,21 @@ describe('generateShareableCards', () => {
     const card = generateShareableCards(base).find((c) => c.id === 'members-reached');
     expect(card?.data.context).toBe("You reached 88.1K people. That's like filling AT&T Stadium!");
   });
+
+  it('counts engagements, not people, on the best month card', () => {
+    const card = generateShareableCards({
+      ...base,
+      engagement_by_day: [
+        { date: '2026-03-01', engagement: 1_200 },
+        { date: '2026-03-02', engagement: 34 },
+      ],
+    }).find((c) => c.id === 'best-month');
+    expect(card?.data.context).toBe('1,234 engagements on your content');
+  });
+
+  it('does not set a background color on cards', () => {
+    for (const card of generateShareableCards(base)) {
+      expect(card).not.toHaveProperty('backgroundColor');
+    }
+  });
 });

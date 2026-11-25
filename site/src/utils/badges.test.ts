@@ -11,9 +11,7 @@ import {
 } from './badges';
 import type { ParsedExcelData } from './excel/types';
 
-const discovery = (
-  overrides: Partial<NonNullable<ParsedExcelData['discovery_data']>>,
-) => ({
+const discovery = (overrides: Partial<NonNullable<ParsedExcelData['discovery_data']>>) => ({
   discovery_data: {
     start_date: '2026-01-01',
     end_date: '2026-12-31',
@@ -56,8 +54,7 @@ const activeMonths = (count: number): ParsedExcelData => ({
   ],
 });
 
-const earnedIds = (data: ParsedExcelData) =>
-  getEarnedBadges(data).map((badge) => badge.id);
+const earnedIds = (data: ParsedExcelData) => getEarnedBadges(data).map((badge) => badge.id);
 
 describe('getEarnedBadges', () => {
   it('earns no badges with no data', () => {
@@ -65,12 +62,10 @@ describe('getEarnedBadges', () => {
   });
 
   it('earns Millionaire at 1M total impressions', () => {
-    expect(
-      earnedIds(discovery({ total_impressions: MILLIONAIRE_IMPRESSIONS - 1 })),
-    ).toEqual([]);
-    expect(
-      earnedIds(discovery({ total_impressions: MILLIONAIRE_IMPRESSIONS })),
-    ).toEqual(['millionaire']);
+    expect(earnedIds(discovery({ total_impressions: MILLIONAIRE_IMPRESSIONS - 1 }))).toEqual([]);
+    expect(earnedIds(discovery({ total_impressions: MILLIONAIRE_IMPRESSIONS }))).toEqual([
+      'millionaire',
+    ]);
   });
 
   it('earns Viral at 100K impressions on the top post', () => {
@@ -79,24 +74,22 @@ describe('getEarnedBadges', () => {
   });
 
   it('earns Community builder at 1,000 new followers', () => {
-    expect(
-      earnedIds(discovery({ new_followers: COMMUNITY_BUILDER_FOLLOWERS - 1 })),
-    ).toEqual([]);
-    expect(
-      earnedIds(discovery({ new_followers: COMMUNITY_BUILDER_FOLLOWERS })),
-    ).toEqual(['community-builder']);
+    expect(earnedIds(discovery({ new_followers: COMMUNITY_BUILDER_FOLLOWERS - 1 }))).toEqual([]);
+    expect(earnedIds(discovery({ new_followers: COMMUNITY_BUILDER_FOLLOWERS }))).toEqual([
+      'community-builder',
+    ]);
   });
 
   it('earns Thought leader with 20 posts at 10+ engagements', () => {
-    expect(
-      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS - 1, THOUGHT_LEADER_ENGAGEMENTS)),
-    ).toEqual([]);
-    expect(
-      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS - 1)),
-    ).toEqual([]);
-    expect(
-      earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS)),
-    ).toEqual(['thought-leader']);
+    expect(earnedIds(engagedPosts(THOUGHT_LEADER_POSTS - 1, THOUGHT_LEADER_ENGAGEMENTS))).toEqual(
+      [],
+    );
+    expect(earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS - 1))).toEqual(
+      [],
+    );
+    expect(earnedIds(engagedPosts(THOUGHT_LEADER_POSTS, THOUGHT_LEADER_ENGAGEMENTS))).toEqual([
+      'thought-leader',
+    ]);
   });
 
   it('earns Grindset with engagement in 12 months', () => {
@@ -124,5 +117,23 @@ describe('getEarnedBadges', () => {
       ...activeMonths(12),
     };
     expect(earnedIds(data)).toEqual(BADGES.map((badge) => badge.id));
+  });
+});
+
+describe('BADGES text', () => {
+  it('shows the thresholds in the description and share sentence', () => {
+    expect(BADGES.map(({ description, shareSentence }) => [description, shareSentence])).toEqual([
+      ['1M+ total impressions', 'I hit 1M+ impressions on LinkedIn this year. Did you?'],
+      [
+        'A post with 100K+ impressions',
+        'One of my posts hit 100K impressions this year. Did yours?',
+      ],
+      ['1,000+ new followers', 'I gained 1,000+ new followers this year. Did you?'],
+      [
+        '20+ posts with 10+ engagements',
+        'I wrote 20+ posts that got 10+ engagements each this year. Did you?',
+      ],
+      ['Engagement in all 12 months', 'I showed up on LinkedIn every month this year. Did you?'],
+    ]);
   });
 });

@@ -23,13 +23,26 @@ const fmt = (d: Date) => `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFul
 const end = day(DAYS - 1);
 
 const slugs = [
-  'shipping-faster-with-preview-environments', 'what-i-learned-from-100-code-reviews',
-  'postgres-indexes-explained', 'my-first-year-as-a-devrel', 'the-case-for-boring-tech',
-  'why-we-moved-off-kubernetes', 'how-to-write-a-good-readme', 'lessons-from-a-failed-launch',
-  'career-advice-i-wish-i-had', 'debugging-a-memory-leak', 'hiring-junior-engineers',
-  'conference-talk-recap', 'side-project-to-startup', 'remote-work-two-years-in',
-  'how-i-take-notes', 'open-source-maintainer-burnout', 'the-best-feedback-i-got',
-  'writing-docs-people-read', 'cron-jobs-done-right', 'my-desk-setup',
+  'shipping-faster-with-preview-environments',
+  'what-i-learned-from-100-code-reviews',
+  'postgres-indexes-explained',
+  'my-first-year-as-a-devrel',
+  'the-case-for-boring-tech',
+  'why-we-moved-off-kubernetes',
+  'how-to-write-a-good-readme',
+  'lessons-from-a-failed-launch',
+  'career-advice-i-wish-i-had',
+  'debugging-a-memory-leak',
+  'hiring-junior-engineers',
+  'conference-talk-recap',
+  'side-project-to-startup',
+  'remote-work-two-years-in',
+  'how-i-take-notes',
+  'open-source-maintainer-burnout',
+  'the-best-feedback-i-got',
+  'writing-docs-people-read',
+  'cron-jobs-done-right',
+  'my-desk-setup',
 ];
 
 // The first post earns Viral. All posts have 10+ engagements for Thought leader.
@@ -60,18 +73,43 @@ const discoveryRows: Row[] = [
   ['Members reached', String(Math.round(totalImpressions * 0.31))],
 ];
 
-const recentRows: Row[] = [[
-  'Post URL', 'Post Publish Date', 'Post type', 'Impressions', 'Impressions (in-network)',
-  'Impressions (out-of-network)', 'Members reached', 'Followers gained', 'Profile viewers',
-  'Reactions', 'Comments', 'Reposts', 'Saves', 'Sends', 'Custom button engagements',
-]];
+const recentRows: Row[] = [
+  [
+    'Post URL',
+    'Post Publish Date',
+    'Post type',
+    'Impressions',
+    'Impressions (in-network)',
+    'Impressions (out-of-network)',
+    'Members reached',
+    'Followers gained',
+    'Profile viewers',
+    'Reactions',
+    'Comments',
+    'Reposts',
+    'Saves',
+    'Sends',
+    'Custom button engagements',
+  ],
+];
 for (const post of posts.slice(0, 3)) {
   const inNetwork = randInt(40, 95);
   recentRows.push([
-    post.url, post.date, post.type, String(post.impressions), `${inNetwork}%`, `${100 - inNetwork}%`,
-    String(Math.round(post.impressions * 0.6)), String(randInt(0, 40)), String(randInt(0, 30)),
-    String(Math.round(post.engagements * 0.8)), String(Math.round(post.engagements * 0.12)),
-    String(Math.round(post.engagements * 0.04)), String(randInt(0, 20)), String(randInt(0, 10)), '0',
+    post.url,
+    post.date,
+    post.type,
+    String(post.impressions),
+    `${inNetwork}%`,
+    `${100 - inNetwork}%`,
+    String(Math.round(post.impressions * 0.6)),
+    String(randInt(0, 40)),
+    String(randInt(0, 30)),
+    String(Math.round(post.engagements * 0.8)),
+    String(Math.round(post.engagements * 0.12)),
+    String(Math.round(post.engagements * 0.04)),
+    String(randInt(0, 20)),
+    String(randInt(0, 10)),
+    '0',
   ]);
 }
 
@@ -80,12 +118,28 @@ const byImpressions = [...posts].sort((a, b) => b.impressions - a.impressions).s
 const topRows: Row[] = [
   ['Maximum of 50 posts available to include in this list', null, null, null, null, null, null],
   [null, null, null, null, null, null, null],
-  ['Post URL', 'Post Publish Date', 'Engagements', '', 'Post URL', 'Post Publish Date', 'Impressions'],
+  [
+    'Post URL',
+    'Post Publish Date',
+    'Engagements',
+    '',
+    'Post URL',
+    'Post Publish Date',
+    'Impressions',
+  ],
 ];
 for (let i = 0; i < 50; i++) {
-  const e = byEngagements[i];
-  const m = byImpressions[i];
-  topRows.push([e.url, e.date, String(e.engagements), '', m.url, m.date, String(m.impressions)]);
+  const engaged = byEngagements[i];
+  const seen = byImpressions[i];
+  topRows.push([
+    engaged.url,
+    engaged.date,
+    String(engaged.engagements),
+    '',
+    seen.url,
+    seen.date,
+    String(seen.impressions),
+  ]);
 }
 
 // 3 to 8 new followers each day add up to more than 1,000 for Community builder.
@@ -94,15 +148,81 @@ const followerRows: Row[] = [
   [null, null],
   ['Date', 'New followers'],
 ];
-for (let i = 0; i < DAYS; i++) followerRows.push([fmt(day(i)), String(randInt(3, 8))]);
+for (let i = 0; i < DAYS; i++) {
+  followerRows.push([fmt(day(i)), String(randInt(3, 8))]);
+}
 
 const demographics: Record<string, string[]> = {
-  Company: ['Acme Corp', 'Globex', 'Initech', 'Umbrella', 'Hooli', 'Stark Industries', 'Wayne Enterprises', 'Pied Piper', 'Vandelay Industries', 'Soylent'],
-  Location: ['San Francisco Bay Area', 'New York City Metropolitan Area', 'Greater Seattle Area', 'Greater London', 'Bengaluru', 'Greater Boston', 'Austin, Texas Metropolitan Area', 'Toronto, Ontario', 'Los Angeles Metropolitan Area', 'Berlin Metropolitan Area'],
-  'Company size': ['10,001+ employees', '1001-5000 employees', '51-200 employees', '201-500 employees', '11-50 employees', '5001-10,000 employees', '501-1000 employees', '2-10 employees', '1 employee'],
-  Seniority: ['Senior', 'Entry', 'Director', 'Manager', 'VP', 'Owner', 'CXO', 'Partner', 'Training'],
-  'Job title': ['Software Engineer', 'Senior Software Engineer', 'Founder', 'Product Manager', 'Engineering Manager', 'Developer Advocate', 'Data Scientist', 'Recruiter', 'Chief Technology Officer', 'Student'],
-  Industry: ['Software Development', 'IT Services and IT Consulting', 'Technology, Information and Internet', 'Financial Services', 'Higher Education', 'Computer and Network Security', 'Staffing and Recruiting', 'Hospitals and Health Care', 'Advertising Services', 'Venture Capital and Private Equity Funds'],
+  Company: [
+    'Acme Corp',
+    'Globex',
+    'Initech',
+    'Umbrella',
+    'Hooli',
+    'Stark Industries',
+    'Wayne Enterprises',
+    'Pied Piper',
+    'Vandelay Industries',
+    'Soylent',
+  ],
+  Location: [
+    'San Francisco Bay Area',
+    'New York City Metropolitan Area',
+    'Greater Seattle Area',
+    'Greater London',
+    'Bengaluru',
+    'Greater Boston',
+    'Austin, Texas Metropolitan Area',
+    'Toronto, Ontario',
+    'Los Angeles Metropolitan Area',
+    'Berlin Metropolitan Area',
+  ],
+  'Company size': [
+    '10,001+ employees',
+    '1001-5000 employees',
+    '51-200 employees',
+    '201-500 employees',
+    '11-50 employees',
+    '5001-10,000 employees',
+    '501-1000 employees',
+    '2-10 employees',
+    '1 employee',
+  ],
+  Seniority: [
+    'Senior',
+    'Entry',
+    'Director',
+    'Manager',
+    'VP',
+    'Owner',
+    'CXO',
+    'Partner',
+    'Training',
+  ],
+  'Job title': [
+    'Software Engineer',
+    'Senior Software Engineer',
+    'Founder',
+    'Product Manager',
+    'Engineering Manager',
+    'Developer Advocate',
+    'Data Scientist',
+    'Recruiter',
+    'Chief Technology Officer',
+    'Student',
+  ],
+  Industry: [
+    'Software Development',
+    'IT Services and IT Consulting',
+    'Technology, Information and Internet',
+    'Financial Services',
+    'Higher Education',
+    'Computer and Network Security',
+    'Staffing and Recruiting',
+    'Hospitals and Health Care',
+    'Advertising Services',
+    'Venture Capital and Private Equity Funds',
+  ],
 };
 function demographicRows(limit: number): Row[] {
   const rows: Row[] = [['Top Demographics', 'Value', 'Percentage']];
@@ -123,9 +243,21 @@ function sheet(rows: Row[], widths: number[]): XLSX.WorkSheet {
 const workbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(workbook, sheet(discoveryRows, [20, 24]), 'DISCOVERY');
 XLSX.utils.book_append_sheet(workbook, sheet(engagementRows, [11, 12, 12]), 'ENGAGEMENT');
-XLSX.utils.book_append_sheet(workbook, sheet(recentRows, [79, 18, 10, 12, 25, 29, 16, 17, 16, 10, 9, 8, 7, 7, 26]), 'MOST RECENT POSTS');
+XLSX.utils.book_append_sheet(
+  workbook,
+  sheet(recentRows, [79, 18, 10, 12, 25, 29, 16, 17, 16, 10, 9, 8, 7, 7, 26]),
+  'MOST RECENT POSTS',
+);
 XLSX.utils.book_append_sheet(workbook, sheet(topRows, [79, 18, 12, 7, 79, 18, 12]), 'TOP POSTS');
 XLSX.utils.book_append_sheet(workbook, sheet(followerRows, [30, 14]), 'FOLLOWERS');
-XLSX.utils.book_append_sheet(workbook, sheet(demographicRows(10), [17, 37, 11]), 'AUDIENCE DEMOGRAPHICS');
-XLSX.utils.book_append_sheet(workbook, sheet(demographicRows(9), [17, 37, 11]), 'CONTENT DEMOGRAPHICS');
+XLSX.utils.book_append_sheet(
+  workbook,
+  sheet(demographicRows(10), [17, 37, 11]),
+  'AUDIENCE DEMOGRAPHICS',
+);
+XLSX.utils.book_append_sheet(
+  workbook,
+  sheet(demographicRows(9), [17, 37, 11]),
+  'CONTENT DEMOGRAPHICS',
+);
 writeFileSync(output, XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }));

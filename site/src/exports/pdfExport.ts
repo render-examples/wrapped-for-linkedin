@@ -7,7 +7,7 @@
  */
 
 import { exportCardsAsImagesBatch } from '@exports/batchImageExporter';
-import { EXPORT_HEIGHT, EXPORT_WIDTH } from '@exports/imageExport';
+import { EXPORT_HEIGHT, EXPORT_WIDTH, type ExportCardOptions } from '@exports/imageExport';
 
 const PDF_PAGE_WIDTH_MM = 216;
 const PDF_PAGE_HEIGHT_MM = (PDF_PAGE_WIDTH_MM * EXPORT_HEIGHT) / EXPORT_WIDTH;
@@ -21,17 +21,12 @@ async function loadJsPDF() {
   }
 }
 
-interface PDFExportOptions {
-  // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
-  postImage?: string | null;
-}
-
 /**
  * Build one PDF of all cards, one card per page. The caller saves or shares the Blob.
  */
 export async function buildCardsPDF(
   cardElements: HTMLElement[],
-  options: PDFExportOptions = {}
+  options: ExportCardOptions = {},
 ): Promise<Blob> {
   if (cardElements.length === 0) {
     throw new Error('No cards provided for PDF export');
@@ -40,9 +35,7 @@ export async function buildCardsPDF(
   const jsPDF = await loadJsPDF();
 
   try {
-    const imageDataUrls = await exportCardsAsImagesBatch(cardElements, {
-      postImage: options.postImage,
-    });
+    const imageDataUrls = await exportCardsAsImagesBatch(cardElements, options);
 
     const pdf = new jsPDF({
       orientation: 'portrait',

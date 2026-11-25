@@ -16,7 +16,8 @@ export interface DiscoveryData {
   total_impressions: number;
   members_reached: number;
   total_engagements?: number;
-  average_impressions_per_day?: number;
+  // The median of the daily impressions on the ENGAGEMENT sheet.
+  median_daily_impressions?: number;
   new_followers?: number;
 }
 

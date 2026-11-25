@@ -3,16 +3,19 @@
  */
 
 /**
- * Format a large number with a K or M suffix, for example 1500000 as "1.5M".
+ * Format a large number with a K or M suffix and one decimal, for example 1500000 as "1.5M".
+ * A trailing ".0" is removed. A value that rounds to 1000K shows as "1M".
  */
 export function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1) + 'M';
+  if (num < 1000) {
+    return num.toString();
   }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + 'K';
+  // Template strings drop a trailing ".0", for example `${1.0}` is "1".
+  const thousands = Math.round(num / 100) / 10;
+  if (thousands < 1000) {
+    return `${thousands}K`;
   }
-  return num.toString();
+  return `${Math.round(num / 100_000) / 10}M`;
 }
 
 // Parse an ISO date (YYYY-MM-DD) as a local date, so the day does not change with the time zone.
@@ -26,21 +29,17 @@ function parseISODate(dateString: string): Date {
  */
 export function formatDate(
   date: Date | string,
-  options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' }
+  options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' },
 ): string {
   const dateObj = typeof date === 'string' ? parseISODate(date) : date;
   return dateObj.toLocaleDateString('en-US', options);
 }
 
 /**
- * Format a date string as "January 15, 2024". Returns the input if it is not a valid date.
+ * Format an ISO date (YYYY-MM-DD) as "January 15, 2024". Returns other values as is.
  */
 export function formatDateString(dateStr: string): string {
-  if (!dateStr) return dateStr;
-  const date = new Date(dateStr);
-  return isNaN(date.getTime())
-    ? dateStr
-    : date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? formatDate(dateStr) : dateStr;
 }
 
 /**

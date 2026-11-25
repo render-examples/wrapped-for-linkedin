@@ -17,12 +17,25 @@ describe('formatVenueComparison', () => {
   });
 
   it('uses "twice" when the largest venue fills two times', () => {
-    expect(formatVenueComparison(1_500_000)).toBe("That's like filling Grand Central Terminal twice");
-    expect(formatVenueComparison(2_200_000)).toBe("That's like filling Grand Central Terminal twice");
+    expect(formatVenueComparison(1_500_000)).toBe(
+      "That's like filling Grand Central Terminal twice",
+    );
+    expect(formatVenueComparison(2_200_000)).toBe(
+      "That's like filling Grand Central Terminal twice",
+    );
+  });
+
+  it('does not round up to the next count', () => {
+    expect(formatVenueComparison(1_462_500)).toBe("That's like filling Grand Central Terminal");
+    expect(formatVenueComparison(2_212_500)).toBe(
+      "That's like filling Grand Central Terminal twice",
+    );
   });
 
   it('uses "N times" when the largest venue fills three or more times', () => {
-    expect(formatVenueComparison(2_250_000)).toBe("That's like filling Grand Central Terminal 3 times");
+    expect(formatVenueComparison(2_250_000)).toBe(
+      "That's like filling Grand Central Terminal 3 times",
+    );
   });
 
   it('returns null below the smallest venue', () => {

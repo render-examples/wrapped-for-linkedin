@@ -6,12 +6,20 @@ import type { ShareInfo } from '@/types/wrappedStories';
 
 const APP_URL = 'https://wrappedforlinkedin.onrender.com/';
 
-type ShareTextInput = Pick<ShareInfo, 'impressions' | 'membersReached' | 'year' | 'topBadgeSentence'>;
+type ShareTextInput = Pick<
+  ShareInfo,
+  'impressions' | 'membersReached' | 'year' | 'topBadgeSentence'
+>;
 
 /**
  * Build the prefilled post text. If the user has a badge, the text starts with the badge sentence.
  */
-export function buildShareText({ impressions, membersReached, year, topBadgeSentence }: ShareTextInput): string {
+export function buildShareText({
+  impressions,
+  membersReached,
+  year,
+  topBadgeSentence,
+}: ShareTextInput): string {
   const hashtags = `#WrappedForLinkedIn #${year}Recap #Render`;
 
   if (topBadgeSentence) {

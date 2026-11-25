@@ -44,11 +44,14 @@ describe('createPostRequest', () => {
     vi.useFakeTimers();
     vi.stubGlobal(
       'fetch',
-      vi.fn((_url: string, init: RequestInit) =>
-        new Promise<Response>((_resolve, reject) => {
-          init.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
-        })
-      )
+      vi.fn(
+        (_url: string, init: RequestInit) =>
+          new Promise<Response>((_resolve, reject) => {
+            init.signal?.addEventListener('abort', () =>
+              reject(new DOMException('Aborted', 'AbortError')),
+            );
+          }),
+      ),
     );
 
     const result = request.get(POST_URL);
@@ -59,6 +62,18 @@ describe('createPostRequest', () => {
   it('returns null on a network error', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
     await expect(request.get(POST_URL)).resolves.toBeNull();
+  });
+
+  it('tries again after a failed request', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValue(new Response(null, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(request.get(POST_URL)).resolves.toBeNull();
+    await expect(request.get(POST_URL)).resolves.toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('sends no request when the service URL is not set', async () => {

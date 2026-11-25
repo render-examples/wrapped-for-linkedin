@@ -2,7 +2,13 @@
  * Helpers shared by the sheet parsers.
  */
 import type { WorkSheet, WorkBook } from 'xlsx';
-import { MAX_ROWS, CONSECUTIVE_EMPTY_ROWS, EXCEL_DATE_OFFSET, MS_PER_DAY, MIN_PERCENTAGE } from '@utils/excel/constants';
+import {
+  MAX_ROWS,
+  CONSECUTIVE_EMPTY_ROWS,
+  EXCEL_DATE_OFFSET,
+  MS_PER_DAY,
+  MIN_PERCENTAGE,
+} from '@utils/excel/constants';
 
 /**
  * Get the value of a cell, for example "B5". Returns undefined if the cell is empty.
@@ -33,8 +39,15 @@ export function parsePercentage(value: unknown): number {
   return isNaN(parsed) ? 0 : parsed / 100;
 }
 
+// Format a Date as YYYY-MM-DD in local time. toISOString() uses UTC, which changes the day east of UTC.
+function toLocalISODate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 /**
- * Parse a Date, a date string, or an Excel serial date.
+ * Parse a Date, a date string such as "1/15/2024", or an Excel serial date.
  * @returns An ISO date (YYYY-MM-DD). Returns the input string if it is not a valid date,
  * and an empty string for other values that are not dates.
  */
@@ -42,18 +55,21 @@ export function parseDate(value: unknown): string {
   if (!value) return '';
 
   if (value instanceof Date) {
-    return value.toISOString().split('T')[0];
+    return toLocalISODate(value);
   }
 
   if (typeof value === 'string') {
-    const date = new Date(value);
-    if (!isNaN(date.getTime())) {
-      return date.toISOString().split('T')[0];
+    // new Date() parses an ISO date as UTC midnight, so keep it as is.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
     }
-    return value;
+    // new Date() parses other formats, such as MM/DD/YYYY, as local time.
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? value : toLocalISODate(date);
   }
 
   if (typeof value === 'number') {
+    // The serial date is a UTC midnight, so the UTC day is the correct day.
     const excelDate = new Date((value - EXCEL_DATE_OFFSET) * MS_PER_DAY);
     return excelDate.toISOString().split('T')[0];
   }
@@ -80,7 +96,9 @@ export function parseNumber(value: unknown): number {
  */
 export function findSheet(workbook: WorkBook, sheetNames: string[]): WorkSheet | null {
   for (const sheetName of sheetNames) {
-    const found = workbook.SheetNames.find((name) => name.toLowerCase() === sheetName.toLowerCase());
+    const found = workbook.SheetNames.find(
+      (name) => name.toLowerCase() === sheetName.toLowerCase(),
+    );
     if (found) {
       return workbook.Sheets[found];
     }
@@ -114,7 +132,7 @@ export function findRowWithKeywords(
   sheet: WorkSheet,
   columns: string[],
   keywords: string[],
-  maxRow: number = MAX_ROWS.HEADER_SCAN
+  maxRow: number = MAX_ROWS.HEADER_SCAN,
 ): number | null {
   for (let row = 1; row <= maxRow; row++) {
     for (const col of columns) {
@@ -135,7 +153,7 @@ export function* iterateRowsUntilEmpty(
   startRow: number,
   columns: string[],
   maxRow: number = MAX_ROWS.DATA,
-  maxEmptyRows: number = CONSECUTIVE_EMPTY_ROWS
+  maxEmptyRows: number = CONSECUTIVE_EMPTY_ROWS,
 ): Generator<number> {
   let emptyRowCount = 0;
 
@@ -158,7 +176,11 @@ export function* iterateRowsUntilEmpty(
 /**
  * Get the values of `columns` in one row, keyed by column letter.
  */
-export function getRowValues(sheet: WorkSheet, row: number, columns: string[]): Record<string, unknown> {
+export function getRowValues(
+  sheet: WorkSheet,
+  row: number,
+  columns: string[],
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const col of columns) {
     result[col] = getCellValue(sheet, `${col}${row}`);

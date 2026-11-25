@@ -38,7 +38,7 @@ function addPostMetric(
   postsByUrl: Map<string, PostData>,
   columns: MetricColumns,
   rowValues: Record<string, unknown>,
-  metricType: MetricType
+  metricType: MetricType,
 ): void {
   const url = parseURL(rowValues[columns.URL]);
   if (!url) return;
@@ -74,7 +74,7 @@ export function parseTopPosts(workbook: WorkBook): TopPost[] {
     const headerRow = findRowWithKeywords(
       sheet,
       [layout.ENGAGEMENTS.URL, layout.ENGAGEMENTS.DATE],
-      HEADER_KEYWORDS.URL
+      HEADER_KEYWORDS.URL,
     );
     if (!headerRow) {
       console.warn('Could not find header row in top posts sheet');

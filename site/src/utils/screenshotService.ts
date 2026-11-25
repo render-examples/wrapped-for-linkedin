@@ -47,12 +47,13 @@ interface PostRequest<T> {
 }
 
 /**
- * Create a client for one service path. It sends at most one request per post in a session.
+ * Create a client for one service path. It keeps each result for the session, so it sends
+ * one request per post. A null result is not kept, so a later call sends the request again.
  * `read` turns the response into a value. If it throws, the result is null.
  */
 export function createPostRequest<T>(
   path: ServicePath,
-  read: (response: Response) => T | null | Promise<T | null>
+  read: (response: Response) => T | null | Promise<T | null>,
 ): PostRequest<T> {
   const cache = new Map<string, Promise<T | null>>();
 
@@ -70,12 +71,19 @@ export function createPostRequest<T>(
       if (!url) {
         return Promise.resolve(null);
       }
-      let pending = cache.get(url);
-      if (!pending) {
-        pending = send(url);
-        cache.set(url, pending);
+      const cached = cache.get(url);
+      if (cached) {
+        return cached;
       }
-      return pending;
+      const request = send(url);
+      cache.set(url, request);
+      // Do not keep a failed result, so the next call tries again.
+      void request.then((result) => {
+        if (result === null && cache.get(url) === request) {
+          cache.delete(url);
+        }
+      });
+      return request;
     },
     clear() {
       cache.clear();

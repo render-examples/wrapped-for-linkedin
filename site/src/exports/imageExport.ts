@@ -12,6 +12,7 @@ import { createRoot } from 'react-dom/client';
 import { toPng } from 'html-to-image';
 import hashSum from 'hash-sum';
 import { imageCache } from '@exports/imageCache';
+import { isPostImageDataUrl } from '@exports/postScreenshot';
 import { Icon } from '@components/Icon';
 
 export const EXPORT_WIDTH = 1080;
@@ -22,38 +23,34 @@ const EXPORT_CSS_WIDTH = 432;
 const EXPORT_CSS_HEIGHT = (EXPORT_CSS_WIDTH * EXPORT_HEIGHT) / EXPORT_WIDTH;
 const EXPORT_PIXEL_RATIO = EXPORT_WIDTH / EXPORT_CSS_WIDTH;
 const EXPORT_ZINDEX = 999999;
-const DEFAULT_BACKGROUND = '#0d0d0d';
 
 // Elements that only make sense on screen.
-const SCREEN_ONLY_SELECTORS = [
-  '.share-button-wrapper',
-  '.card-progress-wrapper',
-  '.card-logo',
-  '.post-status-link',
-].join(', ');
+const SCREEN_ONLY_SELECTORS = ['.share-button-wrapper', '.card-logo', '.post-status-link'].join(
+  ', ',
+);
 
-interface ExportCardOptions {
-  backgroundColor?: string;
+export interface ExportCardOptions {
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
   postImage?: string | null;
 }
 
-/**
- * Get the card background color from the `--card-bg-color` custom property.
- */
-function getCardBackgroundColor(element: HTMLElement): string {
-  const value = getComputedStyle(element).getPropertyValue('--card-bg-color').trim();
-  return value || DEFAULT_BACKGROUND;
+// Get the page background color from the `--bg` token in index.css.
+function getBackgroundColor(element: HTMLElement): string {
+  return getComputedStyle(element).getPropertyValue('--bg').trim();
 }
 
 // Render the trophy icon at once, so the clone has the SVG before the export reads it.
+// Copy the SVG out of the React root, then unmount the root.
 function createPostFallback(): HTMLElement {
   const fallback = document.createElement('div');
   fallback.className = 'peak-post-export-fallback';
   const icon = document.createElement('div');
   icon.className = 'peak-post-export-fallback-icon';
-  const root = createRoot(icon);
+  const holder = document.createElement('div');
+  const root = createRoot(holder);
   flushSync(() => root.render(createElement(Icon, { name: 'trophy' })));
+  icon.append(...Array.from(holder.childNodes, (node) => node.cloneNode(true)));
+  root.unmount();
   fallback.appendChild(icon);
   return fallback;
 }
@@ -129,15 +126,16 @@ function waitForImages(root: HTMLElement): Promise<void> {
         : new Promise<void>((resolve) => {
             img.onload = () => resolve();
             img.onerror = () => resolve();
-          })
-    )
+          }),
+    ),
   ).then(() => undefined);
 }
 
-function getCacheKey(element: HTMLElement, backgroundColor: string, postImage: string | null): string {
-  const id = element.id || `card-${hashSum(element.innerHTML)}`;
+// The key uses the card HTML and the post screenshot. Only the Peak Performer card has a
+// screenshot, so the large data URL is hashed at most once per export.
+function getCacheKey(element: HTMLElement, postImage: string | null): string {
   const postKey = postImage ? hashSum(postImage) : 'none';
-  return `${id}-${backgroundColor.replace('#', '')}-${postKey}`;
+  return `card-${hashSum(element.innerHTML)}-${postKey}`;
 }
 
 // Lay out the clone at the export size in a hidden container on the page.
@@ -176,21 +174,23 @@ function mountOffscreen(clone: HTMLElement): HTMLElement {
 
 /**
  * Export a single card as a 1080 × 1350 PNG.
- * Results are cached by card content, background color, and post screenshot.
+ * Results are cached by card content and post screenshot.
  * @returns A data URL of the PNG.
  */
 export async function exportCardAsImage(
   element: HTMLElement,
-  options: ExportCardOptions = {}
+  options: ExportCardOptions = {},
 ): Promise<string> {
-  const { backgroundColor = getCardBackgroundColor(element) } = options;
-
   try {
-    // Only the Peak Performer card shows the post screenshot.
+    // Only the Peak Performer card shows the post screenshot. Use only a PNG or JPEG data URL,
+    // because the export puts it in a CSS url().
     const usesPostImage = element.querySelector('.peak-post-embed-wrapper') !== null;
-    const postImage = usesPostImage ? (options.postImage ?? null) : null;
+    const postImage =
+      usesPostImage && options.postImage && isPostImageDataUrl(options.postImage)
+        ? options.postImage
+        : null;
 
-    const cacheKey = getCacheKey(element, backgroundColor, postImage);
+    const cacheKey = getCacheKey(element, postImage);
     const cached = imageCache.get(cacheKey);
     if (cached) {
       return cached;
@@ -210,7 +210,7 @@ export async function exportCardAsImage(
         pixelRatio: EXPORT_PIXEL_RATIO,
         width: EXPORT_CSS_WIDTH,
         height: EXPORT_CSS_HEIGHT,
-        backgroundColor,
+        backgroundColor: getBackgroundColor(clone),
       });
 
       imageCache.set(cacheKey, dataUrl);

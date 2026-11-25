@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { isCardNavigationTouch } from './storyTouch';
 
-const viewport = (containsTarget: boolean) => ({ contains: () => containsTarget }) as unknown as Element;
+const viewport = (containsTarget: boolean) =>
+  ({ contains: () => containsTarget }) as unknown as Element;
 // A fake element. closest() finds a match when the element is one of the given tags or roles.
 const element = (matches: string[]) =>
   ({

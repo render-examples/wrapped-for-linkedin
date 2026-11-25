@@ -10,7 +10,6 @@ import { formatNumber } from '@utils/formatters';
 import { getEarnedBadges } from '@utils/badges';
 
 const AUDIENCE_ITEMS_PER_SECTION = 3;
-const CARD_BACKGROUND = '#0d0d0d';
 
 // Convert a fraction from 0 to 1 to a whole-number percentage.
 function toPercent(fraction: number | undefined): number {
@@ -39,7 +38,7 @@ export function getAudienceSections(demographics?: DemographicInsights): Audienc
             })),
           },
         ]
-      : []
+      : [],
   );
 }
 
@@ -50,7 +49,6 @@ export function getAudienceSections(demographics?: DemographicInsights): Audienc
 export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
   const cards: ShareableCard[] = [];
 
-  // Total impressions
   if (data.discovery_data?.total_impressions) {
     cards.push({
       id: 'total-impressions',
@@ -62,12 +60,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         icon: 'sparkle',
         context: 'Your posts were seen this many times',
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-purple)',
     });
   }
 
-  // Members reached
   if (data.discovery_data?.members_reached) {
     const membersReached = data.discovery_data.members_reached;
     const venueFormatted = formatVenueComparison(membersReached);
@@ -85,12 +81,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         icon: 'users',
         context: contextMessage,
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-blue)',
     });
   }
 
-  // Top post
   if (data.top_posts && data.top_posts.length > 0) {
     const topPost = data.top_posts[0];
 
@@ -106,12 +100,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         url: topPost.url,
         date: topPost.publish_date,
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-yellow)',
     });
   }
 
-  // Top industry
   if (data.demographics?.industries && data.demographics.industries.length > 0) {
     const topIndustry = data.demographics.industries[0];
     const percentage = toPercent(topIndustry.percentage);
@@ -126,12 +118,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         context: 'Your primary professional industry',
         percentage: topIndustry.percentage,
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-green)',
     });
   }
 
-  // Audience snapshot
   const audienceSections = getAudienceSections(data.demographics);
   if (audienceSections.length > 0) {
     cards.push({
@@ -142,12 +132,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         context: 'The people who saw your posts',
         sections: audienceSections,
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-blue)',
     });
   }
 
-  // Best month
   const bestMonth = calculateBestMonth(data.engagement_by_day ?? []);
   if (bestMonth) {
     cards.push({
@@ -158,14 +146,12 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         value: bestMonth.monthYear,
         label: 'was your month',
         icon: 'calendar',
-        context: `${bestMonth.peopleEngaged.toLocaleString()} people interacted with your content`,
+        context: `${bestMonth.engagements.toLocaleString('en-US')} engagements on your content`,
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-green)',
     });
   }
 
-  // New followers
   if (data.discovery_data?.new_followers) {
     cards.push({
       id: 'new-followers',
@@ -177,12 +163,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
         icon: 'confetti',
         context: 'Your community is growing!',
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-pink)',
     });
   }
 
-  // Badges
   const badges = getEarnedBadges(data);
   if (badges.length > 0) {
     cards.push({
@@ -196,7 +180,6 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
             : `You earned ${badges.length} badges this year`,
         badges: badges.map(({ id, name, description, icon }) => ({ id, name, description, icon })),
       },
-      backgroundColor: CARD_BACKGROUND,
       accent: 'var(--accent-purple)',
     });
   }
@@ -213,7 +196,6 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
       newFollowers: formatNumber(data.discovery_data?.new_followers || 0),
       context: '',
     },
-    backgroundColor: CARD_BACKGROUND,
     accent: 'var(--accent-purple)',
   });
 

@@ -18,6 +18,7 @@ const VENUES = [
 
 interface VenueComparison {
   venue: string;
+  // How many whole times the reach fills the venue.
   times: number;
 }
 
@@ -33,7 +34,7 @@ function getVenueComparison(membersReached: number): VenueComparison | null {
 
   return {
     venue: venue.name,
-    times: Math.round((membersReached / venue.capacity) * 10) / 10,
+    times: Math.floor(membersReached / venue.capacity),
   };
 }
 
@@ -47,8 +48,8 @@ export function formatVenueComparison(membersReached: number): string | null {
     return null;
   }
 
-  const times = Math.floor(comparison.times);
-  const prefix = `That's like filling ${comparison.venue}`;
+  const { venue, times } = comparison;
+  const prefix = `That's like filling ${venue}`;
 
   if (times === 1) {
     return prefix;

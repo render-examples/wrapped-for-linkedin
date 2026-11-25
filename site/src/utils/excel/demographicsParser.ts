@@ -1,5 +1,5 @@
 /**
- * Parse the DEMOGRAPHICS sheet. Each row has a category in column A, such as "Job titles",
+ * Parse the DEMOGRAPHICS or AUDIENCE DEMOGRAPHICS sheet. Each row has a category in column A, such as "Job titles",
  * an item name in column B, and a percentage in column C. The rows of one category are together.
  */
 import type { WorkBook, WorkSheet } from 'xlsx';
@@ -9,14 +9,14 @@ import { SHEET_NAMES, COLUMN_LAYOUTS, MAX_ROWS } from '@utils/excel/constants';
 
 type Category = keyof DemographicInsights;
 
-// Patterns that match the lowercase category names in column A.
+// Patterns that match the lowercase category names in column A, singular or plural.
 const CATEGORY_PATTERNS: [Category, RegExp][] = [
   ['job_titles', /^job titles?$/],
   ['locations', /^locations?$/],
-  ['industries', /^industries?$/],
+  ['industries', /^industr(y|ies)$/],
   ['seniority', /^seniority$/],
-  ['company_size', /^company size$/],
-  ['companies', /^(specific )?companies?$/],
+  ['company_size', /^company sizes?$/],
+  ['companies', /^(specific )?compan(y|ies)$/],
 ];
 
 function getCategory(cellValue: unknown): Category | null {
@@ -32,16 +32,15 @@ function isHeaderValue(value: unknown): boolean {
   return str === 'value' || str === 'percentage';
 }
 
-// Sort by percentage, highest first, then by name.
-function sortDemographicItems(items: DemographicItem[]): DemographicItem[] {
-  return items.sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
-}
-
 /**
  * Read the rows of one category from `startRow` until the category changes.
  * @returns The items, highest percentage first.
  */
-function parseCategoryRows(sheet: WorkSheet, startRow: number, category: Category): DemographicItem[] {
+function parseCategoryRows(
+  sheet: WorkSheet,
+  startRow: number,
+  category: Category,
+): DemographicItem[] {
   const items: DemographicItem[] = [];
   const { CATEGORY: catCol, NAME: nameCol, PERCENTAGE: pctCol } = COLUMN_LAYOUTS.DEMOGRAPHICS;
 
@@ -66,7 +65,8 @@ function parseCategoryRows(sheet: WorkSheet, startRow: number, category: Categor
     });
   }
 
-  return sortDemographicItems(items);
+  // Sort by percentage, highest first, then by name.
+  return items.sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name));
 }
 
 /**

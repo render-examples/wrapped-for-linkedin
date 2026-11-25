@@ -23,9 +23,11 @@ export function isTouchDevice(): boolean {
 function getBrowserShareEnv(): ShareEnv {
   const clipboard = navigator.clipboard;
   return {
-    canShare: typeof navigator.canShare === 'function' ? navigator.canShare.bind(navigator) : undefined,
+    canShare:
+      typeof navigator.canShare === 'function' ? navigator.canShare.bind(navigator) : undefined,
     share: typeof navigator.share === 'function' ? navigator.share.bind(navigator) : undefined,
-    writeText: typeof clipboard?.writeText === 'function' ? clipboard.writeText.bind(clipboard) : undefined,
+    writeText:
+      typeof clipboard?.writeText === 'function' ? clipboard.writeText.bind(clipboard) : undefined,
     isTouchDevice: isTouchDevice(),
   };
 }
@@ -52,7 +54,7 @@ export function getShareMode(file: File, env: ShareEnv = getBrowserShareEnv()): 
 export async function shareFile(
   file: File,
   text: string,
-  env: ShareEnv = getBrowserShareEnv()
+  env: ShareEnv = getBrowserShareEnv(),
 ): Promise<ShareResult> {
   if (!env.share) {
     return 'failed';
