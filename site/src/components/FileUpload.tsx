@@ -6,6 +6,14 @@ import { useSampleData } from '@/hooks/useSampleData';
 import { SampleDataButton } from '@components/SampleDataButton';
 import '@styles/FileUpload.css';
 
+// Passed with an error, so the caller always gets a valid ParsedExcelData.
+const EMPTY_DATA: ParsedExcelData = {
+  discovery_data: undefined,
+  top_posts: [],
+  demographics: undefined,
+  engagement_by_day: [],
+};
+
 interface FileUploadProps {
   onFileProcessed: (data: ParsedExcelData, error?: string, uploadDate?: number, isFromCache?: boolean) => void;
   isLoading?: boolean;
@@ -18,16 +26,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
 
   const sampleData = useSampleData(
     (data) => onFileProcessed(data, undefined, Date.now(), false),
-    (error) => {
-      // Create a minimal valid ParsedExcelData structure for error handling
-      const emptyData: ParsedExcelData = {
-        discovery_data: undefined,
-        top_posts: [],
-        demographics: undefined,
-        engagement_by_day: []
-      };
-      onFileProcessed(emptyData, error.message);
-    }
+    (error) => onFileProcessed(EMPTY_DATA, error.message)
   );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -41,14 +40,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
       console.error('Error processing file:', error);
-      // Create a minimal valid ParsedExcelData structure for error handling
-      const emptyData: ParsedExcelData = {
-        discovery_data: undefined,
-        top_posts: [],
-        demographics: undefined,
-        engagement_by_day: []
-      };
-      onFileProcessed(emptyData, errorMessage);
+      onFileProcessed(EMPTY_DATA, errorMessage);
     }
   }, [cache, onFileProcessed]);
 
@@ -89,9 +81,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
       <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isLoading || sampleData.isLoading ? 'disabled' : ''}`}>
         <input {...getInputProps()} />
         <div className="dropzone-content">
-          <>
           <p className="dropzone-text">Upload your LinkedIn analytics file here</p>
-          </>
           <img src="/images/upload/icon-upload.svg" alt="Upload" className="upload-icon" />
           {isDragActive ? (
             <p className="dropzone-text">Drop your file here</p>

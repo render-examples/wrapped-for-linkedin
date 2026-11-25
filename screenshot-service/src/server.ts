@@ -1,5 +1,5 @@
-import { createApp } from './app.js';
-import { closeBrowser, fetchPostStatus, takePostScreenshot } from './linkedin.js';
+import { createApp } from './app.ts';
+import { closeBrowser, fetchPostStatus, takePostScreenshot } from './linkedin.ts';
 
 const port = Number(process.env.PORT) || 10000;
 const allowedOrigins = (process.env.ALLOWED_ORIGIN || '')

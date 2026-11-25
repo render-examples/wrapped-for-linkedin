@@ -24,7 +24,6 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
   demographics,
   onUploadNewData,
 }) => {
-  // Extract discovery data if available
   const discoveryData: DiscoveryData | undefined = data.discovery_data;
   const topPosts: TopPost[] = data.top_posts || [];
 
@@ -52,9 +51,8 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
 
   return (
     <div className="unified-dashboard">
-      {/* Wrapped Stories Section (at the top) */}
       {wrappedCards.length > 0 && (
-        <WrappedStoriesContainer 
+        <WrappedStoriesContainer
           cards={wrappedCards}
           shareInfo={shareInfo}
           autoPlayDuration={5000}
@@ -64,7 +62,6 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
 
       <BadgesSection badges={earnedBadges} />
 
-      {/* Main Dashboard Section */}
       {discoveryData && (
         <SpotifyDashboard
           discovery={discoveryData}
@@ -72,17 +69,14 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
         />
       )}
 
-      {/* Top posts Section */}
       {topPosts.length > 0 && (
         <TopPostsDisplay posts={topPosts} />
       )}
 
-      {/* Demographics Section */}
       {demographics && (
         <DemographicsView demographics={demographics} />
       )}
 
-      {/* Fallback content if no discovery data */}
       {!discoveryData && !demographics && (
         <div className="fallback-section">
           <h1 className="fallback-title">Your LinkedIn year in review</h1>
@@ -97,7 +91,6 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
         </div>
       )}
 
-      {/* Final Message - That's a wrap! */}
       <FinalMessage />
     </div>
   );

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { embedUrlForUrn, isValidUrn } from '../src/urn.js';
+import { embedUrlForUrn, isValidUrn } from '../src/urn.ts';
 
 describe('isValidUrn', () => {
   it('accepts activity, share, and ugcPost URNs', () => {
@@ -10,7 +10,7 @@ describe('isValidUrn', () => {
   });
 
   it('rejects full URLs and other values', () => {
-    const invalid = [
+    const invalid: unknown[] = [
       'https://www.linkedin.com/embed/feed/update/urn:li:share:123',
       'https://evil.example.com',
       'urn:li:share:',

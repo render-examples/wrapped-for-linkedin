@@ -126,12 +126,12 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   // Store latest handlers in refs for event listeners
   const handleNextRef = useRef(handleNext);
   const handlePreviousRef = useRef(handlePrevious);
-  const clearAutoPlayTimerRef2 = useRef(clearAutoPlayTimer);
+  const clearAutoPlayTimerRef = useRef(clearAutoPlayTimer);
 
   useEffect(() => {
     handleNextRef.current = handleNext;
     handlePreviousRef.current = handlePrevious;
-    clearAutoPlayTimerRef2.current = clearAutoPlayTimer;
+    clearAutoPlayTimerRef.current = clearAutoPlayTimer;
   });
 
   // Keyboard navigation
@@ -145,7 +145,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
           handlePreviousRef.current();
           break;
         case 'Escape':
-          clearAutoPlayTimerRef2.current();
+          clearAutoPlayTimerRef.current();
           setIsAutoPlaying(false);
           break;
         default:
@@ -273,9 +273,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     return null;
   }
 
-  const currentCard = cards[currentCardIndex];
-  const viewportClassName = `story-viewport${currentCard?.type === 'peak-performer' ? ' peak-performer-viewport' : ''}`;
-
   return (
     <div className="wrapped-stories-container">
       {/* Left arrow - positioned on left side of viewport */}
@@ -289,7 +286,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       </button>
 
       <div
-        className={viewportClassName}
+        className="story-viewport"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onPointerDown={handlePointerDown}
@@ -297,15 +294,11 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         onPointerLeave={handlePointerUp}
       >
         {/* Swipe Arrow Indicators */}
-        {swipeArrowDirection && (
-          <>
-            {swipeArrowDirection === 'left' && (
-              <div className="swipe-arrow swipe-arrow-left">→</div>
-            )}
-            {swipeArrowDirection === 'right' && (
-              <div className="swipe-arrow swipe-arrow-right">←</div>
-            )}
-          </>
+        {swipeArrowDirection === 'left' && (
+          <div className="swipe-arrow swipe-arrow-left">→</div>
+        )}
+        {swipeArrowDirection === 'right' && (
+          <div className="swipe-arrow swipe-arrow-right">←</div>
         )}
 
         {/* Render all cards - CSS makes only active one visible */}
@@ -314,7 +307,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             key={card.id}
             card={card}
             isActive={index === currentCardIndex}
-            cardIndex={index}
             cardRef={cardRefs[index]}
             allCards={cardRefs}
             shareInfo={shareInfo}

@@ -34,7 +34,7 @@ export async function exportCardsAsPDFBatch(
   filename: string = `wrapped_${new Date().getFullYear()}.pdf`,
   options: PDFExportOptions = {}
 ): Promise<void> {
-  if (!cardElements || cardElements.length === 0) {
+  if (cardElements.length === 0) {
     throw new Error('No cards provided for PDF export');
   }
 
@@ -42,7 +42,6 @@ export async function exportCardsAsPDFBatch(
 
   try {
     const imageDataUrls = await exportCardsAsImagesBatch(cardElements, {
-      concurrency: 8,
       postImage: options.postImage,
     });
 

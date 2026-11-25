@@ -5,15 +5,21 @@
   "type": "module",
   "description": "Takes screenshots of public LinkedIn post embeds for Wrapped for LinkedIn exports.",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.18"
   },
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node --test"
+    "start": "node src/server.ts",
+    "test": "tsc && node --test 'test/**/*.test.ts'",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.5",
     "playwright": "1.65.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "typescript": "~5.9.3"
   }
 }

@@ -95,8 +95,7 @@ a:focus-visible,
   outline-offset: 4px;
 }
 
-/* Mono label, used for eyebrows, metric labels, and badge rules. */
-.mono-label,
+/* Mono label for section eyebrows. */
 .section-eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;

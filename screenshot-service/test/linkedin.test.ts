@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { classifyEmbedResponse, clipAboveActionBar } from '../src/linkedin.js';
+import { classifyEmbedResponse, clipAboveActionBar } from '../src/linkedin.ts';
 
 describe('classifyEmbedResponse', () => {
   it('returns public for a 200 with a post card', () => {

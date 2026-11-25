@@ -11,4 +11,4 @@ RUN npm ci --omit=dev
 COPY src ./src
 
 USER pwuser
-CMD ["node", "src/server.js"]
+CMD ["node", "src/server.ts"]

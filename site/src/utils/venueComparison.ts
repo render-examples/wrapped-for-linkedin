@@ -1,9 +1,8 @@
 /**
- * Venue comparison utility for visualizing reach
- * Helps creators understand their reach by comparing to famous venues
+ * Compare a reach number to the capacity of a well-known venue.
  */
 
-// All venues organized by capacity in ascending order
+// Sorted by capacity, smallest first.
 const VENUES = [
   { name: 'Madison Square Garden', capacity: 22000 },
   { name: 'Fenway Park', capacity: 37755 },
@@ -17,42 +16,29 @@ const VENUES = [
   { name: 'Grand Central Terminal', capacity: 750000 },
 ] as const;
 
-export interface VenueComparison {
+interface VenueComparison {
   venue: string;
   times: number;
 }
 
 /**
- * Get a venue comparison for a given reach number
- * Uses threshold-based matching: finds the appropriate venue at or below the reach
- * @param membersReached - The number of members reached
- * @returns Object with venue name and number of times it would fill, or null if too small
+ * Find the largest venue that the reach fills at least once.
+ * @returns The venue and how many times the reach fills it, or null if the reach is below the smallest venue.
  */
-export function getVenueComparison(membersReached: number): VenueComparison | null {
-  // Smallest venue threshold - if below this, don't show comparison
-  if (membersReached < VENUES[0].capacity) {
+function getVenueComparison(membersReached: number): VenueComparison | null {
+  const venue = [...VENUES].reverse().find((v) => membersReached >= v.capacity);
+  if (!venue) {
     return null;
   }
 
-  // Find the largest venue that fits within the reach
-  // Start from the end and work backwards to find the appropriate venue
-  let selectedVenue: typeof VENUES[number] = VENUES[0];
-  for (let i = VENUES.length - 1; i >= 0; i--) {
-    if (membersReached >= VENUES[i].capacity) {
-      selectedVenue = VENUES[i];
-      break;
-    }
-  }
-
-  const times = Math.round((membersReached / selectedVenue.capacity) * 10) / 10;
   return {
-    venue: selectedVenue.name,
-    times: Math.max(times, 1),
+    venue: venue.name,
+    times: Math.round((membersReached / venue.capacity) * 10) / 10,
   };
 }
 
 /**
- * Format the venue comparison as a readable string
+ * Format the venue comparison as a sentence.
  * @param membersReached - The number of members reached
  * @returns A string like "That's like filling Fenway Park twice", or null if the reach is too small
  */

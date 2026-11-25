@@ -10,7 +10,6 @@ import { usePostStatus } from '@/hooks/usePostStatus';
 interface StoryCardProps {
   card: ShareableCard;
   isActive: boolean;
-  cardIndex: number;
   cardRef?: React.RefObject<HTMLDivElement>;
   allCards?: React.RefObject<HTMLDivElement>[];
   shareInfo: ShareInfo;
@@ -231,7 +230,6 @@ export const StoryCard: React.FC<StoryCardProps> = ({
         <div className="card-footer">
           <div className="branding">Wrapped for LinkedIn</div>
           <ShareButton
-            cardId={card.id}
             card={card}
             cardRef={cardRef as React.RefObject<HTMLDivElement>}
             allCards={allCards}

@@ -15,7 +15,7 @@ Options:
   --help        Show this help and exit
 
 Requirements:
-  - Node.js 20.19+ or 22.12+ or 23.x+
+  - Node.js 22.18+
   - npm dependencies installed (npm install in site/ directory)
 EOF
 }

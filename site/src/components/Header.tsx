@@ -2,22 +2,16 @@ import '@styles/Header.css';
 
 interface HeaderProps {
   onLogoClick?: () => void;
-  onClearCache?: () => void;
-  hasCachedData?: boolean;
 }
 
 export function Header({ onLogoClick }: HeaderProps) {
-  const handleHomeClick = () => {
-    onLogoClick?.();
-  };
-
   return (
     <header className="app-header">
       <div className="header-content">
         <div className="header-left">
           <button
             className="wrapped-for-linkedin-title-container"
-            onClick={handleHomeClick}
+            onClick={() => onLogoClick?.()}
             aria-label="Navigate to home"
             title="Wrapped for LinkedIn home"
           >

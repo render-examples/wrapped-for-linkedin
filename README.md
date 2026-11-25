@@ -31,7 +31,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 ## Run locally
 
-You need Node.js 20.19+ or 22.12+ for the site, and Node.js 22+ for the screenshot service.
+You need Node.js 22.18 or later. Node runs the TypeScript files in `screenshot-service/` and `site/og/` directly, without a build step.
 
 ```bash
 git clone https://github.com/render-examples/wrapped-for-linkedin.git

@@ -4,17 +4,11 @@ const URN_PATTERN = /^urn:li:(activity|share|ugcPost):\d+$/;
 
 const EMBED_BASE = 'https://www.linkedin.com/embed/feed/update/';
 
-/**
- * @param {unknown} value
- * @returns {value is string}
- */
-export function isValidUrn(value) {
+export function isValidUrn(value: unknown): value is string {
   return typeof value === 'string' && URN_PATTERN.test(value);
 }
 
-/**
- * @param {string} urn A URN that passed isValidUrn.
- */
-export function embedUrlForUrn(urn) {
+/** Build the embed URL for a URN that passed isValidUrn. */
+export function embedUrlForUrn(urn: string): string {
   return `${EMBED_BASE}${urn}`;
 }

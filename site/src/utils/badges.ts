@@ -3,8 +3,8 @@
  * The list order is the rank. The first earned badge is the top badge.
  */
 
-import type { IconName } from "@components/Icon";
-import type { ParsedExcelData } from "@utils/excel/types";
+import type { IconName } from '@components/Icon';
+import type { ParsedExcelData } from '@utils/excel/types';
 
 export const MILLIONAIRE_IMPRESSIONS = 1_000_000;
 export const VIRAL_POST_IMPRESSIONS = 100_000;
@@ -12,7 +12,7 @@ export const COMMUNITY_BUILDER_FOLLOWERS = 1_000;
 export const GRINDSET_MONTHS = 12;
 
 export interface Badge {
-  id: "millionaire" | "viral" | "community-builder" | "grindset";
+  id: 'millionaire' | 'viral' | 'community-builder' | 'grindset';
   name: string;
   // The rule, as shown to the user.
   description: string;
@@ -38,39 +38,39 @@ function countActiveMonths(data: ParsedExcelData): number {
 
 export const BADGES: Badge[] = [
   {
-    id: "millionaire",
-    name: "Millionaire",
-    description: "1M+ total impressions",
+    id: 'millionaire',
+    name: 'Millionaire',
+    description: '1M+ total impressions',
     shareSentence:
-      "I hit a million impressions on LinkedIn this year. Did you?",
-    icon: "diamond",
+      'I hit a million impressions on LinkedIn this year. Did you?',
+    icon: 'diamond',
     isEarned: (data) =>
       (data.discovery_data?.total_impressions ?? 0) >= MILLIONAIRE_IMPRESSIONS,
   },
   {
-    id: "viral",
-    name: "Viral",
-    description: "A post with 100K+ impressions",
-    shareSentence: "One of my posts hit 100K impressions this year. Did yours?",
-    icon: "rocket",
+    id: 'viral',
+    name: 'Viral',
+    description: 'A post with 100K+ impressions',
+    shareSentence: 'One of my posts hit 100K impressions this year. Did yours?',
+    icon: 'rocket',
     isEarned: (data) =>
       (data.top_posts?.[0]?.impressions ?? 0) >= VIRAL_POST_IMPRESSIONS,
   },
   {
-    id: "community-builder",
-    name: "Community builder",
-    description: "1,000+ new followers",
-    shareSentence: "I gained 1,000+ new followers this year. Did you?",
-    icon: "handshake",
+    id: 'community-builder',
+    name: 'Community builder',
+    description: '1,000+ new followers',
+    shareSentence: 'I gained 1,000+ new followers this year. Did you?',
+    icon: 'handshake',
     isEarned: (data) =>
       (data.discovery_data?.new_followers ?? 0) >= COMMUNITY_BUILDER_FOLLOWERS,
   },
   {
-    id: "grindset",
-    name: "Grindset",
-    description: "Engagement in all 12 months",
-    shareSentence: "I showed up on LinkedIn every month this year. Did you?",
-    icon: "fire",
+    id: 'grindset',
+    name: 'Grindset',
+    description: 'Engagement in all 12 months',
+    shareSentence: 'I showed up on LinkedIn every month this year. Did you?',
+    icon: 'fire',
     isEarned: (data) => countActiveMonths(data) >= GRINDSET_MONTHS,
   },
 ];

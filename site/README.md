@@ -8,7 +8,7 @@ The app is powered by and deployed on [Render](https://render.com/).
 
 ### Prerequisites
 
-- Node.js 20.19+ or 22.12+ or 23.x+ (with npm)
+- Node.js 22.18+ (with npm)
 
 ### Development
 

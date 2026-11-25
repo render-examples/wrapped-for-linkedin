@@ -1,6 +1,9 @@
 import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApp } from '../src/app.js';
+import type { AddressInfo } from 'node:net';
+import type { Server } from 'node:http';
+import { createApp } from '../src/app.ts';
+import type { PostStatus } from '../src/linkedin.ts';
 
 const ORIGIN = 'https://wrappedforlinkedin.onrender.com';
 const PUBLIC_URN = 'urn:li:share:1';
@@ -8,13 +11,15 @@ const PRIVATE_URN = 'urn:li:share:2';
 const BROKEN_URN = 'urn:li:share:3';
 const PNG = Buffer.from([137, 80, 78, 71]);
 
-const statusFor = (urn) =>
+const statusFor = (urn: string): PostStatus =>
   urn === PUBLIC_URN ? 'public' : urn === PRIVATE_URN ? 'unavailable' : 'error';
 
+const portOf = (server: Server) => (server.address() as AddressInfo).port;
+
 describe('screenshot service', () => {
-  let server;
-  let baseUrl;
-  const logs = [];
+  let server: Server;
+  let baseUrl: string;
+  const logs: string[] = [];
   const calls = { status: 0, screenshot: 0 };
 
   before(async () => {
@@ -31,15 +36,15 @@ describe('screenshot service', () => {
         return status === 'public' ? { status, image: PNG } : { status };
       },
     });
-    await new Promise((resolve) => {
-      server = app.listen(0, resolve);
+    await new Promise<void>((resolve) => {
+      server = app.listen(0, () => resolve());
     });
-    baseUrl = `http://127.0.0.1:${server.address().port}`;
+    baseUrl = `http://127.0.0.1:${portOf(server)}`;
   });
 
   after(() => server.close());
 
-  const get = (path) => fetch(`${baseUrl}${path}`, { headers: { Origin: ORIGIN } });
+  const get = (path: string) => fetch(`${baseUrl}${path}`, { headers: { Origin: ORIGIN } });
 
   it('returns 200 for a public post and 404 for a private post', async () => {
     assert.equal((await get(`/post-status?urn=${PUBLIC_URN}`)).status, 200);
@@ -52,10 +57,10 @@ describe('screenshot service', () => {
   });
 
   it('caches post status', async () => {
-    const before = calls.status;
+    const callsBefore = calls.status;
     await get(`/post-status?urn=${PUBLIC_URN}`);
     await get(`/post-status?urn=${PUBLIC_URN}`);
-    assert.equal(calls.status, before);
+    assert.equal(calls.status, callsBefore);
   });
 
   it('returns a PNG with CORS and cache headers', async () => {
@@ -63,14 +68,14 @@ describe('screenshot service', () => {
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'image/png');
     assert.equal(response.headers.get('access-control-allow-origin'), ORIGIN);
-    assert.match(response.headers.get('cache-control'), /max-age=86400/);
+    assert.match(response.headers.get('cache-control') ?? '', /max-age=86400/);
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), PNG);
   });
 
   it('caches images', async () => {
-    const before = calls.screenshot;
+    const callsBefore = calls.screenshot;
     await get(`/post-image?urn=${PUBLIC_URN}`);
-    assert.equal(calls.screenshot, before);
+    assert.equal(calls.screenshot, callsBefore);
   });
 
   it('returns 404 for the image of a private post', async () => {
@@ -114,10 +119,10 @@ describe('rate limit', () => {
       checkStatus: async () => 'public',
       takeScreenshot: async () => ({ status: 'public', image: PNG }),
     });
-    const server = await new Promise((resolve) => {
+    const server = await new Promise<Server>((resolve) => {
       const s = app.listen(0, () => resolve(s));
     });
-    const url = `http://127.0.0.1:${server.address().port}/post-status?urn=${PUBLIC_URN}`;
+    const url = `http://127.0.0.1:${portOf(server)}/post-status?urn=${PUBLIC_URN}`;
     try {
       assert.equal((await fetch(url)).status, 200);
       assert.equal((await fetch(url)).status, 200);

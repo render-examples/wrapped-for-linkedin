@@ -9,7 +9,6 @@ import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
 
 interface ShareButtonProps {
-  cardId: string;
   card: ShareableCard;
   cardRef: React.RefObject<HTMLDivElement>;
   allCards?: React.RefObject<HTMLDivElement>[];
@@ -20,11 +19,25 @@ interface ShareButtonProps {
 type ExportOption = 'current-card' | 'all-cards' | null;
 
 /**
+ * Place the menu below the button and keep it in the viewport.
+ * On phones, CSS centers the menu in the viewport.
+ */
+function getDropdownPosition(button: HTMLElement): { top: string; left: string } {
+  if (window.innerWidth <= 480) {
+    return { top: '50%', left: '50%' };
+  }
+  const rect = button.getBoundingClientRect();
+  // The menu is 280px wide. Center it under the button, 10px below it.
+  const left = rect.left + rect.width / 2 - 140;
+  const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
+  return { top: `${rect.bottom + 10}px`, left: `${adjustedLeft}px` };
+}
+
+/**
  * ShareButton component with dropdown menu for export options
  * Supports PNG export for single cards and PDF export for all cards
  */
 export const ShareButton: React.FC<ShareButtonProps> = ({
-  cardId,
   card,
   cardRef,
   allCards = [],
@@ -39,30 +52,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  // Update dropdown position when it opens
-  useEffect(() => {
-    if (isDropdownOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const isMobile = window.innerWidth <= 480;
-
-      if (isMobile) {
-        // On mobile, center the menu in viewport
-        const top = '50%';
-        const left = '50%';
-        setDropdownPosition({ top, left });
-      } else {
-        // On desktop, position below button
-        const top = rect.bottom + 10; // 10px below button
-        const left = rect.left + (rect.width / 2) - 140; // Center dropdown (280px / 2)
-
-        // Keep dropdown within viewport
-        const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
-
-        setDropdownPosition({ top: `${top}px`, left: `${adjustedLeft}px` });
-      }
-    }
-  }, [isDropdownOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -102,7 +91,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       // Download image from data URL
       const link = document.createElement('a');
       link.href = imageDataUrl;
-      link.download = `wrapped-for-linkedin-${cardId}.png`;
+      link.download = `wrapped-for-linkedin-${card.id}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -116,14 +105,13 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [cardRef, cardId, card]);
+  }, [cardRef, card]);
 
   /**
-   * Handle PDF export of all cards using optimized batch processing
-   * Waits for all cards to be rendered as they auto-play through
+   * Export all cards as one PDF.
    */
   const handlePDFExport = useCallback(async () => {
-    if (!allCards || allCards.length === 0) {
+    if (allCards.length === 0) {
       setError('No cards available for PDF export');
       return;
     }
@@ -134,28 +122,14 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setExportType('all-cards');
 
     try {
-      // Collect all card elements - some might not be refs yet, so wait for them
-      const cardElements: HTMLElement[] = [];
+      const getCardElements = () =>
+        allCards.map((ref) => ref.current).filter((element): element is HTMLDivElement => element !== null);
 
-      // First, add any already-rendered cards from the refs
-      for (const ref of allCards) {
-        if (ref && ref.current) {
-          cardElements.push(ref.current);
-        }
-      }
-
-      // If we don't have all cards yet, wait for them to be rendered
+      // If a ref is still empty, wait for the card to render, then try again.
+      let cardElements = getCardElements();
       if (cardElements.length < allCards.length) {
-        // Wait a bit for all refs to be populated
         await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Try again to get all card elements
-        cardElements.length = 0;
-        for (const ref of allCards) {
-          if (ref && ref.current) {
-            cardElements.push(ref.current);
-          }
-        }
+        cardElements = getCardElements();
       }
 
       if (cardElements.length === 0) {
@@ -183,31 +157,17 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     }
   }, [allCards, shareInfo]);
 
-  /**
-   * Handle export option selection
-   */
-  const handleExportOption = useCallback(
-    (option: ExportOption) => {
-      if (option === 'current-card') {
-        handlePNGExport();
-      } else if (option === 'all-cards') {
-        handlePDFExport();
-      }
-    },
-    [handlePNGExport, handlePDFExport]
-  );
-
-  /**
-   * Toggle dropdown visibility
-   */
   const handleToggleDropdown = useCallback(() => {
-    if (!isExporting) {
-      setIsDropdownOpen(prev => !prev);
-      // Pause autoplay when share button is clicked
-      if (!isDropdownOpen && onPauseAutoplay) {
-        onPauseAutoplay();
-      }
+    if (isExporting) {
+      return;
     }
+    if (!isDropdownOpen) {
+      if (buttonRef.current) {
+        setDropdownPosition(getDropdownPosition(buttonRef.current));
+      }
+      onPauseAutoplay?.();
+    }
+    setIsDropdownOpen(prev => !prev);
   }, [isExporting, isDropdownOpen, onPauseAutoplay]);
 
   return (
@@ -253,7 +213,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           >
             <button
               className="dropdown-option"
-              onClick={() => handleExportOption('current-card')}
+              onClick={handlePNGExport}
               role="menuitem"
             >
               <img src="/images/share/png-file.png" alt="PNG" className="option-icon" style={{ height: '2rem' }} />
@@ -265,7 +225,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
             <button
               className="dropdown-option"
-              onClick={() => handleExportOption('all-cards')}
+              onClick={handlePDFExport}
               role="menuitem"
             >
               <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" style={{ height: '2rem' }} />

@@ -39,8 +39,9 @@ The site may send only public post URLs to the screenshot service. The service m
 
 ## Screenshot service conventions
 
-- The service uses plain JavaScript with JSDoc types and the Node.js test runner.
-- `src/app.js` builds the Express app with injected dependencies, so tests run without Chromium. Keep Playwright calls in `src/linkedin.js`.
+- The service is TypeScript. Node runs the `.ts` files directly by removing the types, so there is no build step. `npm test` runs `tsc` to check types, then the Node.js test runner.
+- Node cannot run TypeScript syntax that generates code, such as `enum`, `namespace`, and constructor parameter properties. `erasableSyntaxOnly` in `tsconfig.json` rejects them. Import local files with the `.ts` extension.
+- `src/app.ts` builds the Express app with injected dependencies, so tests run without Chromium. Keep Playwright calls in `src/linkedin.ts`.
 - Keep the Playwright version in `package.json` the same as the image tag in `Dockerfile`.
 - If you change a service URL, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGIN` in `render.yaml`.
 

@@ -23,34 +23,33 @@ export async function exportCardsAsImagesBatch(
 ): Promise<string[]> {
   const { concurrency = DEFAULT_CONCURRENCY, onProgress, postImage = null } = options;
 
-  if (!cardElements || cardElements.length === 0) {
+  if (cardElements.length === 0) {
     throw new Error('No cards provided for batch export');
   }
 
-  const results: (string | Error)[] = new Array(cardElements.length);
+  const results: PromiseSettledResult<string>[] = [];
   let processedCount = 0;
 
   for (let i = 0; i < cardElements.length; i += concurrency) {
     const batch = cardElements.slice(i, i + concurrency);
-
-    await Promise.all(
-      batch.map(async (cardElement, offset) => {
-        const index = i + offset;
+    const batchResults = await Promise.allSettled(
+      batch.map(async (cardElement) => {
         try {
-          results[index] = await exportCardAsImage(cardElement, { postImage });
-        } catch (error) {
-          results[index] = error instanceof Error ? error : new Error('Unknown error');
+          return await exportCardAsImage(cardElement, { postImage });
+        } finally {
+          processedCount++;
+          onProgress?.(processedCount, cardElements.length);
         }
-        processedCount++;
-        onProgress?.(processedCount, cardElements.length);
       })
     );
+    results.push(...batchResults);
   }
 
-  const errors = results.filter((r): r is Error => r instanceof Error);
+  const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
   if (errors.length > 0) {
-    throw new Error(`Batch image export failed: ${errors.length} card(s) failed to render: ${errors[0].message}`);
+    const firstMessage = errors[0].reason instanceof Error ? errors[0].reason.message : 'Unknown error';
+    throw new Error(`Batch image export failed: ${errors.length} card(s) failed to render: ${firstMessage}`);
   }
 
-  return results as string[];
+  return results.map((r) => (r as PromiseFulfilledResult<string>).value);
 }

@@ -34,8 +34,6 @@ const SCREEN_ONLY_SELECTORS = [
 
 export interface ExportCardOptions {
   backgroundColor?: string;
-  useCache?: boolean;
-  cardId?: string;
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
   postImage?: string | null;
 }
@@ -90,7 +88,7 @@ function createPostImage({ src, width, height }: PostImage): HTMLElement {
 /**
  * Remove screen-only elements and replace the LinkedIn iframe.
  * The browser cannot read pixels from a cross-origin iframe, so the export
- * uses a server-side screenshot or a fallback emoji.
+ * uses a server-side screenshot or a trophy icon.
  */
 function prepareCloneContent(clone: HTMLElement, postImage: PostImage | null): void {
   clone.querySelectorAll(SCREEN_ONLY_SELECTORS).forEach((el) => el.remove());
@@ -136,66 +134,72 @@ function waitForImages(root: HTMLElement): Promise<void> {
   ).then(() => undefined);
 }
 
+function getCacheKey(element: HTMLElement, backgroundColor: string, postImage: string | null): string {
+  const id = element.id || `card-${hashSum(element.innerHTML)}`;
+  const postKey = postImage ? hashSum(postImage) : 'none';
+  return `${id}-${backgroundColor.replace('#', '')}-${postKey}`;
+}
+
+// Lay out the clone at the export size in a hidden container on the page.
+// html-to-image needs the clone in the DOM to read computed styles.
+function mountOffscreen(clone: HTMLElement): HTMLElement {
+  Object.assign(clone.style, {
+    position: 'relative',
+    inset: 'auto',
+    width: `${EXPORT_CSS_WIDTH}px`,
+    height: `${EXPORT_CSS_HEIGHT}px`,
+    margin: '0',
+    opacity: '1',
+    transform: 'none',
+    transition: 'none',
+    visibility: 'visible',
+    borderRadius: '0',
+    overflow: 'hidden',
+  });
+
+  const container = document.createElement('div');
+  Object.assign(container.style, {
+    position: 'fixed',
+    left: '0',
+    top: '0',
+    width: `${EXPORT_CSS_WIDTH}px`,
+    height: `${EXPORT_CSS_HEIGHT}px`,
+    zIndex: String(EXPORT_ZINDEX),
+    pointerEvents: 'none',
+    opacity: '0',
+  });
+
+  container.appendChild(clone);
+  document.body.appendChild(container);
+  return container;
+}
+
 /**
  * Export a single card as a 1080 × 1350 PNG.
+ * Results are cached by card content, background color, and post screenshot.
  * @returns A data URL of the PNG.
  */
 export async function exportCardAsImage(
   element: HTMLElement,
   options: ExportCardOptions = {}
 ): Promise<string> {
-  const {
-    backgroundColor = getCardBackgroundColor(element),
-    useCache = true,
-    cardId,
-    postImage = null,
-  } = options;
+  const { backgroundColor = getCardBackgroundColor(element) } = options;
 
   try {
-    const id = cardId || element.id || `card-${hashSum(element.innerHTML)}`;
+    // Only the Peak Performer card shows the post screenshot.
     const usesPostImage = element.querySelector('.peak-post-embed-wrapper') !== null;
-    const postKey = usesPostImage && postImage ? hashSum(postImage) : 'none';
-    const cacheKey = `${id}-${backgroundColor.replace('#', '')}-${postKey}`;
+    const postImage = usesPostImage ? (options.postImage ?? null) : null;
 
-    if (useCache) {
-      const cached = imageCache.get(cacheKey);
-      if (cached) {
-        return cached.dataUrl;
-      }
+    const cacheKey = getCacheKey(element, backgroundColor, postImage);
+    const cached = imageCache.get(cacheKey);
+    if (cached) {
+      return cached.dataUrl;
     }
 
-    const loadedPostImage = usesPostImage && postImage ? await loadPostImage(postImage) : null;
+    const loadedPostImage = postImage ? await loadPostImage(postImage) : null;
     const clone = element.cloneNode(true) as HTMLElement;
     prepareCloneContent(clone, loadedPostImage);
-
-    Object.assign(clone.style, {
-      position: 'relative',
-      inset: 'auto',
-      width: `${EXPORT_CSS_WIDTH}px`,
-      height: `${EXPORT_CSS_HEIGHT}px`,
-      margin: '0',
-      opacity: '1',
-      transform: 'none',
-      transition: 'none',
-      visibility: 'visible',
-      borderRadius: '0',
-      overflow: 'hidden',
-    });
-
-    const container = document.createElement('div');
-    Object.assign(container.style, {
-      position: 'fixed',
-      left: '0',
-      top: '0',
-      width: `${EXPORT_CSS_WIDTH}px`,
-      height: `${EXPORT_CSS_HEIGHT}px`,
-      zIndex: String(EXPORT_ZINDEX),
-      pointerEvents: 'none',
-      opacity: '0',
-    });
-
-    container.appendChild(clone);
-    document.body.appendChild(container);
+    const container = mountOffscreen(clone);
 
     try {
       flattenGradientText(clone);
@@ -209,14 +213,7 @@ export async function exportCardAsImage(
         backgroundColor,
       });
 
-      if (useCache) {
-        imageCache.set(cacheKey, {
-          dataUrl,
-          timestamp: Date.now(),
-          backgroundColor,
-          size: dataUrl.length,
-        });
-      }
+      imageCache.set(cacheKey, { dataUrl, size: dataUrl.length });
 
       return dataUrl;
     } finally {

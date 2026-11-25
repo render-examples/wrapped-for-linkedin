@@ -41,6 +41,15 @@ const DemographicCategory: React.FC<{
   );
 };
 
+const CATEGORIES: { key: keyof DemographicInsights; title: string; icon: string }[] = [
+  { key: 'job_titles', title: 'Job titles', icon: '/images/demographics/job-titles.png' },
+  { key: 'locations', title: 'Locations', icon: '/images/demographics/locations.png' },
+  { key: 'industries', title: 'Industries', icon: '/images/demographics/industries.png' },
+  { key: 'seniority', title: 'Seniority levels', icon: '/images/demographics/seniority-levels.png' },
+  { key: 'company_size', title: 'Company size', icon: '/images/demographics/company-size.png' },
+  { key: 'companies', title: 'Companies', icon: '/images/demographics/companies.png' },
+];
+
 export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics }) => {
   const hasData =
     demographics?.job_titles?.length > 0 ||
@@ -63,53 +72,12 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
       </div>
 
       <div className="demographics-grid">
-        {demographics?.job_titles?.length > 0 && (
-          <DemographicCategory
-            title="Job titles"
-            items={demographics.job_titles}
-            icon="/images/demographics/job-titles.png"
-          />
-        )}
-
-        {demographics?.locations?.length > 0 && (
-          <DemographicCategory
-            title="Locations"
-            items={demographics.locations}
-            icon="/images/demographics/locations.png"
-          />
-        )}
-
-        {demographics?.industries?.length > 0 && (
-          <DemographicCategory
-            title="Industries"
-            items={demographics.industries}
-            icon="/images/demographics/industries.png"
-          />
-        )}
-
-        {demographics?.seniority && demographics.seniority.length > 0 && (
-          <DemographicCategory
-            title="Seniority levels"
-            items={demographics.seniority}
-            icon="/images/demographics/seniority-levels.png"
-          />
-        )}
-
-        {demographics?.company_size && demographics.company_size.length > 0 && (
-          <DemographicCategory
-            title="Company size"
-            items={demographics.company_size}
-            icon="/images/demographics/company-size.png"
-          />
-        )}
-
-        {demographics?.companies && demographics.companies.length > 0 && (
-          <DemographicCategory
-            title="Companies"
-            items={demographics.companies}
-            icon="/images/demographics/companies.png"
-          />
-        )}
+        {CATEGORIES.map(({ key, title, icon }) => {
+          const items = demographics[key];
+          return items && items.length > 0 ? (
+            <DemographicCategory key={key} title={title} items={items} icon={icon} />
+          ) : null;
+        })}
       </div>
     </div>
   );

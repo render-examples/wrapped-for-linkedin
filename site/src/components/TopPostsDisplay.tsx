@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import type { TopPost } from '@types';
 import { Icon } from '@components/Icon';
 import { formatDateString } from '@utils/formatters';
@@ -10,19 +10,17 @@ interface TopPostsDisplayProps {
   posts: TopPost[];
 }
 
-export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
-  // Memoized formatter functions with useCallback
-  const formatEngagements = useCallback((num: number): string => {
-    if (num >= 1_000_000) {
-      return `${(num / 1_000_000).toFixed(1)}M`;
-    }
-    if (num >= 1_000) {
-      return `${(num / 1_000).toFixed(1)}K`;
-    }
-    return String(Math.round(num));
-  }, []);
+function formatCount(num: number): string {
+  if (num >= 1_000_000) {
+    return `${(num / 1_000_000).toFixed(1)}M`;
+  }
+  if (num >= 1_000) {
+    return `${(num / 1_000).toFixed(1)}K`;
+  }
+  return String(Math.round(num));
+}
 
-  // Memoize displayed posts and embed URLs calculation
+export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   const displayedPosts = useMemo(() => {
     return (posts ?? []).slice(0, 6).map(post => ({
       ...post,
@@ -85,7 +83,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
                     <img src="/images/dashboard/heart.png" alt="Engagements" />
                   </div>
                   <div className="top-post-stat-info">
-                    <div className="top-post-stat-value">{formatEngagements(post.engagements)}</div>
+                    <div className="top-post-stat-value">{formatCount(post.engagements)}</div>
                     <div className="top-post-stat-label">Engagements</div>
                   </div>
                 </div>
@@ -95,7 +93,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
                       <img src="/images/dashboard/sparkle.png" alt="Impressions" />
                     </div>
                     <div className="top-post-stat-info">
-                      <div className="top-post-stat-value">{formatEngagements(post.impressions)}</div>
+                      <div className="top-post-stat-value">{formatCount(post.impressions)}</div>
                       <div className="top-post-stat-label">Impressions</div>
                     </div>
                   </div>

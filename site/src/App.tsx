@@ -17,35 +17,34 @@ interface DataState {
   error: string | null;
 }
 
+const INITIAL_STATE: DataState = {
+  engagement: null,
+  demographics: undefined,
+  uploadDate: null,
+  isFromCache: false,
+  error: null,
+};
+
+const SESSION_KEY = 'wrapped-session-active';
+
 function App() {
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useState<DataState>({
-    engagement: null,
-    demographics: undefined,
-    uploadDate: null,
-    isFromCache: false,
-    error: null,
-  });
+  const [state, setState] = useState<DataState>(INITIAL_STATE);
   const cache = useCache();
   const { clear: clearCache } = cache;
 
-  // Detect hard refresh and clear cache
+  // Clear the cache when the tab has no session flag.
+  // sessionStorage lasts for the life of the tab, so this happens once per new tab.
   useEffect(() => {
-    // Check if this is a hard refresh by looking at sessionStorage
-    // sessionStorage is cleared on hard refresh but persists on soft refresh
-    const sessionKey = 'wrapped-session-active';
-    const wasSessionActive = sessionStorage.getItem(sessionKey);
-    
+    const wasSessionActive = sessionStorage.getItem(SESSION_KEY);
+
     if (!wasSessionActive) {
-      // This is either first visit or hard refresh
-      // Hard refresh clears sessionStorage, so we clear localStorage too
       clearCache();
-      sessionStorage.setItem(sessionKey, 'true');
+      sessionStorage.setItem(SESSION_KEY, 'true');
     }
-    
-    // Set up beforeunload to persist session flag on soft refresh
+
     const handleBeforeUnload = () => {
-      sessionStorage.setItem(sessionKey, 'true');
+      sessionStorage.setItem(SESSION_KEY, 'true');
     };
     
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -86,13 +85,7 @@ function App() {
   };
 
   const resetState = () => {
-    setState({
-      engagement: null,
-      demographics: undefined,
-      uploadDate: null,
-      isFromCache: false,
-      error: null,
-    });
+    setState(INITIAL_STATE);
   };
 
   const handleClearCache = () => {
@@ -128,9 +121,8 @@ function App() {
         event.preventDefault();
         clearCache();
         resetState();
-        // Clear session storage to simulate hard refresh
         sessionStorage.clear();
-        sessionStorage.setItem('wrapped-session-active', 'true');
+        sessionStorage.setItem(SESSION_KEY, 'true');
       }
     };
 
@@ -146,11 +138,7 @@ function App() {
       <div className="landing-content">
         {state.engagement && <div className="background-overlay" />}
         
-        <Header
-          onLogoClick={handleLogoClick}
-          onClearCache={handleClearCache}
-          hasCachedData={cache.data !== null}
-        />
+        <Header onLogoClick={handleLogoClick} />
 
         <main className="app-main">
           {state.engagement && (
@@ -168,15 +156,15 @@ function App() {
 
           {loading && <Loading />}
 
-          {!loading && !state.error && state.engagement ? (
+          {!loading && !state.error && (state.engagement ? (
             <UnifiedDashboard
               data={state.engagement}
               demographics={state.demographics}
               onUploadNewData={handleClearCache}
             />
-          ) : !loading && !state.error && !state.engagement ? (
+          ) : (
             <FileUpload onFileProcessed={handleFileProcessed} isLoading={loading} />
-          ) : null}
+          ))}
         </main>
       </div>
 

@@ -1,6 +1,6 @@
-import { chromium } from 'playwright';
-import { embedUrlForUrn } from './urn.js';
-import { createLimiter } from './limiter.js';
+import { chromium, type Browser } from 'playwright';
+import { embedUrlForUrn } from './urn.ts';
+import { createLimiter } from './limiter.ts';
 
 // LinkedIn's embed width.
 const EMBED_WIDTH = 504;
@@ -9,20 +9,21 @@ const POST_SELECTOR = 'article.main-feed-activity-embed-card';
 const ACTION_BAR_SELECTOR = '.social-action-bar';
 const NAVIGATION_TIMEOUT_MS = 15_000;
 const IMAGE_SETTLE_TIMEOUT_MS = 5_000;
-const MAX_PAGES = 2;
+const MAX_CONCURRENT_PAGES = 2;
 
-/**
- * @typedef {'public' | 'unavailable' | 'error'} PostStatus
- */
+export type PostStatus = 'public' | 'unavailable' | 'error';
+
+export type ScreenshotResult =
+  | { status: 'public'; image: Buffer }
+  | { status: 'unavailable' | 'error' };
+
+type Box = { x: number; y: number; width: number; height: number };
 
 /**
  * Classify a response from the LinkedIn embed page.
  * LinkedIn returns 404 and its error page for a private or deleted post.
- * @param {number} status
- * @param {string} html
- * @returns {PostStatus}
  */
-export function classifyEmbedResponse(status, html) {
+export function classifyEmbedResponse(status: number, html: string): PostStatus {
   if (status === 404 || html.includes('error-pages')) {
     return 'unavailable';
   }
@@ -32,12 +33,8 @@ export function classifyEmbedResponse(status, html) {
   return 'error';
 }
 
-/**
- * Fetch the embed HTML without a browser and classify it.
- * @param {string} urn
- * @returns {Promise<PostStatus>}
- */
-export async function fetchPostStatus(urn) {
+/** Fetch the embed HTML without a browser and classify it. */
+export async function fetchPostStatus(urn: string): Promise<PostStatus> {
   try {
     const response = await fetch(embedUrlForUrn(urn), {
       redirect: 'follow',
@@ -50,26 +47,19 @@ export async function fetchPostStatus(urn) {
 }
 
 /**
- * @typedef {{ x: number, y: number, width: number, height: number }} Box
- */
-
-/**
  * Get a clip from the top of the post to the top of the action bar.
- * @param {Box} post
- * @param {Box | null} actionBar
- * @returns {Box | null} Null if the action bar is not inside the post.
+ * Returns null if the action bar is not inside the post.
  */
-export function clipAboveActionBar(post, actionBar) {
+export function clipAboveActionBar(post: Box, actionBar: Box | null): Box | null {
   if (!actionBar || actionBar.y <= post.y || actionBar.y >= post.y + post.height) {
     return null;
   }
   return { x: post.x, y: post.y, width: post.width, height: actionBar.y - post.y };
 }
 
-/** @type {Promise<import('playwright').Browser> | null} */
-let browserPromise = null;
+let browserPromise: Promise<Browser> | null = null;
 
-function getBrowser() {
+function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
     browserPromise = chromium.launch({ args: ['--disable-dev-shm-usage'] }).then((browser) => {
       browser.on('disconnected', () => {
@@ -84,15 +74,11 @@ function getBrowser() {
   return browserPromise;
 }
 
-const limit = createLimiter(MAX_PAGES);
+const limit = createLimiter(MAX_CONCURRENT_PAGES);
 
-/**
- * Take a screenshot of the post in the embed page.
- * @param {string} urn
- * @returns {Promise<{ status: 'public', image: Buffer } | { status: 'unavailable' | 'error' }>}
- */
-export function takePostScreenshot(urn) {
-  return limit(async () => {
+/** Take a screenshot of the post in the embed page. */
+export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
+  return limit(async (): Promise<ScreenshotResult> => {
     const browser = await getBrowser();
     const context = await browser.newContext({
       viewport: { width: EMBED_WIDTH, height: 1200 },
@@ -134,7 +120,7 @@ export function takePostScreenshot(urn) {
   });
 }
 
-export async function closeBrowser() {
+export async function closeBrowser(): Promise<void> {
   if (browserPromise) {
     const browser = await browserPromise.catch(() => null);
     browserPromise = null;

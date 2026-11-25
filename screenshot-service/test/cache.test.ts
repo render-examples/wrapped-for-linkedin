@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { TtlCache } from '../src/cache.js';
+import { TtlCache } from '../src/cache.ts';
 
 describe('TtlCache', () => {
   it('expires entries after the time to live', () => {

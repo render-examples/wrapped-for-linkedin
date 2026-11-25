@@ -1,34 +1,26 @@
-import express from 'express';
+import express, { type Request } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { isValidUrn } from './urn.js';
-import { TtlCache } from './cache.js';
+import { isValidUrn } from './urn.ts';
+import { TtlCache } from './cache.ts';
+import type { PostStatus, ScreenshotResult } from './linkedin.ts';
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
-/**
- * @typedef {import('./linkedin.js').PostStatus} PostStatus
- * @typedef {{
- *   allowedOrigins: string[],
- *   checkStatus: (urn: string) => Promise<PostStatus>,
- *   takeScreenshot: (urn: string) => Promise<{ status: PostStatus, image?: Buffer }>,
- *   rateLimitPerMinute?: number,
- *   log?: (message: string) => void,
- * }} AppOptions
- */
+export type AppOptions = {
+  allowedOrigins: string[];
+  checkStatus: (urn: string) => Promise<PostStatus>;
+  takeScreenshot: (urn: string) => Promise<ScreenshotResult>;
+  rateLimitPerMinute?: number;
+  log?: (message: string) => void;
+};
 
 /**
  * Share one pending promise per key, so parallel requests for the same URN do the work once.
- * @template T
  */
-function dedupe() {
-  /** @type {Map<string, Promise<T>>} */
-  const pending = new Map();
-  /**
-   * @param {string} key
-   * @param {() => Promise<T>} task
-   */
-  return (key, task) => {
+function dedupe<T>() {
+  const pending = new Map<string, Promise<T>>();
+  return (key: string, task: () => Promise<T>): Promise<T> => {
     let promise = pending.get(key);
     if (!promise) {
       promise = task().finally(() => pending.delete(key));
@@ -38,28 +30,34 @@ function dedupe() {
   };
 }
 
-/**
- * @param {AppOptions} options
- */
+/** Accept only a `urn` query parameter with a valid post URN. */
+function readUrn(req: Request): string | null {
+  const keys = Object.keys(req.query);
+  if (keys.length !== 1 || keys[0] !== 'urn') {
+    return null;
+  }
+  return isValidUrn(req.query.urn) ? req.query.urn : null;
+}
+
 export function createApp({
   allowedOrigins,
   checkStatus,
   takeScreenshot,
   rateLimitPerMinute = 60,
   log = console.log,
-}) {
+}: AppOptions) {
   const app = express();
   app.disable('x-powered-by');
   // Render sends requests through one proxy. Use the client IP from X-Forwarded-For.
   app.set('trust proxy', 1);
 
-  const statusCache = new TtlCache({ ttlMs: HOUR_MS, maxEntries: 10_000 });
-  const imageCache = new TtlCache({ ttlMs: DAY_MS, maxEntries: 500 });
-  const statusRequests = dedupe();
-  const imageRequests = dedupe();
+  const statusCache = new TtlCache<PostStatus>({ ttlMs: HOUR_MS, maxEntries: 10_000 });
+  const imageCache = new TtlCache<ScreenshotResult>({ ttlMs: DAY_MS, maxEntries: 500 });
+  const statusRequests = dedupe<PostStatus>();
+  const imageRequests = dedupe<ScreenshotResult>();
 
   // Log only the status code. Never log the URN, the IP address, or headers.
-  app.use((req, res, next) => {
+  app.use((_req, res, next) => {
     res.on('finish', () => log(String(res.statusCode)));
     next();
   });
@@ -85,18 +83,6 @@ export function createApp({
       legacyHeaders: false,
     })
   );
-
-  /**
-   * Accept only a `urn` query parameter with a valid post URN.
-   * @param {import('express').Request} req
-   */
-  const readUrn = (req) => {
-    const keys = Object.keys(req.query);
-    if (keys.length !== 1 || keys[0] !== 'urn') {
-      return null;
-    }
-    return isValidUrn(req.query.urn) ? req.query.urn : null;
-  };
 
   app.get('/post-status', async (req, res) => {
     const urn = readUrn(req);
@@ -139,7 +125,7 @@ export function createApp({
       }
     }
 
-    if (result.status === 'public' && result.image) {
+    if (result.status === 'public') {
       res
         .status(200)
         .type('png')
