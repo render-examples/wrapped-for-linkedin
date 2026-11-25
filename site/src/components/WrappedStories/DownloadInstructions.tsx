@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { openLinkedInShare } from '@utils/linkedinShareLink';
+import { Icon } from '@components/Icon';
+import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
 
 type ExportType = 'current-card' | 'all-cards';
 
 interface DownloadInstructionsProps {
   isVisible: boolean;
-  impressions?: string | number;
-  membersReached?: string | number;
+  shareInfo: ShareInfo;
   exportType?: ExportType;
   onDismiss?: () => void;
 }
@@ -20,15 +21,13 @@ interface DownloadInstructionsProps {
  */
 export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
   isVisible,
-  impressions,
-  membersReached,
+  shareInfo,
   exportType = 'current-card',
   onDismiss,
 }) => {
   const handleShareOnLinkedIn = useCallback(() => {
-    // Open LinkedIn share with card data
-    openLinkedInShare(impressions, membersReached);
-  }, [impressions, membersReached]);
+    openLinkedInShare(shareInfo);
+  }, [shareInfo]);
 
   if (!isVisible) {
     return null;
@@ -52,7 +51,9 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
             onClick={onDismiss}
             aria-label="Close instructions"
           >
-            ✕
+            <span className="instructions-close-icon">
+              <Icon name="close" />
+            </span>
           </button>
         </div>
 

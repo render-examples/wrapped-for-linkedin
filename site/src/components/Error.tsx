@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '@components/Icon';
 import '@styles/Error.css';
 
 interface ErrorProps {
@@ -9,7 +10,9 @@ interface ErrorProps {
 export const Error: React.FC<ErrorProps> = ({ error, onRetry }) => {
   return (
     <div className="error-container">
-      <div className="error-icon">⚠️</div>
+      <div className="error-icon">
+        <Icon name="warning" />
+      </div>
       <h2>Oops! Something went wrong</h2>
       <p className="error-message">{error}</p>
       {onRetry && (

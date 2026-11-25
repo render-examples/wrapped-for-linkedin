@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "hash-sum": "^2.0.0",
     "html-to-image": "^1.11.11",
     "jspdf": "^2.5.1",

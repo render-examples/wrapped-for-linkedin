@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import type { TopPost } from '@types';
+import { Icon } from '@components/Icon';
 import { formatDateString } from '@utils/formatters';
 import { getLinkedInEmbedUrl } from '@utils/linkedinEmbed';
+import { usePostStatus } from '@/hooks/usePostStatus';
 import '@styles/TopPostsDisplay.css';
 
 interface TopPostsDisplayProps {
@@ -47,7 +49,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
         <div className="faq-content">
           <div className="faq-item">
             <p className="faq-question">Why are some posts not found?</p>
-            <p className="faq-answer">If a post is not made publicly available, it can't be displayed here. That said, you can click on the post tile to view it on LinkedIn.</p>
+            <p className="faq-answer">LinkedIn only allows public posts to be embedded. For other posts, the app shows your stats from the file and a link to open the post on LinkedIn.</p>
           </div>
           
           <div className="faq-item">
@@ -73,26 +75,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
 
               <div className="post-content">
                 <div className="post-embed-wrapper">
-                  {/* LinkedIn post embed using iframe with lazy loading */}
-                  {post.embedUrl ? (
-                    <iframe
-                      src={post.embedUrl}
-                      height="350"
-                      width="100%"
-                      allowFullScreen
-                      loading="lazy"
-                      className="linkedin-iframe"
-                      title={`LinkedIn post #${post.rank}`}
-                    />
-                  ) : (
-                    <div className="post-fallback">
-                      <div className="fallback-icon">📌</div>
-                      <p className="fallback-text">View post on LinkedIn</p>
-                      <a href={post.url} target="_blank" rel="noopener noreferrer" className="fallback-link">
-                        Open post
-                      </a>
-                    </div>
-                  )}
+                  <PostEmbed url={post.url} embedUrl={post.embedUrl} rank={post.rank} />
                 </div>
               </div>
 
@@ -122,6 +105,51 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
           );
         })}
       </div>
+    </div>
+  );
+};
+
+interface PostEmbedProps {
+  url: string;
+  embedUrl: string | null;
+  rank: number;
+}
+
+/**
+ * Show the LinkedIn embed for a public post. For a post that is not public,
+ * show a trophy and a link to the post. If the check fails, keep the embed.
+ */
+const PostEmbed: React.FC<PostEmbedProps> = ({ url, embedUrl, rank }) => {
+  const isPublic = usePostStatus(embedUrl ? url : undefined);
+
+  if (embedUrl && isPublic !== false) {
+    return (
+      <iframe
+        src={embedUrl}
+        height="350"
+        width="100%"
+        allowFullScreen
+        loading="lazy"
+        className="linkedin-iframe"
+        title={`LinkedIn post #${rank}`}
+      />
+    );
+  }
+
+  return (
+    <div className="post-fallback">
+      <div className="fallback-icon">
+        <Icon name={embedUrl ? 'trophy' : 'pin'} />
+      </div>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fallback-link"
+        onClick={(e) => e.stopPropagation()}
+      >
+        Open post
+      </a>
     </div>
   );
 };

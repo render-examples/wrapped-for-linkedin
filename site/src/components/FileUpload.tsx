@@ -115,11 +115,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
         <p>
           <img src="/images/upload/icon-shield.svg" alt="Shield" className="shield-icon"/>
           <br/>
-          <strong>Your data never leaves your device</strong>
+          <strong>Your analytics data never leaves your browser</strong>
           <br /> <br />
           <span className="privacy-disclaimer-text">
-            All processing happens locally in your browser.
-            We don't store, <br /> transmit, or use your LinkedIn data for anything else.
+            All processing happens locally. To show and export your top posts,
+            the app sends only each post's public ID to our server.
           </span>
           <br /> <br />
           <a 

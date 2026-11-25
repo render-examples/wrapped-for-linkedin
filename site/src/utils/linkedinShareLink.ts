@@ -1,71 +1,45 @@
 /**
- * Utility to generate LinkedIn share links with prefilled content
- * Note: LinkedIn restricts direct text prefilling for security reasons.
- * The generated link will direct users to LinkedIn where they can post.
- * Text can be copied to clipboard separately.
+ * Build LinkedIn share links with prefilled post text.
  */
 
-/**
- * Current year for share text
- */
-const currentYear = new Date().getFullYear();
+export const APP_URL = 'https://wrappedforlinkedin.onrender.com/';
 
-/**
- * Generate a LinkedIn share URL with prefilled text based on card data
- *
- * @param impressions Optional impressions value from card data
- * @param membersReached Optional members reached value from card data
- * @returns The LinkedIn share URL with prefilled text
- */
-export function generateLinkedInShareUrl(
-  impressions?: string | number,
-  membersReached?: string | number
-): string {
-  // App URL will be hardcoded after deployment
-  const appUrl = 'https://wrappedforlinkedin.onrender.com/';
-
-  // Build share URL with prefilled text
-  const shareUrlWithText = `https://www.linkedin.com/feed/?shareActive=true&text=%F0%9F%8E%81%20Just%20got%20my%20Wrapped%20for%20LinkedIn%20${currentYear}!%0A%0AThis%20year%3A%20${impressions || 0}%20impressions%2C%20${membersReached || 0}%20people%20reached%2C%20and%20countless%20connections%20that%20mattered.%0A%0AWhat%27s%20your%20LinkedIn%20story%3F%20Get%20yours%20here%3A%20${appUrl}%0A%0A%23WrappedForLinkedIn%20%23${currentYear}Recap`;
-
-  return shareUrlWithText;
+export interface ShareTextInput {
+  impressions?: string | number;
+  membersReached?: string | number;
+  year: number;
+  // The share sentence of the user's top badge, if they earned one.
+  topBadgeSentence?: string;
 }
 
 /**
- * Open LinkedIn share dialog in a new window
- * Users will see the prefilled share text and can add their own comments
- *
- * @param impressions Optional impressions value from card data
- * @param membersReached Optional members reached value from card data
+ * Build the prefilled post text. If the user has a badge, the text starts with the badge sentence.
  */
-export function openLinkedInShare(
-  impressions?: string | number,
-  membersReached?: string | number
-): Window | null {
-  const shareUrl = generateLinkedInShareUrl(impressions, membersReached);
-  return window.open(shareUrl, '_blank');
+export function buildShareText({ impressions, membersReached, year, topBadgeSentence }: ShareTextInput): string {
+  const hashtags = `#WrappedForLinkedIn #${year}Recap`;
+
+  if (topBadgeSentence) {
+    return `${topBadgeSentence}\n\nGet your Wrapped for LinkedIn ${year}: ${APP_URL}\n\n${hashtags}`;
+  }
+
+  return [
+    `🎁 Just got my Wrapped for LinkedIn ${year}!`,
+    `This year: ${impressions || 0} impressions, ${membersReached || 0} people reached, and countless connections that mattered.`,
+    `What's your LinkedIn story? Get yours here: ${APP_URL}`,
+    hashtags,
+  ].join('\n\n');
 }
 
 /**
- * Generate a pre-filled LinkedIn share URL using the LinkedIn Share endpoint
- * This is the primary method for sharing wrapped content
- *
- * @param impressions Optional impressions value from card data
- * @param membersReached Optional members reached value from card data
- * @returns Object with shareUrl and instructions
+ * Get the LinkedIn share URL with the prefilled post text.
  */
-export function getLinkedInShareConfig(
-  impressions?: string | number,
-  membersReached?: string | number
-): {
-  shareUrl: string;
-  instructions: string;
-} {
-  const generatedShareUrl = generateLinkedInShareUrl(impressions, membersReached);
-
-  return {
-    shareUrl: generatedShareUrl,
-    instructions: 'Click the button above to share on LinkedIn. The text will be copied to your clipboard for posting.',
-  };
+export function generateLinkedInShareUrl(input: ShareTextInput): string {
+  return `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(buildShareText(input))}`;
 }
 
-
+/**
+ * Open the LinkedIn share dialog in a new tab.
+ */
+export function openLinkedInShare(input: ShareTextInput): Window | null {
+  return window.open(generateLinkedInShareUrl(input), '_blank');
+}

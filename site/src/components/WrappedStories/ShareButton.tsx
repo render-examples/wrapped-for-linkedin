@@ -2,8 +2,10 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '@exports/imageExport';
 import { exportCardsAsPDFBatch } from '@exports/pdfExport';
+import { getPostImage } from '@exports/postScreenshot';
 import { DownloadInstructions } from '@components/WrappedStories/DownloadInstructions';
-import type { ShareableCard } from '@/types/wrappedStories';
+import { Icon } from '@components/Icon';
+import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
 
 interface ShareButtonProps {
@@ -11,10 +13,7 @@ interface ShareButtonProps {
   card: ShareableCard;
   cardRef: React.RefObject<HTMLDivElement>;
   allCards?: React.RefObject<HTMLDivElement>[];
-  summaryMetrics?: {
-    impressions: string;
-    membersReached: string;
-  };
+  shareInfo: ShareInfo;
   onPauseAutoplay?: () => void;
 }
 
@@ -26,9 +25,10 @@ type ExportOption = 'current-card' | 'all-cards' | null;
  */
 export const ShareButton: React.FC<ShareButtonProps> = ({
   cardId,
+  card,
   cardRef,
   allCards = [],
-  summaryMetrics,
+  shareInfo,
   onPauseAutoplay,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -95,7 +95,9 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     setExportType('current-card');
 
     try {
-      const imageDataUrl = await exportCardAsImage(cardRef.current);
+      const postImage =
+        card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
+      const imageDataUrl = await exportCardAsImage(cardRef.current, { postImage });
 
       // Download image from data URL
       const link = document.createElement('a');
@@ -114,7 +116,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [cardRef, cardId]);
+  }, [cardRef, cardId, card]);
 
   /**
    * Handle PDF export of all cards using optimized batch processing
@@ -161,11 +163,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         return;
       }
 
-      const year = new Date().getFullYear();
-      const filename = `wrapped-for-linkedin-${year}.pdf`;
+      const filename = `wrapped_${shareInfo.year}.pdf`;
+      const postImage = shareInfo.topPostUrl ? await getPostImage(shareInfo.topPostUrl) : null;
 
-      // Use optimized batch export
-      await exportCardsAsPDFBatch(cardElements, filename);
+      await exportCardsAsPDFBatch(cardElements, filename, { postImage });
 
       // Show instructions
       setShowInstructions(true);
@@ -180,7 +181,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [allCards]);
+  }, [allCards, shareInfo]);
 
   /**
    * Handle export option selection
@@ -281,7 +282,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       {/* Error Message */}
       {error && (
         <div className="share-feedback error">
-          ❌ {error}
+          <span className="share-feedback-icon">
+            <Icon name="error" />
+          </span>
+          {error}
         </div>
       )}
 
@@ -289,8 +293,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       {showInstructions && createPortal(
         <DownloadInstructions
           isVisible={showInstructions}
-          impressions={summaryMetrics?.impressions || '0'}
-          membersReached={summaryMetrics?.membersReached || '0'}
+          shareInfo={shareInfo}
           exportType={exportType ?? 'current-card'}
           onDismiss={() => setShowInstructions(false)}
         />,

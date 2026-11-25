@@ -1,0 +1,42 @@
+/* One column per badge, so the grid border ends at the last card. */
+.wrapped-metrics-grid.badges-grid {
+  grid-template-columns: repeat(var(--badge-columns), minmax(0, 1fr));
+}
+
+@media (max-width: 600px) {
+  .wrapped-metrics-grid.badges-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.badge-card {
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
+
+.badge-art {
+  width: 64px;
+}
+
+.badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.badge-name {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.badge-rule {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}

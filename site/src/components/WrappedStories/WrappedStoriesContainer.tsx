@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryCard } from '@components/WrappedStories/StoryCard';
-import type { ShareableCard } from '@/types/wrappedStories';
+import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
 
 interface WrappedStoriesContainerProps {
   cards: ShareableCard[];
+  shareInfo: ShareInfo;
   autoPlayDuration?: number; // milliseconds
   onUploadNewData?: () => void;
 }
 
 export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = ({
   cards,
+  shareInfo,
   autoPlayDuration = 5000,
   onUploadNewData,
 }) => {
@@ -31,21 +33,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     [cards.length]
   );
 
-  // Validate we have cards
-  if (!cards || cards.length === 0) {
-    return null;
-  }
-
   const totalCards = cards.length;
-
-  // Extract summary metrics from the year-summary card to pass to all cards
-  const yearSummaryCard = cards.find(card => card.type === 'year-summary');
-  const summaryMetrics = yearSummaryCard
-    ? {
-        impressions: yearSummaryCard.data.impressions,
-        membersReached: yearSummaryCard.data.membersReached,
-      }
-    : { impressions: '0', membersReached: '0' };
 
   // Clear auto-play timer
   const clearAutoPlayTimer = useCallback(() => {
@@ -281,6 +269,10 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     };
   }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer, clearSwipeArrowTimer]);
 
+  if (!cards || cards.length === 0) {
+    return null;
+  }
+
   const currentCard = cards[currentCardIndex];
   const viewportClassName = `story-viewport${currentCard?.type === 'peak-performer' ? ' peak-performer-viewport' : ''}`;
 
@@ -353,7 +345,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             cardIndex={index}
             cardRef={cardRefs[index]}
             allCards={cardRefs}
-            summaryMetrics={summaryMetrics}
+            shareInfo={shareInfo}
             onPauseAutoplay={handlePauseAutoPlay}
             currentCardIndex={currentCardIndex}
             totalCards={totalCards}

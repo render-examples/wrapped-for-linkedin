@@ -6,7 +6,7 @@
 
 // Cache configuration constants
 const DEFAULT_IMAGE_CACHE_SIZE_MB = 15;
-const MAX_CACHED_IMAGES = 8;
+const MAX_CACHED_IMAGES = 12;
 
 export interface CachedImage {
   dataUrl: string;

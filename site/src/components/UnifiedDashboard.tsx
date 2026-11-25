@@ -4,9 +4,13 @@ import { TopPostsDisplay } from '@components/TopPostsDisplay';
 import { DemographicsView } from '@components/DemographicsView';
 import { WrappedStoriesContainer } from '@components/WrappedStories/WrappedStoriesContainer';
 import { FinalMessage } from '@components/FinalMessage';
+import { BadgesSection } from '@components/BadgesSection';
+import { getEarnedBadges } from '@utils/badges';
 import { generateShareableCards } from '@utils/cardDataMapper';
+import { formatNumber, getWrappedYear } from '@utils/formatters';
 import type { EngagementMetrics, TopPost, DemographicInsights, DiscoveryData } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
+import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {
@@ -24,28 +28,41 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
   const discoveryData: DiscoveryData | undefined = data.discovery_data;
   const topPosts: TopPost[] = data.top_posts || [];
 
-  // Generate shareable cards for wrapped stories
-  const wrappedCards = useMemo(() => {
-    if (!discoveryData) return [];
-    const excelData: ParsedExcelData = {
-      discovery_data: discoveryData,
-      top_posts: data.top_posts,
-      demographics,
-      engagement_by_day: data.engagementByDay,
-    };
-    return generateShareableCards(excelData);
-  }, [discoveryData, data.top_posts, demographics, data.engagementByDay]);
+  const excelData: ParsedExcelData = useMemo(() => ({
+    discovery_data: discoveryData,
+    top_posts: data.top_posts,
+    demographics,
+    engagement_by_day: data.engagementByDay,
+  }), [discoveryData, data.top_posts, demographics, data.engagementByDay]);
+
+  const wrappedCards = useMemo(
+    () => (discoveryData ? generateShareableCards(excelData) : []),
+    [discoveryData, excelData]
+  );
+
+  const earnedBadges = useMemo(() => getEarnedBadges(excelData), [excelData]);
+
+  const shareInfo: ShareInfo = useMemo(() => ({
+    impressions: formatNumber(discoveryData?.total_impressions || 0),
+    membersReached: formatNumber(discoveryData?.members_reached || 0),
+    year: getWrappedYear(discoveryData),
+    topPostUrl: data.top_posts?.[0]?.url,
+    topBadgeSentence: earnedBadges[0]?.shareSentence,
+  }), [discoveryData, data.top_posts, earnedBadges]);
 
   return (
     <div className="unified-dashboard">
       {/* Wrapped Stories Section (at the top) */}
       {wrappedCards.length > 0 && (
         <WrappedStoriesContainer 
-          cards={wrappedCards} 
+          cards={wrappedCards}
+          shareInfo={shareInfo}
           autoPlayDuration={5000}
           onUploadNewData={onUploadNewData}
         />
       )}
+
+      <BadgesSection badges={earnedBadges} />
 
       {/* Main Dashboard Section */}
       {discoveryData && (
