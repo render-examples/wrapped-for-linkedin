@@ -1,5 +1,5 @@
 /**
- * Maps parsed Excel data to shareable card objects
+ * Map parsed Excel data to shareable story cards.
  */
 
 import type { AudienceSection, ShareableCard } from '@/types/wrappedStories';
@@ -11,6 +11,11 @@ import { getEarnedBadges } from '@utils/badges';
 
 const AUDIENCE_ITEMS_PER_SECTION = 3;
 const CARD_BACKGROUND = '#0d0d0d';
+
+// Convert a fraction from 0 to 1 to a whole-number percentage.
+function toPercent(fraction: number | undefined): number {
+  return Math.round((fraction || 0) * 100);
+}
 
 /**
  * Get the top companies, locations, and seniority levels of the people who saw the posts.
@@ -30,7 +35,7 @@ export function getAudienceSections(demographics?: DemographicInsights): Audienc
             label,
             items: items.slice(0, AUDIENCE_ITEMS_PER_SECTION).map((item) => ({
               name: item.name,
-              percentage: Math.round((item.percentage || 0) * 100),
+              percentage: toPercent(item.percentage),
             })),
           },
         ]
@@ -39,13 +44,13 @@ export function getAudienceSections(demographics?: DemographicInsights): Audienc
 }
 
 /**
- * Generate all shareable cards from parsed Excel data
- * Cards are ordered by virality potential
+ * Make the shareable cards from parsed Excel data.
+ * The cards are in story order. Cards without data are skipped.
  */
 export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
   const cards: ShareableCard[] = [];
 
-  // Card 1: Total impressions
+  // Total impressions
   if (data.discovery_data?.total_impressions) {
     cards.push({
       id: 'total-impressions',
@@ -62,14 +67,13 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 2: Members Reached
+  // Members reached
   if (data.discovery_data?.members_reached) {
     const membersReached = data.discovery_data.members_reached;
     const venueFormatted = formatVenueComparison(membersReached);
-    const contextMessage =
-      venueFormatted
-        ? `You reached ${formatNumber(membersReached)} people. ${venueFormatted}!`
-        : 'Your network is powerful';
+    const contextMessage = venueFormatted
+      ? `You reached ${formatNumber(membersReached)} people. ${venueFormatted}!`
+      : 'Your network is powerful';
 
     cards.push({
       id: 'members-reached',
@@ -86,7 +90,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 3: Top Post
+  // Top post
   if (data.top_posts && data.top_posts.length > 0) {
     const topPost = data.top_posts[0];
 
@@ -107,10 +111,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 4: Top Industry
+  // Top industry
   if (data.demographics?.industries && data.demographics.industries.length > 0) {
     const topIndustry = data.demographics.industries[0];
-    const percentage = Math.round((topIndustry.percentage || 0) * 100);
+    const percentage = toPercent(topIndustry.percentage);
     cards.push({
       id: 'top-industry',
       type: 'audience-industry',
@@ -127,7 +131,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 5: Audience snapshot
+  // Audience snapshot
   const audienceSections = getAudienceSections(data.demographics);
   if (audienceSections.length > 0) {
     cards.push({
@@ -143,27 +147,25 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 6: Best Month
-  if (data.engagement_by_day && data.engagement_by_day.length > 0) {
-    const bestMonth = calculateBestMonth(data.engagement_by_day);
-    if (bestMonth) {
-      cards.push({
-        id: 'best-month',
-        type: 'best-month',
-        title: 'Engagement Expert',
-        data: {
-          value: bestMonth.monthYear,
-          label: 'was your month',
-          icon: 'calendar',
-          context: `${bestMonth.peopleEngaged.toLocaleString()} people interacted with your content`,
-        },
-        backgroundColor: CARD_BACKGROUND,
-        accent: 'var(--accent-green)',
-      });
-    }
+  // Best month
+  const bestMonth = calculateBestMonth(data.engagement_by_day ?? []);
+  if (bestMonth) {
+    cards.push({
+      id: 'best-month',
+      type: 'best-month',
+      title: 'Engagement Expert',
+      data: {
+        value: bestMonth.monthYear,
+        label: 'was your month',
+        icon: 'calendar',
+        context: `${bestMonth.peopleEngaged.toLocaleString()} people interacted with your content`,
+      },
+      backgroundColor: CARD_BACKGROUND,
+      accent: 'var(--accent-green)',
+    });
   }
 
-  // Card 7: New Followers
+  // New followers
   if (data.discovery_data?.new_followers) {
     cards.push({
       id: 'new-followers',
@@ -180,7 +182,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 8: Badges
+  // Badges
   const badges = getEarnedBadges(data);
   if (badges.length > 0) {
     cards.push({
@@ -188,7 +190,10 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
       type: 'badges',
       title: 'Your Badges',
       data: {
-        context: badges.length === 1 ? 'You earned 1 badge this year' : `You earned ${badges.length} badges this year`,
+        context:
+          badges.length === 1
+            ? 'You earned 1 badge this year'
+            : `You earned ${badges.length} badges this year`,
         badges: badges.map(({ id, name, description, icon }) => ({ id, name, description, icon })),
       },
       backgroundColor: CARD_BACKGROUND,
@@ -196,7 +201,7 @@ export function generateShareableCards(data: ParsedExcelData): ShareableCard[] {
     });
   }
 
-  // Card 9: Year Summary (final card)
+  // Year summary. This card is always last.
   cards.push({
     id: 'year-summary',
     type: 'year-summary',

@@ -1,5 +1,5 @@
 /**
- * Types for Wrapped Stories components
+ * Types for the story cards.
  */
 
 import type { IconName } from '@components/Icon';
