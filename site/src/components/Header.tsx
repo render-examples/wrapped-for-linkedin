@@ -32,11 +32,11 @@ export function Header({ onLogoClick }: HeaderProps) {
         </div>
         <div className="header-right">
           <a
-            href="https://render.com"
+            href="https://dashboard.render.com/register?utm_source=2026_seasonal_wrapped"
             target="_blank"
             rel="noopener noreferrer"
             className="render-logo-link"
-            aria-label="Visit Render.com"
+            aria-label="Sign up for Render"
           >
             <span className="render-powered-text" data-mobile-text="DEPLOYED ON">POWERED BY AND DEPLOYED ON</span>
             <img
