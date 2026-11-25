@@ -67,7 +67,7 @@ export function formatVenueComparison(membersReached: number): string | null {
   const prefix = `That's like filling ${comparison.venue}`;
 
   if (times === 1) {
-    return `${prefix} 1 time`;
+    return prefix;
   }
 
   if (times === 2) {

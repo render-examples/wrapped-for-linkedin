@@ -69,8 +69,8 @@ describe('generateShareableCards', () => {
     expect(ids.slice(-2)).toEqual(['badges', 'year-summary']);
   });
 
-  it('uses "1 time" in the Network Ninja text', () => {
+  it('omits the count in the Network Ninja text', () => {
     const card = generateShareableCards(base).find((c) => c.id === 'members-reached');
-    expect(card?.data.context).toBe("You reached 88.1K people. That's like filling AT&T Stadium 1 time!");
+    expect(card?.data.context).toBe("You reached 88.1K people. That's like filling AT&T Stadium!");
   });
 });

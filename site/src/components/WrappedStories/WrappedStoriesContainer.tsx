@@ -296,34 +296,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {/* Click zones for desktop navigation */}
-        <div
-          className="click-zone click-zone-left"
-          onClick={handlePrevious}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handlePrevious();
-            }
-          }}
-          tabIndex={0}
-          role="button"
-          aria-label="Previous card"
-        />
-        <div
-          className="click-zone click-zone-right"
-          onClick={handleNext}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleNext();
-            }
-          }}
-          tabIndex={0}
-          role="button"
-          aria-label="Next card"
-        />
-
         {/* Swipe Arrow Indicators */}
         {swipeArrowDirection && (
           <>

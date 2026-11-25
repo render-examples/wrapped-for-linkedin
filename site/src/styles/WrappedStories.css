@@ -22,7 +22,6 @@
   aspect-ratio: 4 / 5;
   margin: 0 auto 1.5rem;
   touch-action: pan-y;
-  user-select: none;
 }
 
 /* Story card */
@@ -574,25 +573,6 @@
   background-image: url('/images/dashboard/arrow-right.svg');
 }
 
-/* Click zones for desktop navigation. They leave the header and footer free. */
-.click-zone {
-  position: absolute;
-  top: 20%;
-  bottom: 20%;
-  z-index: 15;
-  width: 35%;
-}
-
-.click-zone-left {
-  left: 0;
-  cursor: w-resize;
-}
-
-.click-zone-right {
-  right: 0;
-  cursor: e-resize;
-}
-
 /* Swipe arrows */
 .swipe-arrow {
   position: absolute;
@@ -646,13 +626,14 @@
   }
 
   /* Touch and tap handle navigation on phones. */
-  .side-nav-button,
-  .click-zone {
+  .side-nav-button {
     display: none;
   }
 
+  /* Stop a long press from selecting text during a tap or swipe. */
   .story-viewport {
     width: 100%;
+    user-select: none;
   }
 
   .control-button.mobile-only-upload {

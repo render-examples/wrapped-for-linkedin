@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { formatVenueComparison } from './venueComparison';
 
 describe('formatVenueComparison', () => {
-  it('uses "1 time" when the reach matches a venue', () => {
-    expect(formatVenueComparison(80_000)).toBe("That's like filling AT&T Stadium 1 time");
+  it('omits the count when the reach matches a venue', () => {
+    expect(formatVenueComparison(80_000)).toBe("That's like filling AT&T Stadium");
   });
 
-  it('uses "1 time" when the rounded ratio is above 1', () => {
-    expect(formatVenueComparison(88_100)).toBe("That's like filling AT&T Stadium 1 time");
+  it('omits the count when the rounded ratio is above 1', () => {
+    expect(formatVenueComparison(88_100)).toBe("That's like filling AT&T Stadium");
   });
 
   it('picks the largest venue that fits', () => {
-    expect(formatVenueComparison(160_000)).toBe("That's like filling Coachella 1 time");
-    expect(formatVenueComparison(199_000)).toBe("That's like filling Coachella 1 time");
-    expect(formatVenueComparison(400_000)).toBe("That's like filling Times Square 1 time");
+    expect(formatVenueComparison(160_000)).toBe("That's like filling Coachella");
+    expect(formatVenueComparison(199_000)).toBe("That's like filling Coachella");
+    expect(formatVenueComparison(400_000)).toBe("That's like filling Times Square");
   });
 
   it('uses "twice" when the largest venue fills two times', () => {
