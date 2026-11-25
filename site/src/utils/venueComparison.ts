@@ -54,7 +54,7 @@ export function getVenueComparison(membersReached: number): VenueComparison | nu
 /**
  * Format the venue comparison as a readable string
  * @param membersReached - The number of members reached
- * @returns Formatted string like "That's like filling Madison Square Garden 1.5 times" or null if too small
+ * @returns A string like "That's like filling Fenway Park twice", or null if the reach is too small
  */
 export function formatVenueComparison(membersReached: number): string | null {
   const comparison = getVenueComparison(membersReached);
@@ -63,16 +63,16 @@ export function formatVenueComparison(membersReached: number): string | null {
     return null;
   }
 
-  if (comparison.times === 1) {
-    return `That's like filling ${comparison.venue}`;
+  const times = Math.floor(comparison.times);
+  const prefix = `That's like filling ${comparison.venue}`;
+
+  if (times === 1) {
+    return `${prefix} 1 time`;
   }
 
-  if (comparison.times >= 2 && comparison.times < 3) {
-    return `That's like filling ${comparison.venue} twice`;
+  if (times === 2) {
+    return `${prefix} twice`;
   }
 
-  const flooredTimes = Math.floor(comparison.times);
-  const formattedTimes = flooredTimes.toLocaleString('en-US');
-
-  return `That's like filling ${comparison.venue} ${formattedTimes} times`;
+  return `${prefix} ${times.toLocaleString('en-US')} times`;
 }
