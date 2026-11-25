@@ -23,6 +23,8 @@ Start the site with `bin/preview.sh`. Start the screenshot service with `ALLOWED
 
 After you change `site/og/og-image.html`, run `npm run og` in `site/` and commit the new `site/public/images/og-image.png`.
 
+`site/fixtures/all-badges.xlsx` is a mock export that earns every badge. After you change a badge rule or the export format, run `npm run fixtures` in `site/` and commit the new file.
+
 ## Site conventions
 
 - Import with the path aliases in `site/tsconfig.app.json`, such as `@components`, `@utils`, and `@exports`.
