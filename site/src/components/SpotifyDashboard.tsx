@@ -11,6 +11,13 @@ interface SpotifyDashboardProps {
   engagementByDay?: EngagementByDay[];
 }
 
+const MetricCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="metric-card">
+    <h3 className="metric-card-label">{label}</h3>
+    <div className="metric-card-value">{value}</div>
+  </div>
+);
+
 export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
   discovery,
   engagementByDay,
@@ -25,10 +32,8 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
     <>
       {/* Your <year> Wrapped - Unified Metrics Section */}
       <div className="wrapped-section">
-        <h2 className='section-title'>Year in review</h2>
-        <h2 className="section-subtitle">
-        Your Wrapped for LinkedIn {year}
-      </h2>
+        <p className="section-eyebrow">Year in review</p>
+        <h2 className="section-title">Your Wrapped for LinkedIn {year}</h2>
         <p className="section-subtitle">
           {discovery?.start_date && discovery?.end_date ? (
             <>
@@ -36,99 +41,14 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
             </>
           ) : null}
         </p>
-        <br></br>
-        {/* Line 1: Total impressions, Members reached, New followers */}
-        <div className="wrapped-metrics-grid line-1">
-          {/* Total impressions Card */}
-          <div className="metric-card">
-            <div className="card-background gradient"></div>
-            <div className="card-content">
-              <h3 className="spotify-card-label">Total impressions</h3>
-              <div className="spotify-card-value-container">
-                <div className="spotify-card-value">
-                  {formatNumber(discovery?.total_impressions || 0)}
-                </div>
-              </div>
-              <div className="card-accent"></div>
-            </div>
-          </div>
-
-          {/* Members reached Card */}
-          <div className="metric-card">
-            <div className="card-background gradient"></div>
-            <div className="card-content">
-              <h3 className="spotify-card-label">Members reached</h3>
-              <div className="spotify-card-value-container">
-                <div className="spotify-card-value">
-                  {formatNumber(discovery?.members_reached || 0)}
-                </div>
-              </div>
-              <div className="card-accent"></div>
-            </div>
-          </div>
-
-          {/* New followers Card */}
-          <div className="metric-card">
-            <div className="card-background gradient"></div>
-            <div className="card-content">
-              <h3 className="spotify-card-label">New followers</h3>
-              <div className="spotify-card-value-container">
-                <div className="spotify-card-value">
-                  {formatNumber(discovery?.new_followers || 0)}
-                </div>
-              </div>
-              <div className="card-accent"></div>
-            </div>
-          </div>
+        <div className="wrapped-metrics-grid">
+          <MetricCard label="Total impressions" value={formatNumber(discovery?.total_impressions || 0)} />
+          <MetricCard label="Members reached" value={formatNumber(discovery?.members_reached || 0)} />
+          <MetricCard label="New followers" value={formatNumber(discovery?.new_followers || 0)} />
+          <MetricCard label="Total engagements" value={formatNumber(discovery?.total_engagements || 0)} />
+          {bestMonth && <MetricCard label="Best month" value={bestMonth.monthYear} />}
+          <MetricCard label="Median daily impressions" value={formatNumber(discovery?.average_impressions_per_day || 0)} />
         </div>
-
-        {/* Line 2: Total engagements, Best month, Median daily impressions */}
-        <div className="wrapped-metrics-grid line-2">
-          {/* Total engagements Card */}
-          <div className="metric-card">
-            <div className="card-background gradient"></div>
-            <div className="card-content">
-              <h3 className="spotify-card-label">Total engagements</h3>
-              <div className="spotify-card-value-container">
-                <div className="spotify-card-value">
-                  {formatNumber(discovery?.total_engagements || 0)}
-                </div>
-              </div>
-              <div className="card-accent"></div>
-            </div>
-          </div>
-
-          {/* Best month Card */}
-          {bestMonth && (
-            <div className="metric-card">
-              <div className="card-background gradient"></div>
-              <div className="card-content">
-                <h3 className="spotify-card-label">Best month</h3>
-                <div className="spotify-card-value-container">
-                  <div className="spotify-card-value">
-                    {bestMonth.monthYear}
-                  </div>
-                </div>
-                <div className="card-accent"></div>
-              </div>
-            </div>
-          )}
-
-          {/* Median daily impressions Card */}
-          <div className="metric-card">
-            <div className="card-background gradient"></div>
-              <div className="card-content">
-                <h3 className="spotify-card-label">Median daily impressions</h3>
-                <div className="spotify-card-value-container">
-                <div className="spotify-card-value">
-                  {formatNumber(discovery?.average_impressions_per_day || 0)}
-                </div>
-              </div>
-              <div className="card-accent"></div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </>
   );

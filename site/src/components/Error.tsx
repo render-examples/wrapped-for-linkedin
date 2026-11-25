@@ -13,7 +13,7 @@ export const Error: React.FC<ErrorProps> = ({ error, onRetry }) => {
       <h2>Oops! Something went wrong</h2>
       <p className="error-message">{error}</p>
       {onRetry && (
-        <button className="retry-button" onClick={onRetry}>
+        <button className="button primary retry-button" onClick={onRetry}>
           Try again
         </button>
       )}

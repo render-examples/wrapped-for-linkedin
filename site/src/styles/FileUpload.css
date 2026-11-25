@@ -1,37 +1,38 @@
 .file-upload-container {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  padding: 2rem;
+  gap: 2.5rem;
   width: 100%;
   max-width: 700px;
+  min-height: 60vh;
   margin: 0 auto;
+  padding: 2rem;
 }
 
-.dropzone {
-  width: 100%;
-  max-width: 600px;
-  padding: 32px;
-  border: 1.5px solid transparent;
-  background: rgba(13, 13, 13, 0.88);
-  backdrop-filter: blur(16px);
-  cursor: pointer;
-  text-align: center;
+.dropzone,
+.instructions,
+.privacy-disclaimer {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg);
 }
 
-.dropzone:hover:not(.disabled) {
-  background: rgba(13, 13, 13, 0.96);
-  border: 1.5px solid transparent;
-  background-clip: padding-box;
-  border-image: linear-gradient(135deg, #F239FF, #0A8FFF) 1;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 2px 44px 0 #F239FF;
+.dropzone {
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.dropzone:hover:not(.disabled),
+.dropzone.active {
+  border-color: var(--accent);
 }
 
 .dropzone.disabled {
@@ -42,24 +43,17 @@
 .dropzone-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   align-items: center;
+  gap: 1.5rem;
 }
 
 .upload-icon {
-  color: var(--Text-Secondary, #E2E2E2);
-  text-align: center;
-  font-family: Roobert;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 105%; /* 25.2px */
-  letter-spacing: -0.48px;
   animation: bounce 2s infinite;
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -67,151 +61,99 @@
   }
 }
 
-.dropzone-text {
-  color: var(--text-secondary);
-  text-align: center;
-  font-family: Roobert;
+.dropzone-text,
+.instructions h3 {
+  font-family: var(--font-heading);
   font-size: 24px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 105%; /* 25.2px */
-  letter-spacing: -0.48px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--text);
 }
 
-.dropzone-subtext {
-  color: var(--Gray-400, #C3C3C3);
-  text-align: center;
-  font-family: "PP Neue Montreal";
+.dropzone-subtext,
+.instructions li,
+.privacy-disclaimer strong {
   font-size: 18px;
-  font-style: normal;
   font-weight: 400;
-  line-height: 138%; /* 24.84px */
-  letter-spacing: 0.18px;
+  line-height: 1.38;
+  text-align: center;
+  color: var(--text-secondary);
 }
 
 .dropzone-formats {
-  color: var(--Gray-500, #858585);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.045em;
+  line-height: 1.6;
+  text-transform: uppercase;
   text-align: center;
-  font-family: "PP Neue Montreal";
+  color: var(--text-faint);
+}
+
+.privacy-disclaimer-text {
   font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 121%; /* 16.94px */
+  line-height: 1.5;
+  color: var(--text-faint);
 }
 
 .or-divider {
-  display: flex;
-  padding: 4px 24px 6px 24px;
-  flex-direction: column;
-  align-items: center;
-  gap: 1274px;
-  background: rgba(13, 13, 13, 0.66);
-  backdrop-filter: blur(8px);
-  border: 1.5px solid transparent;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  color: var(--Gray-400, #C3C3C3);
-  text-align: center;
-  font-family: "PP Neue Montreal";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 138%; /* 24.84px */
-  letter-spacing: 0.18px;
   width: fit-content;
   margin: -0.75rem 0;
-}
-
-.instructions,
-.privacy-disclaimer {
-  width: 100%;
-  max-width: 600px;
-  background: rgba(13, 13, 13, 0.88);
-  backdrop-filter: blur(16px);
-  border: 1.5px solid transparent;
-  padding: 32px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 4px 24px 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: var(--text-faint);
 }
 
 .instructions {
-  text-align: center;
-  flex-direction: column;
   position: relative;
+  flex-direction: column;
   padding-bottom: 72px;
+  text-align: center;
 }
 
 .instructions h3 {
   margin-bottom: 1.5rem;
-  color: var(--text-secondary);
-  text-align: center;
-  font-family: Roobert;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 105%; /* 25.2px */
-  letter-spacing: -0.48px;
 }
 
 .instructions ol {
   list-style-position: inside;
   line-height: 2.2;
-  color: var(--text-secondary);
 }
 
 .instructions li {
   margin-bottom: 1rem;
-  color: var(--Gray-400, #C3C3C3);
-  text-align: center;
-  font-family: "PP Neue Montreal";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 138%; /* 24.84px */
-  letter-spacing: 0.18px;
 }
 
 .watch-demo-button {
   position: absolute;
-  bottom: 16px;
   right: 16px;
+  bottom: 16px;
   padding: 12px 20px;
-  border: 1.5px solid transparent;
-  border-radius: 0px;
-  background: transparent;
-  cursor: pointer;
+  border: 1px solid var(--border);
+  font-size: 14px;
   text-decoration: none;
-  color: var(--text-secondary);
-  font-family: Roobert;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 105%;
-  letter-spacing: -0.32px;
-  transition: all 0.3s ease;
+  color: var(--text);
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .watch-demo-button:hover {
-  background: rgba(13, 13, 13, 0.88);
-  border: 1.5px solid transparent;
-  background-clip: padding-box;
-  border-image: linear-gradient(135deg, #F239FF, #0A8FFF) 1;
-  box-shadow: 0 2px 24px 0 rgba(242, 57, 255, 0.3);
-  text-decoration: none;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .instructions a:not(.watch-demo-button),
 .privacy-disclaimer a {
-  color: var(--Pink-300, #F79BFE);
-  text-decoration: none;
-  font-family: "PP Neue Montreal";
   font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 138%;
-  letter-spacing: 0.18px;
-  transition: all 0.3s ease;
+  line-height: 1.38;
+  text-decoration: none;
+  color: var(--accent);
 }
 
 .instructions a:not(.watch-demo-button):hover,
@@ -224,56 +166,46 @@
 }
 
 .privacy-disclaimer p {
-  margin: 0;
+  text-align: center;
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.privacy-disclaimer p + p {
-  font-size: 0.85rem;
-  margin-top: 0.75rem;
-  opacity: 0.8;
-}
-
-.privacy-disclaimer strong {
-  color: var(--Gray-400, #C3C3C3);
-  text-align: center;
-  font-family: "PP Neue Montreal";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 138%; /* 24.84px */
-  letter-spacing: 0.18px;
-}
-
-.privacy-disclaimer-text {
-  color: var(--Gray-500, #858585);
-  text-align: center;
-  font-family: "PP Neue Montreal";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 121%; /* 16.94px */
 }
 
 @media (max-width: 768px) {
   .file-upload-container {
     min-height: auto;
     gap: 1.25rem;
+    padding: 2rem 0;
   }
 
-  .dropzone {
+  .dropzone,
+  .instructions,
+  .privacy-disclaimer {
     padding: 24px;
-    background: rgba(13, 13, 13, 0.92);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
   }
 
-  .upload-icon {
-    font-size: 2.5rem;
-    font-family: "Roobert", sans-serif;
+  .instructions {
+    padding-bottom: 72px;
+  }
+
+  .dropzone-text,
+  .instructions h3 {
+    font-size: 18px;
+  }
+
+  .instructions h3 {
+    margin-bottom: 1rem;
+  }
+
+  .dropzone-subtext,
+  .instructions li,
+  .privacy-disclaimer strong,
+  .instructions a:not(.watch-demo-button),
+  .privacy-disclaimer a {
+    font-size: 14px;
+  }
+
+  .instructions li {
+    margin-bottom: 0.75rem;
   }
 
   .upload-icon img {
@@ -281,70 +213,9 @@
     height: 60px;
   }
 
-  .dropzone-text {
-    font-size: 1.1rem;
-    font-family: "Roobert", sans-serif;
-  }
-
-  .instructions,
-  .privacy-disclaimer {
-    padding: 24px;
-    background: rgba(13, 13, 13, 0.92);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-  }
-
-  .instructions {
-    padding-bottom: 56px;
-  }
-  
-  .or-divider {
-    background: rgba(13, 13, 13, 0.75);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .instructions h3 {
-    font-size: 18px;
-    margin-bottom: 1rem;
-  }
-
-  .instructions li {
-    font-size: 13px;
-    margin-bottom: 0.75rem;
-  }
-
-  .instructions a:not(.watch-demo-button) {
-    font-size: 14px;
-  }
-
   .watch-demo-button {
-    font-size: 14px;
-    padding: 10px 16px;
-    bottom: 12px;
     right: 12px;
+    bottom: 12px;
+    padding: 10px 16px;
   }
-
-  .dropzone-text {
-    font-size: 16px;
-  }
-
-  .dropzone-subtext {
-    font-size: 13px;
-  }
-
-  .dropzone-formats {
-    font-size: 13px;
-  }
-
-  .privacy-disclaimer p {
-    font-size: 0.85rem;
-    font-family: "Roobert", sans-serif;
-  }
-
-  .privacy-disclaimer p + p {
-    font-size: 0.8rem;
-    font-family: "Roobert", sans-serif;
-  }
-
 }

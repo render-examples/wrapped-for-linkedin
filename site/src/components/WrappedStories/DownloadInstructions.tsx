@@ -59,7 +59,7 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
         {/* Actions */}
         <div className="instructions-actions">
           <button
-            className="btn-share-linkedin"
+            className="button primary btn-share-linkedin"
             onClick={handleShareOnLinkedIn}
             aria-label="Share on LinkedIn with prepared text"
           >

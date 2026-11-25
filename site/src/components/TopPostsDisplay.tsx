@@ -36,8 +36,8 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
     <div className="top-posts-section">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Top posts</h2>
-          <p className="section-subtitle">What resonated most</p>
+          <p className="section-eyebrow">Top posts</p>
+          <h2 className="section-title">What resonated most</h2>
         </div>
       </div>
 

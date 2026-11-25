@@ -1,35 +1,22 @@
 .sample-data-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 600px;
   padding: 32px;
-  border: 1.5px solid transparent;
-  border-radius: 0;
-  background: rgba(13, 13, 13, 0.88);
-  backdrop-filter: blur(16px);
-  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
   text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transition: border-color 0.2s ease;
 }
 
-.sample-data-button:hover:not(.disabled) {
-  background: rgba(13, 13, 13, 0.96);
-  border: 1.5px solid transparent;
-  background-clip: padding-box;
-  border-image: linear-gradient(135deg, #F239FF, #0A8FFF) 1;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 2px 44px 0 #F239FF;
+.sample-data-button:hover:not(:disabled) {
+  border-color: var(--accent);
 }
 
 .sample-data-button:disabled {
   opacity: 0.8;
-  cursor: not-allowed;
-}
-
-.sample-data-button:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
-  outline-offset: 2px;
 }
 
 .sample-data-button-icon {
@@ -37,25 +24,24 @@
 }
 
 .sample-data-button-text {
-  color: var(--text-secondary);
-  text-align: center;
-  font-family: Roobert;
+  font-family: var(--font-heading);
   font-size: 24px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 105%; /* 25.2px */
-  letter-spacing: -0.48px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
 }
 
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  animation: spin 0.6s linear infinite;
-  vertical-align: middle;
   margin-right: 0.5rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  vertical-align: middle;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
@@ -67,12 +53,8 @@
 @media (max-width: 600px) {
   .sample-data-button {
     padding: 24px;
-    font-size: 0.95rem;
-    background: rgba(13, 13, 13, 0.92);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
   }
-  
+
   .sample-data-button-text {
     font-size: 18px;
   }

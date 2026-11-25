@@ -58,10 +58,8 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
   return (
     <div className="demographics-view">
       <div className="demographics-header">
-        <h2 className="section-title">Your audience</h2>
-        <p className="demographics-subtitle">
-          Who engaged with your content
-        </p>
+        <p className="section-eyebrow">Your audience</p>
+        <h2 className="section-title">Who saw your posts</h2>
       </div>
 
       <div className="demographics-grid">

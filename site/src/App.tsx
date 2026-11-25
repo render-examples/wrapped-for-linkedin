@@ -155,7 +155,7 @@ function App() {
         <main className="app-main">
           {state.engagement && (
             <button
-              className="upload-new-data-btn desktop-only"
+              className="button secondary upload-new-data-btn"
               onClick={handleClearCache}
               aria-label="Upload new data"
               title="Upload new data"

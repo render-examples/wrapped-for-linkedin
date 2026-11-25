@@ -1,44 +1,14 @@
-/* ============================================================================
-   Unified Section Title Styles
-   Used across all dashboard sections for consistent typography
-   ============================================================================ */
+/* Section header: a mono eyebrow, then a Roobert title. */
+.section-eyebrow {
+  margin-bottom: 0.75rem;
+}
 
 .section-title {
-  color: var(--text-primary, #FFF);
-  font-family: Roobert, var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 40px;
-  font-style: normal;
+  margin: 0 0 0.5rem;
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3.2vw, 44px);
   font-weight: 600;
-  line-height: 105%; /* 42px */
-  letter-spacing: -0.8px;
-  margin: 0 0 0.5rem 0;
-  
-  /* Experimental properties for better text rendering */
-  leading-trim: both;
-  text-edge: cap;
-}
-
-/* Responsive adjustments for section titles */
-@media (max-width: 1024px) {
-  .section-title {
-    font-size: 36px;
-    letter-spacing: -0.72px;
-    font-family: "Roobert", sans-serif;
-  }
-}
-
-@media (max-width: 768px) {
-  .section-title {
-    font-size: 32px;
-    letter-spacing: -0.64px;
-    font-family: "Roobert", sans-serif;
-  }
-}
-
-@media (max-width: 480px) {
-  .section-title {
-    font-size: 28px;
-    letter-spacing: -0.56px;
-    font-family: "Roobert", sans-serif;
-  }
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
 }
