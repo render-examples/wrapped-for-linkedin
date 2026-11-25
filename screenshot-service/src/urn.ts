@@ -1,6 +1,6 @@
 // Only post URNs are accepted. The service builds the embed URL itself and
 // never accepts a full URL, so it cannot be used to load other sites.
-const URN_PATTERN = /^urn:li:(activity|share|ugcPost):\d+$/;
+const URN_PATTERN = /^urn:li:(activity|share|ugcPost):\d{1,20}$/;
 
 const EMBED_BASE_URL = 'https://www.linkedin.com/embed/feed/update/';
 

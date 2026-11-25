@@ -47,7 +47,7 @@ The site works without the screenshot service, but exported cards then show no p
 ```bash
 cd screenshot-service
 npm install
-ALLOWED_ORIGIN=http://localhost:5173 npm start
+ALLOWED_ORIGINS=http://localhost:5173 npm start
 ```
 
 The service listens on port 10000, which matches `VITE_SCREENSHOT_SERVICE_URL` in `site/.env.development`.
@@ -97,7 +97,7 @@ Click **Deploy to Render** at the top of this README. The Blueprint creates two 
 - `wrappedforlinkedin` is a static site.
 - `wrapped-for-linkedin-screenshots` is a Docker web service. It uses the Standard plan because Chromium needs about 1 GB of memory.
 
-If you deploy under different service names, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGIN` in `render.yaml` to match the new URLs.
+If you deploy under different service names, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGINS` in `render.yaml` to match the new URLs.
 
 ## Contribute
 

@@ -7,6 +7,7 @@ describe('isValidUrn', () => {
     assert.equal(isValidUrn('urn:li:activity:7273484794833833984'), true);
     assert.equal(isValidUrn('urn:li:share:7485528159346622464'), true);
     assert.equal(isValidUrn('urn:li:ugcPost:7385845292233048064'), true);
+    assert.equal(isValidUrn(`urn:li:share:${'1'.repeat(20)}`), true);
   });
 
   it('rejects full URLs and other values', () => {
@@ -18,6 +19,7 @@ describe('isValidUrn', () => {
       'urn:li:comment:123',
       'urn:li:share:123/../../evil',
       'urn:li:share:123\n',
+      `urn:li:share:${'1'.repeat(21)}`,
       ' urn:li:share:123',
       '',
       undefined,

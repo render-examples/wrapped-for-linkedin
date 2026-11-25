@@ -1,4 +1,4 @@
-import { chromium, type Browser, type Page } from 'playwright';
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { embedUrlForUrn } from './urn.ts';
 import { createLimiter } from './limiter.ts';
 
@@ -15,6 +15,13 @@ const NAVIGATION_TIMEOUT_MS = 15_000;
 const IMAGE_SETTLE_TIMEOUT_MS = 5_000;
 const ACTION_BAR_TIMEOUT_MS = 1_000;
 const MAX_CONCURRENT_PAGES = 2;
+// Screenshot requests that wait for a page. More requests get a 503.
+const MAX_QUEUED_PAGES = 8;
+const QUEUE_TIMEOUT_MS = 20_000;
+// An embed page is about 25 KB.
+const MAX_EMBED_HTML_BYTES = 1024 * 1024;
+// The embed page loads only from these hosts and their subdomains.
+const ALLOWED_HOSTS = ['linkedin.com', 'licdn.com'];
 
 export type PostStatus = 'public' | 'unavailable' | 'error';
 
@@ -38,17 +45,56 @@ export function classifyEmbedResponse(status: number, html: string): PostStatus 
   return 'error';
 }
 
-/** Fetch the embed HTML without a browser and classify it. */
-export async function fetchPostStatus(urn: string): Promise<PostStatus> {
+/** Read the body as text. Returns null if it is larger than `maxBytes`. */
+async function readTextWithLimit(response: Response, maxBytes: number): Promise<string | null> {
+  if (!response.body) {
+    return '';
+  }
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for await (const chunk of response.body) {
+    size += chunk.byteLength;
+    if (size > maxBytes) {
+      await response.body.cancel().catch(() => {});
+      return null;
+    }
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+/**
+ * Fetch the embed HTML without a browser and classify it.
+ * A redirect is an error, so the request cannot leave LinkedIn.
+ */
+export async function fetchPostStatus(urn: string, fetchFn: typeof fetch = fetch): Promise<PostStatus> {
   try {
-    const response = await fetch(embedUrlForUrn(urn), {
-      redirect: 'follow',
+    const response = await fetchFn(embedUrlForUrn(urn), {
+      redirect: 'manual',
       signal: AbortSignal.timeout(NAVIGATION_TIMEOUT_MS),
     });
-    return classifyEmbedResponse(response.status, await response.text());
+    const html = await readTextWithLimit(response, MAX_EMBED_HTML_BYTES);
+    return html === null ? 'error' : classifyEmbedResponse(response.status, html);
   } catch {
     return 'error';
   }
+}
+
+/** Allow only HTTPS requests to LinkedIn hosts, and inline data: URLs. */
+export function isAllowedRequestUrl(url: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol === 'data:') {
+    return true;
+  }
+  if (parsed.protocol !== 'https:') {
+    return false;
+  }
+  return ALLOWED_HOSTS.some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
 }
 
 /**
@@ -113,22 +159,37 @@ async function capturePost(page: Page, urn: string): Promise<ScreenshotResult> {
   return { status: 'public', image };
 }
 
-const runWithPageLimit = createLimiter(MAX_CONCURRENT_PAGES);
+const runWithPageLimit = createLimiter({
+  limit: MAX_CONCURRENT_PAGES,
+  maxQueue: MAX_QUEUED_PAGES,
+  queueTimeoutMs: QUEUE_TIMEOUT_MS,
+});
 
-/** Take a screenshot of the post in a new browser context. */
-export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
+/**
+ * Take a screenshot of the post in a new browser context.
+ * Rejects with LimiterBusyError when too many screenshots wait for a page.
+ * `launch` is for tests.
+ */
+export function takePostScreenshot(
+  urn: string,
+  launch: () => Promise<Browser> = getBrowser
+): Promise<ScreenshotResult> {
   return runWithPageLimit(async () => {
-    const browser = await getBrowser();
-    const context = await browser.newContext({
-      viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
-      deviceScaleFactor: DEVICE_SCALE_FACTOR,
-    });
+    let context: BrowserContext | undefined;
     try {
+      const browser = await launch();
+      context = await browser.newContext({
+        viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
+        deviceScaleFactor: DEVICE_SCALE_FACTOR,
+      });
+      await context.route('**/*', (route) =>
+        isAllowedRequestUrl(route.request().url()) ? route.continue() : route.abort()
+      );
       return await capturePost(await context.newPage(), urn);
     } catch {
       return { status: 'error' };
     } finally {
-      await context.close().catch(() => {});
+      await context?.close().catch(() => {});
     }
   });
 }
