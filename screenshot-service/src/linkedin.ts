@@ -78,11 +78,11 @@ function getBrowser(): Promise<Browser> {
   return browserPromise;
 }
 
-const limit = createLimiter(MAX_CONCURRENT_PAGES);
+const runWithPageLimit = createLimiter(MAX_CONCURRENT_PAGES);
 
 /** Take a screenshot of the post in the embed page. */
 export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
-  return limit(async (): Promise<ScreenshotResult> => {
+  return runWithPageLimit(async (): Promise<ScreenshotResult> => {
     const browser = await getBrowser();
     const context = await browser.newContext({
       viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
@@ -104,7 +104,9 @@ export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
       const post = page.locator(POST_SELECTOR).first();
       await post.waitFor({ state: 'visible', timeout: NAVIGATION_TIMEOUT_MS });
       // LinkedIn loads profile and post images after the load event.
-      await page.waitForLoadState('networkidle', { timeout: IMAGE_SETTLE_TIMEOUT_MS }).catch(() => {});
+      await page
+        .waitForLoadState('networkidle', { timeout: IMAGE_SETTLE_TIMEOUT_MS })
+        .catch(() => {});
       const postBox = await post.boundingBox();
       const actionBarBox = await post
         .locator(ACTION_BAR_SELECTOR)
