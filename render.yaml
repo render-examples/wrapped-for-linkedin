@@ -4,7 +4,7 @@ projects:
       - name: production
         services:
           - type: web
-            name: wrapped-for-linkedin
+            name: wrappedforlinkedin
             runtime: static
             rootDir: site
             buildCommand: npm install; npm run build
