@@ -15,7 +15,7 @@ export interface ShareTextInput {
 /**
  * Build the prefilled post text. If the user has a badge, the text starts with the badge sentence.
  */
-function buildShareText({ impressions, membersReached, year, topBadgeSentence }: ShareTextInput): string {
+export function buildShareText({ impressions, membersReached, year, topBadgeSentence }: ShareTextInput): string {
   const hashtags = `#WrappedForLinkedIn #${year}Recap`;
 
   if (topBadgeSentence) {

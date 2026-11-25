@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '@exports/imageExport';
-import { exportCardsAsPDFBatch } from '@exports/pdfExport';
+import { buildCardsPDF } from '@exports/pdfExport';
 import { getPostImage } from '@exports/postScreenshot';
 import { DownloadInstructions, type ExportType } from '@components/WrappedStories/DownloadInstructions';
+import { NativeSharePrompt } from '@components/WrappedStories/NativeSharePrompt';
+import { dataUrlToFile, downloadFile, getShareMode, type ShareMode } from '@utils/webShare';
 import { Icon } from '@components/Icon';
 import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
@@ -46,6 +48,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [showInstructions, setShowInstructions] = useState(false);
   const [exportType, setExportType] = useState<ExportType>('current-card');
   const [error, setError] = useState<string | null>(null);
+  const [exportedFile, setExportedFile] = useState<File | null>(null);
+  const [shareMode, setShareMode] = useState<ShareMode>('download');
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -66,6 +70,26 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     return undefined;
   }, [isDropdownOpen]);
 
+  /**
+   * Download the file on desktop. On touch devices, keep it for the share prompt.
+   */
+  const deliverFile = useCallback((file: File) => {
+    const mode = getShareMode(file);
+    setExportedFile(file);
+    setShareMode(mode);
+    if (mode === 'download') {
+      downloadFile(file);
+    }
+    setShowInstructions(true);
+  }, []);
+
+  const handleFallbackDownload = useCallback(() => {
+    if (exportedFile) {
+      downloadFile(exportedFile);
+    }
+    setShareMode('download');
+  }, [exportedFile]);
+
   const handlePNGExport = useCallback(async () => {
     if (!cardRef.current) {
       setError('Card element not found');
@@ -82,14 +106,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
       const imageDataUrl = await exportCardAsImage(cardRef.current, { postImage });
 
-      const link = document.createElement('a');
-      link.href = imageDataUrl;
-      link.download = `wrapped-for-linkedin-${card.id}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      setShowInstructions(true);
+      deliverFile(await dataUrlToFile(imageDataUrl, `wrapped-for-linkedin-${card.id}.png`));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to export card';
       setError(errorMessage);
@@ -97,7 +114,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [cardRef, card]);
+  }, [cardRef, card, deliverFile]);
 
   /**
    * Export all cards as one PDF.
@@ -129,12 +146,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         return;
       }
 
-      const filename = `wrapped_${shareInfo.year}.pdf`;
       const postImage = shareInfo.topPostUrl ? await getPostImage(shareInfo.topPostUrl) : null;
+      const pdf = await buildCardsPDF(cardElements, { postImage });
 
-      await exportCardsAsPDFBatch(cardElements, filename, { postImage });
-
-      setShowInstructions(true);
+      deliverFile(new File([pdf], `wrapped_${shareInfo.year}.pdf`, { type: 'application/pdf' }));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
       setError(errorMessage);
@@ -142,7 +157,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [allCards, shareInfo]);
+  }, [allCards, shareInfo, deliverFile]);
 
   const handleToggleDropdown = useCallback(() => {
     if (isExporting) {
@@ -236,12 +251,23 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
       {/* The portal puts the modal outside the card's stacking context. */}
       {showInstructions && createPortal(
-        <DownloadInstructions
-          isVisible={showInstructions}
-          shareInfo={shareInfo}
-          exportType={exportType}
-          onDismiss={() => setShowInstructions(false)}
-        />,
+        shareMode === 'native' && exportedFile ? (
+          <NativeSharePrompt
+            file={exportedFile}
+            shareInfo={shareInfo}
+            exportType={exportType}
+            onShared={() => setShowInstructions(false)}
+            onFallback={handleFallbackDownload}
+            onDismiss={() => setShowInstructions(false)}
+          />
+        ) : (
+          <DownloadInstructions
+            isVisible={showInstructions}
+            shareInfo={shareInfo}
+            exportType={exportType}
+            onDismiss={() => setShowInstructions(false)}
+          />
+        ),
         document.body
       )}
     </div>

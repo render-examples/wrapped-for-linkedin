@@ -27,13 +27,12 @@ export interface PDFExportOptions {
 }
 
 /**
- * Export all cards as one PDF, one card per page.
+ * Build one PDF of all cards, one card per page. The caller saves or shares the Blob.
  */
-export async function exportCardsAsPDFBatch(
+export async function buildCardsPDF(
   cardElements: HTMLElement[],
-  filename: string = `wrapped_${new Date().getFullYear()}.pdf`,
   options: PDFExportOptions = {}
-): Promise<void> {
+): Promise<Blob> {
   if (cardElements.length === 0) {
     throw new Error('No cards provided for PDF export');
   }
@@ -59,7 +58,7 @@ export async function exportCardsAsPDFBatch(
       pdf.addImage(dataUrl, 'PNG', 0, 0, PDF_PAGE_WIDTH_MM, PDF_PAGE_HEIGHT_MM, undefined, 'FAST');
     });
 
-    pdf.save(filename);
+    return pdf.output('blob');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`PDF export failed: ${errorMessage}`);

@@ -44,22 +44,22 @@ The function exports 8 cards at a time by default. It calls `onProgress(done, to
 
 ## PDF export: `pdfExport.ts`
 
-`exportCardsAsPDFBatch(cards, filename?, { postImage? })` renders the cards with the batch exporter and downloads the PDF.
+`buildCardsPDF(cards, { postImage? })` renders the cards with the batch exporter and returns the PDF as a `Blob`. It does not download the file. The caller saves or shares it.
 
-Each page is 216 mm wide and has the same aspect ratio as the card, so the card fills the page with no margin. The default file name is `wrapped_<year>.pdf`. The function loads jsPDF only when the user exports a PDF.
+Each page is 216 mm wide and has the same aspect ratio as the card, so the card fills the page with no margin. The function loads jsPDF only when the user exports a PDF.
 
 ## Examples
 
 ```typescript
 import { exportCardAsImage } from '@exports/imageExport';
-import { exportCardsAsPDFBatch } from '@exports/pdfExport';
+import { buildCardsPDF } from '@exports/pdfExport';
 import { getPostImage } from '@exports/postScreenshot';
 
 const postImage = await getPostImage(topPostUrl);
 
 const dataUrl = await exportCardAsImage(cardElement, { postImage });
 
-await exportCardsAsPDFBatch(cardElements, 'wrapped_2026.pdf', { postImage });
+const pdf = await buildCardsPDF(cardElements, { postImage });
 ```
 
 ## Errors

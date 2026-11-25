@@ -72,7 +72,8 @@ src/
 │   ├── pdfExport.ts     # Export dashboard as PDF
 │   ├── profileExtractor.ts # Extract profile info
 │   ├── shareTextTemplates.ts # Share message templates
-│   └── storageManager.ts # Local storage wrapper
+│   ├── storageManager.ts # Local storage wrapper
+│   └── webShare.ts # Share files through the system share sheet, or download them
 ├── App.tsx              # Root component
 ├── main.tsx             # Entry point
 ├── index.css            # Global styles
@@ -130,7 +131,8 @@ cardDataMapper transforms data
 Choose export format:
 ├── PDF → pdfExport.ts → jsPDF library
 ├── Image → imageExport.ts → html2canvas library
-└── LinkedIn → linkedinShareLink.ts → Pre-filled share URL
+├── Phone → webShare.ts → system share sheet → LinkedIn app
+└── Desktop → download → linkedinShareLink.ts → Pre-filled share URL
 ```
 
 ## 🎨 Key components
@@ -176,7 +178,8 @@ Choose export format:
 - **StoryCard.tsx**: Individual story card component with responsive design
 - **StoryProgress.tsx**: Progress indicators and card navigation
 - **ShareButton.tsx**: Export cards as images/PDFs and pre-filled LinkedIn share functionality
-- **DownloadInstructions.tsx**: Guide for saving cards
+- **NativeSharePrompt.tsx**: Share prompt on phones. Opens the system share sheet with the exported file.
+- **DownloadInstructions.tsx**: Steps to attach a downloaded card on desktop, or when sharing fails.
 
 ### **WrappedStoriesContainer.tsx** (Wrapped Stories)
 - Instagram Stories-inspired carousel with autoplay (5s per card by default)

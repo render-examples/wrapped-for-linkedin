@@ -15,7 +15,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 ## Features
 
-- **Shareable cards**: Download story cards as PNG or PDF and post them on LinkedIn.
+- **Shareable cards**: Download story cards as PNG or PDF and post them on LinkedIn. On phones, share them to the LinkedIn app from the share sheet.
 - **Top posts**: See your posts ranked by impressions, engagement rate, and comments.
 - **Badges**: Earn badges for 1M+ impressions, a 100K+ impression post, 1,000+ new followers, or engagement in all 12 months.
 - **Audience demographics**: See your followers and engagers by industry, seniority, location, and company size.
@@ -27,7 +27,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 
 1. Export your [LinkedIn analytics](https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days) as an Excel file. The [Wrapped for LinkedIn landing page](https://wrappedforlinkedin.onrender.com/) has step-by-step instructions.
 1. Open [wrappedforlinkedin.onrender.com](https://wrappedforlinkedin.onrender.com/) and upload the file.
-1. Look through your stories and share the cards you like.
+1. Look through your stories and share the cards you like. On a phone, tap **Share to LinkedIn** and paste the copied post text into your post.
 
 ## Run locally
 
