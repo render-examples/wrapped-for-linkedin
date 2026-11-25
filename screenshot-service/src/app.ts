@@ -4,8 +4,13 @@ import { isValidUrn } from './urn.ts';
 import { TtlCache } from './cache.ts';
 import type { PostStatus, ScreenshotResult } from './linkedin.ts';
 
-const HOUR_MS = 60 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
+
+const NO_STORE = 'no-store';
+const CACHE_ONE_HOUR = 'public, max-age=3600';
+const CACHE_ONE_DAY = 'public, max-age=86400, immutable';
 
 export type AppOptions = {
   allowedOrigins: string[];
@@ -77,7 +82,7 @@ export function createApp({
 
   app.use(
     rateLimit({
-      windowMs: 60 * 1000,
+      windowMs: MINUTE_MS,
       limit: rateLimitPerMinute,
       standardHeaders: 'draft-8',
       legacyHeaders: false,
@@ -100,12 +105,12 @@ export function createApp({
     }
 
     if (status === 'error') {
-      res.status(502).set('Cache-Control', 'no-store').end();
+      res.status(502).set('Cache-Control', NO_STORE).end();
       return;
     }
     res
       .status(status === 'public' ? 200 : 404)
-      .set('Cache-Control', 'public, max-age=3600')
+      .set('Cache-Control', CACHE_ONE_HOUR)
       .end();
   });
 
@@ -129,15 +134,15 @@ export function createApp({
       res
         .status(200)
         .type('png')
-        .set('Cache-Control', 'public, max-age=86400, immutable')
+        .set('Cache-Control', CACHE_ONE_DAY)
         .send(result.image);
       return;
     }
     if (result.status === 'unavailable') {
-      res.status(404).set('Cache-Control', 'public, max-age=3600').end();
+      res.status(404).set('Cache-Control', CACHE_ONE_HOUR).end();
       return;
     }
-    res.status(502).set('Cache-Control', 'no-store').end();
+    res.status(502).set('Cache-Control', NO_STORE).end();
   });
 
   app.use((_req, res) => {

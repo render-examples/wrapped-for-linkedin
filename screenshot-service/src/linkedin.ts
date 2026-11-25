@@ -4,11 +4,15 @@ import { createLimiter } from './limiter.ts';
 
 // LinkedIn's embed width.
 const EMBED_WIDTH = 504;
+const VIEWPORT_HEIGHT = 1200;
+// Take the screenshot at 2x so the image stays sharp on the exported card.
+const DEVICE_SCALE_FACTOR = 2;
 const POST_SELECTOR = 'article.main-feed-activity-embed-card';
 // The Like, Comment, and Share bar. The screenshot ends above it.
 const ACTION_BAR_SELECTOR = '.social-action-bar';
 const NAVIGATION_TIMEOUT_MS = 15_000;
 const IMAGE_SETTLE_TIMEOUT_MS = 5_000;
+const ACTION_BAR_TIMEOUT_MS = 1_000;
 const MAX_CONCURRENT_PAGES = 2;
 
 export type PostStatus = 'public' | 'unavailable' | 'error';
@@ -81,8 +85,8 @@ export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
   return limit(async (): Promise<ScreenshotResult> => {
     const browser = await getBrowser();
     const context = await browser.newContext({
-      viewport: { width: EMBED_WIDTH, height: 1200 },
-      deviceScaleFactor: 2,
+      viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
+      deviceScaleFactor: DEVICE_SCALE_FACTOR,
     });
     try {
       const page = await context.newPage();
@@ -105,7 +109,7 @@ export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
       const actionBarBox = await post
         .locator(ACTION_BAR_SELECTOR)
         .first()
-        .boundingBox({ timeout: 1_000 })
+        .boundingBox({ timeout: ACTION_BAR_TIMEOUT_MS })
         .catch(() => null);
       const clip = postBox && clipAboveActionBar(postBox, actionBarBox);
       const image = clip
@@ -120,6 +124,7 @@ export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
   });
 }
 
+/** Close the shared browser, if it is open. */
 export async function closeBrowser(): Promise<void> {
   if (browserPromise) {
     const browser = await browserPromise.catch(() => null);
