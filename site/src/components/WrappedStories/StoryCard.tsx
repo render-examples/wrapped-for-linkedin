@@ -182,7 +182,7 @@ const CardBody: React.FC<{ card: ShareableCard }> = ({ card }) => {
  */
 const TopPostBody: React.FC<{ data: CardData }> = ({ data }) => {
   const embedUrl = data.url ? getLinkedInEmbedUrl(data.url) : null;
-  const isPublic = usePostStatus(data.url);
+  const isPublic = usePostStatus(embedUrl ? data.url : undefined);
 
   return (
     <div className="peak-performer-content">
@@ -212,7 +212,7 @@ const TopPostBody: React.FC<{ data: CardData }> = ({ data }) => {
       <div className="peak-post-embed-wrapper">
         {embedUrl && isPublic === false ? (
           <div className="peak-post-unavailable">
-            <div className="fallback-emoji">
+            <div className="peak-post-fallback-icon">
               <Icon name="trophy" />
             </div>
             <a
@@ -238,7 +238,7 @@ const TopPostBody: React.FC<{ data: CardData }> = ({ data }) => {
           </div>
         ) : (
           <div className="peak-post-fallback">
-            <div className="fallback-emoji">
+            <div className="peak-post-fallback-icon">
               <Icon name="pin" />
             </div>
             <p className="fallback-message">Top Post</p>

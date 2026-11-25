@@ -20,7 +20,7 @@ interface ShareButtonProps {
 
 /**
  * Place the menu below the button and keep it in the viewport.
- * On phones, CSS centers the menu in the viewport.
+ * On phones, CSS shows the menu as a bottom sheet and ignores this position.
  */
 function getDropdownPosition(button: HTMLElement): { top: string; left: string } {
   if (window.innerWidth <= 480) {
@@ -56,18 +56,16 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
   // Close the menu on a click outside it.
   useEffect(() => {
+    if (!isDropdownOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
 
-    if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return undefined;
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen]);
 
   /**
@@ -217,7 +215,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               onClick={handlePNGExport}
               role="menuitem"
             >
-              <img src="/images/share/png-file.png" alt="PNG" className="option-icon" style={{ height: '2rem' }} />
+              <img src="/images/share/png-file.png" alt="PNG" className="option-icon" />
               <div className="option-content">
                 <div className="option-title">PNG</div>
                 <div className="option-description">Export current card as a PNG</div>
@@ -229,7 +227,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               onClick={handlePDFExport}
               role="menuitem"
             >
-              <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" style={{ height: '2rem' }} />
+              <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" />
               <div className="option-content">
                 <div className="option-title">PDF</div>
                 <div className="option-description">Export all cards as a single PDF</div>

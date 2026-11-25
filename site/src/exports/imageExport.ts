@@ -32,7 +32,7 @@ const SCREEN_ONLY_SELECTORS = [
   '.post-status-link',
 ].join(', ');
 
-export interface ExportCardOptions {
+interface ExportCardOptions {
   backgroundColor?: string;
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
   postImage?: string | null;

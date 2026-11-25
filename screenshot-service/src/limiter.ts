@@ -5,7 +5,7 @@ export function createLimiter(limit: number) {
   let active = 0;
   const queue: Array<() => void> = [];
 
-  const next = () => {
+  const release = () => {
     active--;
     queue.shift()?.();
   };
@@ -18,7 +18,7 @@ export function createLimiter(limit: number) {
     try {
       return await task();
     } finally {
-      next();
+      release();
     }
   };
 }

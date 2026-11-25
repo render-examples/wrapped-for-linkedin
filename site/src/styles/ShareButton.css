@@ -124,6 +124,7 @@
 
 .option-icon {
   flex-shrink: 0;
+  height: 2rem;
 }
 
 .option-content {

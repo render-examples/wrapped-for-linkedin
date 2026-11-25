@@ -5,6 +5,8 @@ export const CARD_CONTROL_SELECTOR = 'a, button, input, [role="button"], [role="
 // Touches from portals (the share menu and the share prompt) reach the viewport
 // through React, but the viewport element does not contain them.
 export function isCardNavigationTouch(target: Element | null, viewport: Element): boolean {
-  if (!target || !viewport.contains(target)) return false;
+  if (!target || !viewport.contains(target)) {
+    return false;
+  }
   return target.closest(CARD_CONTROL_SELECTOR) === null;
 }

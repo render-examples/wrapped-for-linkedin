@@ -4,7 +4,7 @@
 
 const APP_URL = 'https://wrappedforlinkedin.onrender.com/';
 
-export interface ShareTextInput {
+interface ShareTextInput {
   impressions?: string | number;
   membersReached?: string | number;
   year: number;

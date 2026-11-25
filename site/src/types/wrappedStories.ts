@@ -4,7 +4,7 @@
 
 import type { IconName } from '@components/Icon';
 
-export type CardType =
+type CardType =
   | 'total-impressions'
   | 'members-reached'
   | 'best-month'
@@ -38,7 +38,7 @@ export interface AudienceSection {
   items: { name: string; percentage: number }[];
 }
 
-export interface StoryBadge {
+interface StoryBadge {
   id: string;
   name: string;
   description: string;

@@ -39,11 +39,11 @@ class ImageCache {
   }
 
   private evictIfNeeded(): void {
-    while (
-      this.entries.size > MAX_CACHED_IMAGES ||
-      (this.entries.size > 0 && this.totalSize > MAX_CACHE_BYTES)
-    ) {
-      const oldestKey = this.entries.keys().next().value as string;
+    while (this.entries.size > MAX_CACHED_IMAGES || this.totalSize > MAX_CACHE_BYTES) {
+      const oldestKey = this.entries.keys().next().value;
+      if (oldestKey === undefined) {
+        return;
+      }
       this.remove(oldestKey);
     }
   }

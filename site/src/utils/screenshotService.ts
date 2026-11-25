@@ -15,11 +15,8 @@ type ServicePath = '/post-status' | '/post-image';
  * Build the request URL for a post URL. The URL has only a `urn` query parameter.
  * Returns null when the service URL is not set or the post URL has no URN.
  */
-export function buildServiceRequestUrl(
-  path: ServicePath,
-  postUrl: string,
-  serviceUrl: string | undefined = import.meta.env.VITE_SCREENSHOT_SERVICE_URL
-): string | null {
+function buildServiceRequestUrl(path: ServicePath, postUrl: string): string | null {
+  const serviceUrl = import.meta.env.VITE_SCREENSHOT_SERVICE_URL;
   const urn = getLinkedInPostUrn(postUrl);
   if (!serviceUrl || !urn) {
     return null;
@@ -32,7 +29,7 @@ export function buildServiceRequestUrl(
 /**
  * Send a GET request with no body. Abort it after SERVICE_TIMEOUT_MS.
  */
-export async function fetchWithTimeout(url: string): Promise<Response> {
+async function fetchWithTimeout(url: string): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), SERVICE_TIMEOUT_MS);
   try {
@@ -42,7 +39,7 @@ export async function fetchWithTimeout(url: string): Promise<Response> {
   }
 }
 
-export interface PostRequest<T> {
+interface PostRequest<T> {
   // Returns null when the service URL is not set, the request fails, or `read` returns null.
   get: (postUrl: string) => Promise<T | null>;
   // Clear the session cache. Used by tests.

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FileUpload } from '@components/FileUpload';
 import { UnifiedDashboard } from '@components/UnifiedDashboard';
 import { ErrorDisplay } from '@components/Error';
@@ -17,22 +17,10 @@ function App() {
   // Clear the cache when the tab has no session flag.
   // sessionStorage lasts for the life of the tab, so this happens once per new tab.
   useEffect(() => {
-    const wasSessionActive = sessionStorage.getItem(SESSION_KEY);
-
-    if (!wasSessionActive) {
+    if (!sessionStorage.getItem(SESSION_KEY)) {
       clearCache();
       sessionStorage.setItem(SESSION_KEY, 'true');
     }
-
-    const handleBeforeUnload = () => {
-      sessionStorage.setItem(SESSION_KEY, 'true');
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
   }, [clearCache]);
 
   const handleDataLoaded = (parsed: ParsedExcelData) => {
@@ -41,16 +29,16 @@ function App() {
     window.scrollTo(0, 0);
   };
 
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setData(null);
     setError(null);
     window.scrollTo(0, 0);
-  };
+  }, []);
 
-  const handleClearCache = () => {
+  const handleClearCache = useCallback(() => {
     clearCache();
     resetState();
-  };
+  }, [clearCache, resetState]);
 
   const handleLogoClick = () => {
     // If the dashboard shows data, also clear the cache.
@@ -79,8 +67,7 @@ function App() {
         (event.ctrlKey || event.metaKey)
       ) {
         event.preventDefault();
-        clearCache();
-        resetState();
+        handleClearCache();
         sessionStorage.clear();
         sessionStorage.setItem(SESSION_KEY, 'true');
       }
@@ -91,7 +78,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [data, clearCache]);
+  }, [data, handleClearCache]);
 
   return (
     <div className="app-container">

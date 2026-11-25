@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# preview.sh - Start the development server with hot reload
+# preview.sh - Start the development server with live reload
 # Usage: ./bin/preview.sh [--port PORT] [--help]
 
 print_help() {

@@ -6,7 +6,7 @@ import { exportCardAsImage } from '@exports/imageExport';
 
 const DEFAULT_CONCURRENCY = 8;
 
-export interface BatchExportOptions {
+interface BatchExportOptions {
   concurrency?: number;
   onProgress?: (current: number, total: number) => void;
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
@@ -45,11 +45,11 @@ export async function exportCardsAsImagesBatch(
     results.push(...batchResults);
   }
 
-  const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-  if (errors.length > 0) {
-    const firstMessage = errors[0].reason instanceof Error ? errors[0].reason.message : 'Unknown error';
-    throw new Error(`Batch image export failed: ${errors.length} card(s) failed to render: ${firstMessage}`);
+  const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+  if (failures.length > 0) {
+    const firstMessage = failures[0].reason instanceof Error ? failures[0].reason.message : 'Unknown error';
+    throw new Error(`Batch image export failed: ${failures.length} card(s) failed to render: ${firstMessage}`);
   }
 
-  return results.map((r) => (r as PromiseFulfilledResult<string>).value);
+  return results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []));
 }

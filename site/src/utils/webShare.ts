@@ -3,7 +3,7 @@
  */
 
 export type ShareMode = 'native' | 'download';
-export type ShareResult = 'shared' | 'cancelled' | 'failed';
+type ShareResult = 'shared' | 'cancelled' | 'failed';
 
 export interface ShareEnv {
   canShare?: (data: ShareData) => boolean;

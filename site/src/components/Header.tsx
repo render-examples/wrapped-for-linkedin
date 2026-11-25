@@ -15,13 +15,13 @@ export function Header({ onLogoClick }: HeaderProps) {
             aria-label="Navigate to home"
             title="Wrapped for LinkedIn home"
           >
-            <div className="logo-wrapper">
+            <span className="logo-wrapper">
               <img
                 src="/images/title.svg"
                 alt="Wrapped for LinkedIn"
                 className="wrapped-for-linkedin-title-svg"
               />
-            </div>
+            </span>
           </button>
         </div>
         <div className="header-right">

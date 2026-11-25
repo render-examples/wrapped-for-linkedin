@@ -76,12 +76,9 @@ export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics
       </div>
 
       <div className="demographics-grid">
-        {CATEGORIES.map(({ key, title, icon }) => {
-          const items = demographics[key];
-          return items && items.length > 0 ? (
-            <DemographicCategory key={key} title={title} items={items} icon={icon} />
-          ) : null;
-        })}
+        {CATEGORIES.map(({ key, title, icon }) => (
+          <DemographicCategory key={key} title={title} items={demographics[key] ?? []} icon={icon} />
+        ))}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ async function loadJsPDF() {
   }
 }
 
-export interface PDFExportOptions {
+interface PDFExportOptions {
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
   postImage?: string | null;
 }

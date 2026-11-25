@@ -7,7 +7,8 @@ const EMBED_WIDTH = 504;
 const VIEWPORT_HEIGHT = 1200;
 // Take the screenshot at 2x so the image stays sharp on the exported card.
 const DEVICE_SCALE_FACTOR = 2;
-const POST_SELECTOR = 'article.main-feed-activity-embed-card';
+const POST_CLASS = 'main-feed-activity-embed-card';
+const POST_SELECTOR = `article.${POST_CLASS}`;
 // The Like, Comment, and Share bar. The screenshot ends above it.
 const ACTION_BAR_SELECTOR = '.social-action-bar';
 const NAVIGATION_TIMEOUT_MS = 15_000;
@@ -31,7 +32,7 @@ export function classifyEmbedResponse(status: number, html: string): PostStatus 
   if (status === 404 || html.includes('error-pages')) {
     return 'unavailable';
   }
-  if (status === 200 && html.includes('main-feed-activity-embed-card')) {
+  if (status === 200 && html.includes(POST_CLASS)) {
     return 'public';
   }
   return 'error';
