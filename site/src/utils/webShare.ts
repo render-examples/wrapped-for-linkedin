@@ -20,7 +20,7 @@ export function isTouchDevice(): boolean {
 /**
  * Read the share functions from the browser. Each method is bound, because an unbound call throws "Illegal invocation".
  */
-export function getBrowserShareEnv(): ShareEnv {
+function getBrowserShareEnv(): ShareEnv {
   const clipboard = navigator.clipboard;
   return {
     canShare: typeof navigator.canShare === 'function' ? navigator.canShare.bind(navigator) : undefined,

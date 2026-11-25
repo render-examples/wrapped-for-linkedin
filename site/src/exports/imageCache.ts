@@ -6,40 +6,35 @@
 const MAX_CACHE_BYTES = 15 * 1024 * 1024;
 const MAX_CACHED_IMAGES = 12;
 
-export interface CachedImage {
-  dataUrl: string;
-  // Approximate size in bytes.
-  size: number;
-}
-
 class ImageCache {
-  // A Map keeps insertion order, so the first key is the least recently used.
-  private entries = new Map<string, CachedImage>();
+  // Data URLs by cache key. A Map keeps insertion order, so the first key is the least recently used.
+  private entries = new Map<string, string>();
+  // Approximate size in bytes. Each data URL character is one byte.
   private totalSize = 0;
 
-  public get(key: string): CachedImage | null {
-    const image = this.entries.get(key);
-    if (!image) {
+  public get(key: string): string | null {
+    const dataUrl = this.entries.get(key);
+    if (dataUrl === undefined) {
       return null;
     }
     // Move the entry to the end, so it is the most recently used.
     this.entries.delete(key);
-    this.entries.set(key, image);
-    return image;
+    this.entries.set(key, dataUrl);
+    return dataUrl;
   }
 
-  public set(key: string, image: CachedImage): void {
+  public set(key: string, dataUrl: string): void {
     this.remove(key);
-    this.entries.set(key, image);
-    this.totalSize += image.size;
+    this.entries.set(key, dataUrl);
+    this.totalSize += dataUrl.length;
     this.evictIfNeeded();
   }
 
   private remove(key: string): void {
-    const image = this.entries.get(key);
-    if (image) {
+    const dataUrl = this.entries.get(key);
+    if (dataUrl !== undefined) {
       this.entries.delete(key);
-      this.totalSize -= image.size;
+      this.totalSize -= dataUrl.length;
     }
   }
 

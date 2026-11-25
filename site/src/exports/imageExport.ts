@@ -41,7 +41,7 @@ export interface ExportCardOptions {
 /**
  * Get the card background color from the `--card-bg-color` custom property.
  */
-export function getCardBackgroundColor(element: HTMLElement): string {
+function getCardBackgroundColor(element: HTMLElement): string {
   const value = getComputedStyle(element).getPropertyValue('--card-bg-color').trim();
   return value || DEFAULT_BACKGROUND;
 }
@@ -193,7 +193,7 @@ export async function exportCardAsImage(
     const cacheKey = getCacheKey(element, backgroundColor, postImage);
     const cached = imageCache.get(cacheKey);
     if (cached) {
-      return cached.dataUrl;
+      return cached;
     }
 
     const loadedPostImage = postImage ? await loadPostImage(postImage) : null;
@@ -213,8 +213,7 @@ export async function exportCardAsImage(
         backgroundColor,
       });
 
-      imageCache.set(cacheKey, { dataUrl, size: dataUrl.length });
-
+      imageCache.set(cacheKey, dataUrl);
       return dataUrl;
     } finally {
       container.remove();
