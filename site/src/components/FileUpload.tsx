@@ -4,6 +4,7 @@ import type { ParsedExcelData } from '@utils/excel/types';
 import { useCache } from '@/hooks/useCache';
 import { useSampleData } from '@/hooks/useSampleData';
 import { SampleDataButton } from '@components/SampleDataButton';
+import { isTouchDevice } from '@utils/webShare';
 import '@styles/FileUpload.css';
 
 // Passed with an error, so the caller always gets a valid ParsedExcelData.
@@ -20,6 +21,7 @@ interface FileUploadProps {
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading = false }) => {
+  const touch = isTouchDevice();
   const { save: saveToCache } = useCache((data, uploadDate) => {
     onFileProcessed(data, undefined, uploadDate, true);
   });
@@ -89,7 +91,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
             <p className="dropzone-text">Drop your file here</p>
           ) : (
             <>
-              <p className="dropzone-subtext">Drag and drop or click to select a file</p>
+              <p className="dropzone-subtext">
+                {touch ? 'Tap to choose a file' : 'Drag and drop or click to select a file'}
+              </p>
               <p className="dropzone-formats">Excel (.xlsx) files only</p>
             </>
           )}

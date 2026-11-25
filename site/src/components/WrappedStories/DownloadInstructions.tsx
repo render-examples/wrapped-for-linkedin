@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { openLinkedInShare } from '@utils/linkedinShareLink';
+import { isTouchDevice } from '@utils/webShare';
 import { Icon } from '@components/Icon';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
@@ -23,6 +24,10 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
   exportType = 'current-card',
   onDismiss,
 }) => {
+  const touch = isTouchDevice();
+  const click = touch ? 'Tap' : 'Click';
+  const clicking = touch ? 'tapping' : 'clicking';
+
   const handleShareOnLinkedIn = useCallback(() => {
     openLinkedInShare(shareInfo);
   }, [shareInfo]);
@@ -78,21 +83,21 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
           </p>
 
           <div className="instructions-steps">
-            <p className="instruction-step">1. <b>Open LinkedIn.</b> Click the button above to open LinkedIn with a prepared post.</p>
-            <p className="instruction-step"><strong>Note:</strong> Close the link preview by clicking <strong>X</strong> before attaching media.</p>
+            <p className="instruction-step">1. <b>Open LinkedIn.</b>{` ${click} the button above to open LinkedIn with a prepared post.`}</p>
+            <p className="instruction-step"><strong>Note:</strong>{` Close the link preview by ${clicking} `}<strong>X</strong> before attaching media.</p>
             <img src="/images/share/close-embed.png" alt="Close the link embed" className="instruction-image" />
             {exportType === 'current-card' ? (
               <>
-                <p className="instruction-step">2. <b>Attach your card.</b> Click the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).</p>
-                <img src="/images/share/add-media.png" alt="Click the image icon" className="instruction-image" />
+                <p className="instruction-step">2. <b>Attach your card.</b>{` ${click} the image icon in the bottom left of the post modal. Select your Wrapped for LinkedIn card image (PNG file).`}</p>
+                <img src="/images/share/add-media.png" alt={`${click} the image icon`} className="instruction-image" />
               </>
             ) : (
               <>
-                <p className="instruction-step">2. <b>Attach your cards.</b> Click the <b>+</b> icon at the bottom of the post modal to expand options. Click the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.
+                <p className="instruction-step">2. <b>Attach your cards.</b>{` ${click} the `}<b>+</b>{` icon at the bottom of the post modal to expand options. ${click} the document icon (second from the right) to upload a file and select your Wrapped for LinkedIn PDF file.`}
                 </p>
                 <div className="instruction-images-column">
-                  <img src="/images/share/more.png" alt="Click the plus icon to expand options" className="instruction-image" />
-                  <img src="/images/share/add-a-document.png" alt="Click the document icon to upload" className="instruction-image" />
+                  <img src="/images/share/more.png" alt={`${click} the plus icon to expand options`} className="instruction-image" />
+                  <img src="/images/share/add-a-document.png" alt={`${click} the document icon to upload`} className="instruction-image" />
                 </div>
                 <p><b>Name it.</b>Give your LinkedIn PDF a name like "wrapped".</p>
               </>

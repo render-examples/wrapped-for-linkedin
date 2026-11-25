@@ -12,6 +12,11 @@ export interface ShareEnv {
   isTouchDevice: boolean;
 }
 
+// Return true when the primary pointer is a finger. A touchscreen laptop has a mouse as its primary pointer.
+export function isTouchDevice(): boolean {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
 /**
  * Read the share functions from the browser. Each method is bound, because an unbound call throws "Illegal invocation".
  */
@@ -21,7 +26,7 @@ export function getBrowserShareEnv(): ShareEnv {
     canShare: typeof navigator.canShare === 'function' ? navigator.canShare.bind(navigator) : undefined,
     share: typeof navigator.share === 'function' ? navigator.share.bind(navigator) : undefined,
     writeText: typeof clipboard?.writeText === 'function' ? clipboard.writeText.bind(clipboard) : undefined,
-    isTouchDevice: window.matchMedia('(pointer: coarse)').matches,
+    isTouchDevice: isTouchDevice(),
   };
 }
 

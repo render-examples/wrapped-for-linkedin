@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-import { dataUrlToFile, getShareMode, shareFile, type ShareEnv } from './webShare';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { dataUrlToFile, getShareMode, isTouchDevice, shareFile, type ShareEnv } from './webShare';
 
 const png = new File(['x'], 'card.png', { type: 'image/png' });
 const env = (overrides: Partial<ShareEnv> = {}): ShareEnv => ({
@@ -59,5 +59,19 @@ describe('dataUrlToFile', () => {
     expect(file.name).toBe('card.png');
     expect(file.type).toBe('image/png');
     expect(file.size).toBe(8);
+  });
+});
+
+describe('isTouchDevice', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('returns true when the primary pointer is coarse', () => {
+    vi.stubGlobal('window', { matchMedia: (query: string) => ({ matches: query === '(pointer: coarse)' }) });
+    expect(isTouchDevice()).toBe(true);
+  });
+
+  it('returns false when the primary pointer is fine', () => {
+    vi.stubGlobal('window', { matchMedia: () => ({ matches: false }) });
+    expect(isTouchDevice()).toBe(false);
   });
 });
