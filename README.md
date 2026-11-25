@@ -67,19 +67,19 @@ flowchart LR
         File[LinkedIn analytics file] --> Site[React app]
         Site --> Cards[PNG and PDF exports]
     end
-    Site -- "Public post URLs only" --> Service[Screenshot service]
+    Site -- "Post IDs only" --> Service[Screenshot service]
     Service -- "Post screenshot" --> Site
     Service --> LinkedIn[LinkedIn post embed]
 ```
 
 All of your analytics data stays in your browser. The React app parses the file, builds the cards, and renders the PNG and PDF exports on your device. The file and its contents are never sent to a server.
 
-The screenshot service is the only backend. It gets the URLs of your public top posts and does two things:
+The screenshot service is the only backend. The app sends it only the IDs of your top posts, such as `urn:li:share:123`. The service does two things:
 
 - It checks whether each top post is public, so the app shows an embed only for posts that other people can see.
 - It takes a screenshot of the Peak Performer post for card exports. The browser can't capture a LinkedIn embed, because the embed comes from another site.
 
-The service logs only status codes. It does not log post URLs, IP addresses, or headers.
+The service logs only status codes. It does not log post IDs, IP addresses, or headers.
 
 ## Project structure
 
