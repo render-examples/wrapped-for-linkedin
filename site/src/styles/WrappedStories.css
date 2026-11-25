@@ -245,7 +245,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-.metric-label {
+.metric-label,
+.peak-metric-label,
+.story-badge-rule {
   font-family: var(--font-mono);
   font-size: 2.6cqw;
   letter-spacing: 0.045em;
@@ -298,14 +300,6 @@
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.04em;
-}
-
-.peak-metric-label {
-  font-family: var(--font-mono);
-  font-size: 2.6cqw;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
 }
 
 .peak-post-embed-wrapper {
@@ -488,14 +482,6 @@
   letter-spacing: -0.03em;
 }
 
-.story-badge-rule {
-  font-family: var(--font-mono);
-  font-size: 2.6cqw;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
 /* Export clone. The progress bars and the logo are removed before export. */
 .story-card-export .card-content-wrapper {
   padding-top: 7cqw;
@@ -524,7 +510,8 @@
 }
 
 @media (hover: hover) {
-  .control-button:hover {
+  .control-button:hover,
+  .side-nav-button:hover {
     border-color: var(--accent);
   }
 }
@@ -561,12 +548,6 @@
   background-size: 20px 20px;
   color: transparent;
   transition: border-color 0.2s ease;
-}
-
-@media (hover: hover) {
-  .side-nav-button:hover {
-    border-color: var(--accent);
-  }
 }
 
 .side-nav-prev {

@@ -94,7 +94,8 @@
   color: var(--accent);
 }
 
-.post-date {
+.post-date,
+.top-post-stat-label {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.045em;
@@ -181,14 +182,6 @@
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--text);
-}
-
-.top-post-stat-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  color: var(--text-faint);
 }
 
 @media (max-width: 900px) {
