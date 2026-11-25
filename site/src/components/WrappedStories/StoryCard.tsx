@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { ShareButton } from '@components/WrappedStories/ShareButton';
 import { StoryProgress } from '@components/WrappedStories/StoryProgress';
 import { Icon } from '@components/Icon';
@@ -10,7 +10,7 @@ import { usePostStatus } from '@/hooks/usePostStatus';
 interface StoryCardProps {
   card: ShareableCard;
   isActive: boolean;
-  cardRef?: React.RefObject<HTMLDivElement | null>;
+  cardRef: React.RefObject<HTMLDivElement | null>;
   allCards?: React.RefObject<HTMLDivElement | null>[];
   shareInfo: ShareInfo;
   onPauseAutoplay?: () => void;
@@ -25,7 +25,7 @@ interface StoryCardProps {
 export const StoryCard: React.FC<StoryCardProps> = ({
   card,
   isActive,
-  cardRef: externalCardRef,
+  cardRef,
   allCards,
   shareInfo,
   onPauseAutoplay,
@@ -36,9 +36,6 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   autoPlayDuration = 5000,
   isNavigatingBackward = false,
 }) => {
-  const internalCardRef = useRef<HTMLDivElement>(null);
-  const cardRef = externalCardRef ?? internalCardRef;
-
   return (
     <div
       ref={cardRef}

@@ -62,6 +62,14 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }, autoPlayDuration);
   }, [totalCards, autoPlayDuration, clearAutoPlayTimer]);
 
+  // After the user changes the card, restart the timer unless the user paused autoplay.
+  const resumeAutoPlay = useCallback(() => {
+    clearAutoPlayTimer();
+    if (!userManuallyPaused) {
+      setIsAutoPlaying(true);
+    }
+  }, [clearAutoPlayTimer, userManuallyPaused]);
+
   const handleNext = useCallback(() => {
     setCurrentCardIndex(prev => {
       const nextIndex = prev + 1;
@@ -69,12 +77,8 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       setIsNavigatingBackward(false);
       return nextIndex;
     });
-    clearAutoPlayTimer();
-    // Continue autoplay unless manually paused
-    if (!userManuallyPaused) {
-      setIsAutoPlaying(true);
-    }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
+    resumeAutoPlay();
+  }, [totalCards, resumeAutoPlay]);
 
   const handlePrevious = useCallback(() => {
     setCurrentCardIndex(prev => {
@@ -83,12 +87,8 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       setIsNavigatingBackward(true);
       return prevIndex;
     });
-    clearAutoPlayTimer();
-    // Continue autoplay unless manually paused
-    if (!userManuallyPaused) {
-      setIsAutoPlaying(true);
-    }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
+    resumeAutoPlay();
+  }, [totalCards, resumeAutoPlay]);
 
   const handleJumpToCard = useCallback((index: number) => {
     if (index >= 0 && index < totalCards) {
@@ -96,24 +96,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         setIsNavigatingBackward(index < prevIndex);
         return index;
       });
-      clearAutoPlayTimer();
-      // Continue autoplay unless manually paused
-      if (!userManuallyPaused) {
-        setIsAutoPlaying(true);
-      }
+      resumeAutoPlay();
     }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
-
-  const handleToggleAutoPlay = useCallback(() => {
-    if (isAutoPlaying) {
-      clearAutoPlayTimer();
-      setIsAutoPlaying(false);
-      setUserManuallyPaused(true);
-    } else {
-      setUserManuallyPaused(false);
-      startAutoPlay();
-    }
-  }, [isAutoPlaying, clearAutoPlayTimer, startAutoPlay]);
+  }, [totalCards, resumeAutoPlay]);
 
   // Child components, such as ShareButton, call this to pause autoplay.
   const handlePauseAutoPlay = useCallback(() => {
@@ -121,6 +106,15 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     setIsAutoPlaying(false);
     setUserManuallyPaused(true);
   }, [clearAutoPlayTimer]);
+
+  const handleToggleAutoPlay = useCallback(() => {
+    if (isAutoPlaying) {
+      handlePauseAutoPlay();
+    } else {
+      setUserManuallyPaused(false);
+      startAutoPlay();
+    }
+  }, [isAutoPlaying, handlePauseAutoPlay, startAutoPlay]);
 
   // The keydown listener is added one time, so it reads the latest handlers from refs.
   const handleNextRef = useRef(handleNext);
