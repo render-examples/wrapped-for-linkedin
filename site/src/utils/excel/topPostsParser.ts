@@ -66,7 +66,7 @@ interface MetricColumns {
 function processPostEntry(
   postsMap: Map<string, PostData>,
   columns: MetricColumns,
-  rowValues: Record<string, any>,
+  rowValues: Record<string, unknown>,
   metricType: MetricType
 ): void {
   const url = parseURL(rowValues[columns.URL]);

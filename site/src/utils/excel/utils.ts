@@ -11,9 +11,9 @@ import { MAX_ROWS, SCAN_LIMITS, EXCEL_DATE_OFFSET, MS_PER_DAY, MIN_PERCENTAGE } 
  * @param sheet - The worksheet to read from
  * @param cellAddress - Cell address in A1 notation (e.g., "A1", "B5")
  * @returns The cell value or undefined if cell doesn't exist
- * @note Returns `any` because Excel cells can contain various types (string, number, Date, etc.)
+ * @note Returns `unknown` because Excel cells can contain various types (string, number, Date, etc.)
  */
-export function getCellValue(sheet: WorkSheet, cellAddress: string): any {
+export function getCellValue(sheet: WorkSheet, cellAddress: string): unknown {
   return sheet[cellAddress]?.v;
 }
 
@@ -22,7 +22,7 @@ export function getCellValue(sheet: WorkSheet, cellAddress: string): any {
  * @param value - Percentage value (number or string)
  * @returns Percentage as a decimal (0-1 range) for consistent UI handling
  */
-export function parsePercentage(value: any): number {
+export function parsePercentage(value: unknown): number {
   if (typeof value === 'number') {
     // If it's already a number between 0-100, convert to decimal
     if (value > 1 && value <= 100) {
@@ -59,7 +59,7 @@ export function parsePercentage(value: any): number {
  * @param value - Date value (can be Date object, string, or Excel serial number)
  * @returns ISO date string (YYYY-MM-DD) or empty string if invalid
  */
-export function parseDate(value: any): string {
+export function parseDate(value: unknown): string {
   if (!value) return '';
 
   // If it's already a date, format it
@@ -89,7 +89,7 @@ export function parseDate(value: any): string {
 /**
  * Parse number values safely
  */
-export function parseNumber(value: any): number {
+export function parseNumber(value: unknown): number {
   if (typeof value === 'number') {
     return value;
   }
@@ -125,7 +125,7 @@ export function findSheet(workbook: WorkBook, sheetNames: string | string[]): Wo
 /**
  * Parse a URL from a cell (may contain formula or link)
  */
-export function parseURL(value: any): string {
+export function parseURL(value: unknown): string {
   if (!value) return '';
   if (typeof value === 'string') {
     // Try to extract URL if it's in a common format
@@ -141,7 +141,7 @@ export function parseURL(value: any): string {
  * @param keywords - Array of keywords to search for
  * @returns True if any keyword is found
  */
-export function containsKeyword(value: any, keywords: string[]): boolean {
+export function containsKeyword(value: unknown, keywords: string[]): boolean {
   if (!value) return false;
   const text = String(value).toLowerCase().trim();
   return keywords.some(keyword => text.includes(keyword));
@@ -219,8 +219,8 @@ export function getRowValues(
   sheet: WorkSheet,
   row: number,
   columns: string[]
-): Record<string, any> {
-  const result: Record<string, any> = {};
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
   for (const col of columns) {
     result[col] = getCellValue(sheet, `${col}${row}`);
   }

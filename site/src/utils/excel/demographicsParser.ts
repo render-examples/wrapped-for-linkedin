@@ -45,7 +45,7 @@ const CATEGORY_MAPPINGS: Record<string, RegExp> = {
  * @param cellValue - Raw category name from Excel
  * @returns Normalized category key or null if not recognized
  */
-function normalizeCategoryName(cellValue: any): string | null {
+function normalizeCategoryName(cellValue: unknown): string | null {
   if (!cellValue) return null;
   
   const normalized = String(cellValue).toLowerCase().trim();
@@ -64,7 +64,7 @@ function normalizeCategoryName(cellValue: any): string | null {
  * @param value - Cell value to check
  * @returns True if this is a header row
  */
-function isHeaderValue(value: any): boolean {
+function isHeaderValue(value: unknown): boolean {
   if (!value) return true;
   const str = String(value).toLowerCase().trim();
   return str === 'value' || str === 'percentage';

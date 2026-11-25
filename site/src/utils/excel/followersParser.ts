@@ -47,7 +47,6 @@ export function parseFollowers(workbook: WorkBook): number | undefined {
     const DATA_END_ROW = DATA_START_ROW + 368; // Read up to 368 rows of data
     
     let new_followers = 0;
-    let rowsProcessed = 0;
     
     for (let row = DATA_START_ROW; row <= DATA_END_ROW; row++) {
       const count = getCellValue(sheet, `${followerCol}${row}`);
@@ -60,7 +59,6 @@ export function parseFollowers(workbook: WorkBook): number | undefined {
       // Sum all values (including 0s - days with no new followers)
       const parsed = parseNumber(count);
       new_followers += parsed;
-      rowsProcessed++;
     }
 
     return new_followers;
