@@ -20,7 +20,7 @@ interface FileUploadProps {
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading = false }) => {
-  const cache = useCache((data, uploadDate) => {
+  const { save: saveToCache } = useCache((data, uploadDate) => {
     onFileProcessed(data, undefined, uploadDate, true);
   });
 
@@ -35,21 +35,23 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
     try {
       const { processExcelFile } = await import('@utils/excel/excelProcessor');
       const data = await processExcelFile(acceptedFiles[0]);
-      cache.save(data);
+      saveToCache(data);
       onFileProcessed(data, undefined, Date.now(), false);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to process file';
       console.error('Error processing file:', error);
       onFileProcessed(EMPTY_DATA, errorMessage);
     }
-  }, [cache, onFileProcessed]);
+  }, [saveToCache, onFileProcessed]);
+
+  const isDisabled = isLoading || sampleData.isLoading;
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
-    disabled: isLoading || sampleData.isLoading,
+    disabled: isDisabled,
   });
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
           <li>Click <b>Export</b> in the top right</li>
           <li>Upload the exported file below ↓</li>
         </ol>
-        <a 
+        <a
           href="https://www.youtube.com/watch?v=fpvWoG_PB00"
           target="_blank"
           rel="noopener noreferrer"
@@ -78,7 +80,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
         </a>
       </div>
 
-      <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isLoading || sampleData.isLoading ? 'disabled' : ''}`}>
+      <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}>
         <input {...getInputProps()} />
         <div className="dropzone-content">
           <p className="dropzone-text">Upload your LinkedIn analytics file here</p>
@@ -95,7 +97,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
       </div>
 
       <div className="or-divider">or</div>
-      
+
       <SampleDataButton
         onClick={sampleData.loadSampleData}
         isLoading={sampleData.isLoading}
@@ -112,9 +114,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoadi
             the app sends only each post's public ID to our server.
           </span>
           <br /> <br />
-          <a 
-            href="https://github.com/render-examples/wrapped-for-linkedin/blob/main/site/src/utils/excel/excelProcessor.ts" 
-            target="_blank" 
+          <a
+            href="https://github.com/render-examples/wrapped-for-linkedin/blob/main/site/src/utils/excel/excelProcessor.ts"
+            target="_blank"
             rel="noopener noreferrer"
           >
             View source code on GitHub ↗

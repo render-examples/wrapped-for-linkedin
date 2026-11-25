@@ -12,6 +12,10 @@ interface SpotifyDashboardProps {
 
 const DATE_FORMAT: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
 
+function formatDate(isoDate: string): string {
+  return parseISODate(isoDate).toLocaleDateString('en-US', DATE_FORMAT);
+}
+
 const MetricCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="metric-card">
     <h3 className="metric-card-label">{label}</h3>
@@ -25,18 +29,18 @@ export const SpotifyDashboard: React.FC<SpotifyDashboardProps> = ({
 }) => {
   const year = discovery?.end_date ? getWrappedYear(discovery) : new Date().getFullYear();
 
-  const bestMonth = engagementByDay && engagementByDay.length > 0 ? calculateBestMonth(engagementByDay) : null;
+  const bestMonth = engagementByDay?.length ? calculateBestMonth(engagementByDay) : null;
 
   return (
     <div className="wrapped-section">
       <p className="section-eyebrow">Year in review</p>
       <h2 className="section-title">Your Wrapped for LinkedIn {year}</h2>
       <p className="section-subtitle">
-        {discovery?.start_date && discovery?.end_date ? (
+        {discovery?.start_date && discovery?.end_date && (
           <>
-            {parseISODate(discovery.start_date).toLocaleDateString('en-US', DATE_FORMAT)} – {parseISODate(discovery.end_date).toLocaleDateString('en-US', DATE_FORMAT)}
+            {formatDate(discovery.start_date)} – {formatDate(discovery.end_date)}
           </>
-        ) : null}
+        )}
       </p>
       <div className="wrapped-metrics-grid">
         <MetricCard label="Total impressions" value={formatNumber(discovery?.total_impressions || 0)} />

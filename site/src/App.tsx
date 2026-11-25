@@ -30,8 +30,7 @@ const SESSION_KEY = 'wrapped-session-active';
 function App() {
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<DataState>(INITIAL_STATE);
-  const cache = useCache();
-  const { clear: clearCache } = cache;
+  const { clear: clearCache } = useCache();
 
   // Clear the cache when the tab has no session flag.
   // sessionStorage lasts for the life of the tab, so this happens once per new tab.
@@ -46,9 +45,9 @@ function App() {
     const handleBeforeUnload = () => {
       sessionStorage.setItem(SESSION_KEY, 'true');
     };
-    
+
     window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
@@ -62,26 +61,17 @@ function App() {
       return;
     }
 
-    try {
-      const engagementMetrics: EngagementMetrics = {
+    setState({
+      engagement: {
         discovery_data: excelData.discovery_data,
         top_posts: excelData.top_posts,
         engagementByDay: excelData.engagement_by_day,
-      };
-
-      setState({
-        engagement: engagementMetrics,
-        demographics: excelData.demographics,
-        uploadDate: date ?? Date.now(),
-        isFromCache: fromCache ?? false,
-        error: null,
-      });
-    } catch (err) {
-      setState(prev => ({
-        ...prev,
-        error: err instanceof Error ? err.message : 'Failed to process Excel data'
-      }));
-    }
+      },
+      demographics: excelData.demographics,
+      uploadDate: date ?? Date.now(),
+      isFromCache: fromCache ?? false,
+      error: null,
+    });
   };
 
   const resetState = () => {
@@ -89,30 +79,31 @@ function App() {
   };
 
   const handleClearCache = () => {
-    cache.clear();
+    clearCache();
     resetState();
   };
-  
+
   const handleLogoClick = () => {
-    // If there's any data being displayed, clear the cache
+    // If the dashboard shows data, also clear the cache.
     if (state.engagement) {
       handleClearCache();
     } else {
       resetState();
     }
   };
+
   const currentYear = new Date().getFullYear();
 
-  // Add keyboard shortcuts to return to homepage
+  // Keyboard shortcuts that return to the home page.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Escape key - return to homepage
+      // Escape returns to the home page.
       if (event.key === 'Escape' && state.engagement) {
         handleClearCache();
         return;
       }
-      
-      // Ctrl+Shift+R or Cmd+Shift+R - intercept hard refresh and return to homepage
+
+      // Ctrl+Shift+R or Cmd+Shift+R stops the hard refresh and returns to the home page.
       if (
         event.key === 'R' &&
         event.shiftKey &&
@@ -127,7 +118,7 @@ function App() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -137,7 +128,7 @@ function App() {
     <div className="app-container">
       <div className="landing-content">
         {state.engagement && <div className="background-overlay" />}
-        
+
         <Header onLogoClick={handleLogoClick} />
 
         <main className="app-main">
@@ -151,7 +142,7 @@ function App() {
               Upload new data
             </button>
           )}
-          
+
           {state.error && <ErrorDisplay error={state.error} onRetry={resetState} />}
 
           {loading && <Loading />}
@@ -176,27 +167,27 @@ function App() {
         </div>
         <div className="footer-bottom-row">
           <p className="footer-links">
-            <a 
-              href="https://x.com/render" 
-              target="_blank" 
+            <a
+              href="https://x.com/render"
+              target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
               X
             </a>
             &nbsp; &nbsp; &nbsp; &nbsp;
-            <a 
-              href="https://x.com/render" 
-              target="_blank" 
+            <a
+              href="https://x.com/render"
+              target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
               LinkedIn
             </a>
             &nbsp; &nbsp; &nbsp; &nbsp;
-            <a 
-              href="https://github.com/render-examples/wrapped-for-linkedin" 
-              target="_blank" 
+            <a
+              href="https://github.com/render-examples/wrapped-for-linkedin"
+              target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >

@@ -8,7 +8,7 @@ import { BadgesSection } from '@components/BadgesSection';
 import { getEarnedBadges } from '@utils/badges';
 import { generateShareableCards } from '@utils/cardDataMapper';
 import { formatNumber, getWrappedYear } from '@utils/formatters';
-import type { EngagementMetrics, TopPost, DemographicInsights, DiscoveryData } from '@types';
+import type { EngagementMetrics, DemographicInsights } from '@types';
 import type { ParsedExcelData } from '@utils/excel/types';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/UnifiedDashboard.css';
@@ -24,10 +24,10 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
   demographics,
   onUploadNewData,
 }) => {
-  const discoveryData: DiscoveryData | undefined = data.discovery_data;
-  const topPosts: TopPost[] = data.top_posts || [];
+  const discoveryData = data.discovery_data;
+  const topPosts = data.top_posts ?? [];
 
-  const excelData: ParsedExcelData = useMemo(() => ({
+  const excelData = useMemo<ParsedExcelData>(() => ({
     discovery_data: discoveryData,
     top_posts: data.top_posts,
     demographics,
@@ -41,7 +41,7 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
 
   const earnedBadges = useMemo(() => getEarnedBadges(excelData), [excelData]);
 
-  const shareInfo: ShareInfo = useMemo(() => ({
+  const shareInfo = useMemo<ShareInfo>(() => ({
     impressions: formatNumber(discoveryData?.total_impressions || 0),
     membersReached: formatNumber(discoveryData?.members_reached || 0),
     year: getWrappedYear(discoveryData),

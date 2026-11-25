@@ -11,7 +11,7 @@ export function Header({ onLogoClick }: HeaderProps) {
         <div className="header-left">
           <button
             className="wrapped-for-linkedin-title-container"
-            onClick={() => onLogoClick?.()}
+            onClick={onLogoClick}
             aria-label="Navigate to home"
             title="Wrapped for LinkedIn home"
           >

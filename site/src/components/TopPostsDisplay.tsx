@@ -10,6 +10,8 @@ interface TopPostsDisplayProps {
   posts: TopPost[];
 }
 
+const MAX_DISPLAYED_POSTS = 6;
+
 function formatCount(num: number): string {
   if (num >= 1_000_000) {
     return `${(num / 1_000_000).toFixed(1)}M`;
@@ -21,14 +23,16 @@ function formatCount(num: number): string {
 }
 
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
-  const displayedPosts = useMemo(() => {
-    return (posts ?? []).slice(0, 6).map(post => ({
-      ...post,
-      embedUrl: getLinkedInEmbedUrl(post.url)
-    }));
-  }, [posts]);
+  const displayedPosts = useMemo(
+    () =>
+      posts.slice(0, MAX_DISPLAYED_POSTS).map((post) => ({
+        ...post,
+        embedUrl: getLinkedInEmbedUrl(post.url),
+      })),
+    [posts]
+  );
 
-  if (!posts || posts.length === 0) {
+  if (posts.length === 0) {
     return null;
   }
 
@@ -41,7 +45,6 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
         </div>
       </div>
 
-      {/* FAQ Section */}
       <details className="metrics-faq">
         <summary className="faq-summary">FAQ</summary>
         <div className="faq-content">
@@ -49,7 +52,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
             <p className="faq-question">Why are some posts not found?</p>
             <p className="faq-answer">LinkedIn only allows public posts to be embedded. For other posts, the app shows your stats from the file and a link to open the post on LinkedIn.</p>
           </div>
-          
+
           <div className="faq-item">
             <p className="faq-question">Why don't my exported numbers match what I see on my LinkedIn posts?</p>
             <p className="faq-answer"><strong>Time window:</strong> Your LinkedIn export captures the last 365 days of activity only. Older posts display metrics from within this rolling window, not their all-time totals.</p>

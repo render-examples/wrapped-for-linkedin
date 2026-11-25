@@ -3,20 +3,18 @@ import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '@exports/imageExport';
 import { exportCardsAsPDFBatch } from '@exports/pdfExport';
 import { getPostImage } from '@exports/postScreenshot';
-import { DownloadInstructions } from '@components/WrappedStories/DownloadInstructions';
+import { DownloadInstructions, type ExportType } from '@components/WrappedStories/DownloadInstructions';
 import { Icon } from '@components/Icon';
 import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
 
 interface ShareButtonProps {
   card: ShareableCard;
-  cardRef: React.RefObject<HTMLDivElement>;
-  allCards?: React.RefObject<HTMLDivElement>[];
+  cardRef: React.RefObject<HTMLDivElement | null>;
+  allCards?: React.RefObject<HTMLDivElement | null>[];
   shareInfo: ShareInfo;
   onPauseAutoplay?: () => void;
 }
-
-type ExportOption = 'current-card' | 'all-cards' | null;
 
 /**
  * Place the menu below the button and keep it in the viewport.
@@ -34,8 +32,7 @@ function getDropdownPosition(button: HTMLElement): { top: string; left: string }
 }
 
 /**
- * ShareButton component with dropdown menu for export options
- * Supports PNG export for single cards and PDF export for all cards
+ * A share button with a menu. Export the current card as a PNG, or all cards as one PDF.
  */
 export const ShareButton: React.FC<ShareButtonProps> = ({
   card,
@@ -47,13 +44,13 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-  const [exportType, setExportType] = useState<ExportOption>(null);
+  const [exportType, setExportType] = useState<ExportType>('current-card');
   const [error, setError] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Close dropdown when clicking outside
+  // Close the menu on a click outside it.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -69,9 +66,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     return undefined;
   }, [isDropdownOpen]);
 
-  /**
-   * Handle single card PNG export
-   */
   const handlePNGExport = useCallback(async () => {
     if (!cardRef.current) {
       setError('Card element not found');
@@ -88,7 +82,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
       const imageDataUrl = await exportCardAsImage(cardRef.current, { postImage });
 
-      // Download image from data URL
       const link = document.createElement('a');
       link.href = imageDataUrl;
       link.download = `wrapped-for-linkedin-${card.id}.png`;
@@ -96,7 +89,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       link.click();
       document.body.removeChild(link);
 
-      // Show instructions
       setShowInstructions(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to export card';
@@ -123,7 +115,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
     try {
       const getCardElements = () =>
-        allCards.map((ref) => ref.current).filter((element): element is HTMLDivElement => element !== null);
+        allCards.map((ref) => ref.current).filter((element) => element !== null);
 
       // If a ref is still empty, wait for the card to render, then try again.
       let cardElements = getCardElements();
@@ -142,16 +134,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
       await exportCardsAsPDFBatch(cardElements, filename, { postImage });
 
-      // Show instructions
       setShowInstructions(true);
     } catch (err) {
-      if (err instanceof Error && err.message === 'Export cancelled') {
-        setError(null);
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
-        setError(errorMessage);
-        console.error('PDF export failed:', err);
-      }
+      const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
+      setError(errorMessage);
+      console.error('PDF export failed:', err);
     } finally {
       setIsExporting(false);
     }
@@ -173,7 +160,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   return (
     <div className="share-button-wrapper">
       <div className="share-button-container">
-        {/* Main Share Button */}
         <button
           ref={buttonRef}
           className="share-button"
@@ -201,7 +187,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         </button>
       </div>
 
-      {/* Dropdown Menu - Rendered as Portal to escape stacking context */}
+      {/* The portal puts the menu outside the card's stacking context. */}
       {isDropdownOpen && !isExporting && createPortal(
         <>
           <div className="share-dropdown-backdrop" onClick={() => setIsDropdownOpen(false)} />
@@ -239,7 +225,6 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         document.body
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="share-feedback error">
           <span className="share-feedback-icon">
@@ -249,12 +234,12 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         </div>
       )}
 
-      {/* Download Instructions Modal - Rendered as Portal to escape stacking context */}
+      {/* The portal puts the modal outside the card's stacking context. */}
       {showInstructions && createPortal(
         <DownloadInstructions
           isVisible={showInstructions}
           shareInfo={shareInfo}
-          exportType={exportType ?? 'current-card'}
+          exportType={exportType}
           onDismiss={() => setShowInstructions(false)}
         />,
         document.body

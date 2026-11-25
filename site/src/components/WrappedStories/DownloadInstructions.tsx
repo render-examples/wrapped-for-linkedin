@@ -4,7 +4,7 @@ import { Icon } from '@components/Icon';
 import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
 
-type ExportType = 'current-card' | 'all-cards';
+export type ExportType = 'current-card' | 'all-cards';
 
 interface DownloadInstructionsProps {
   isVisible: boolean;
@@ -14,10 +14,8 @@ interface DownloadInstructionsProps {
 }
 
 /**
- * Component that displays instructions after downloading wrapped cards
- * Guides users to attach the downloaded file to their LinkedIn post
- * and provides a button to open LinkedIn sharing
- * Shows different instructions based on export type (single card PNG or multi-card PDF)
+ * Show the steps to attach a downloaded export to a LinkedIn post.
+ * The steps are different for a PNG of one card and a PDF of all cards.
  */
 export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
   isVisible,
@@ -39,9 +37,9 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
         {/* Header */}
         <div className="instructions-header">
           <h3 className="instructions-title">
-            <img 
-              src="/images/share/check.png" 
-              alt="Check" 
+            <img
+              src="/images/share/check.png"
+              alt="Check"
               className="instructions-check-icon"
             />
             Download complete

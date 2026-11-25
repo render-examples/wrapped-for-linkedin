@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import type { DemographicInsights, DemographicItem } from '@types';
 import '@styles/Demographics.css';
 
@@ -6,12 +6,16 @@ interface DemographicsViewProps {
   demographics: DemographicInsights;
 }
 
-const DemographicCategory: React.FC<{
+const MAX_ITEMS_PER_CATEGORY = 5;
+
+interface DemographicCategoryProps {
   title: string;
   items: DemographicItem[];
   icon: string;
-}> = ({ title, items, icon }) => {
-  const topItems = useMemo(() => items.slice(0, 5), [items]);
+}
+
+const DemographicCategory: React.FC<DemographicCategoryProps> = ({ title, items, icon }) => {
+  const topItems = items.slice(0, MAX_ITEMS_PER_CATEGORY);
 
   if (topItems.length === 0) return null;
 

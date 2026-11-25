@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { createRef, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryCard } from '@components/WrappedStories/StoryCard';
 import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/WrappedStories.css';
@@ -6,9 +6,19 @@ import '@styles/WrappedStories.css';
 interface WrappedStoriesContainerProps {
   cards: ShareableCard[];
   shareInfo: ShareInfo;
-  autoPlayDuration?: number; // milliseconds
+  // Time that each card shows during autoplay, in milliseconds.
+  autoPlayDuration?: number;
   onUploadNewData?: () => void;
 }
+
+// Touch gesture limits, in pixels and milliseconds.
+const SWIPE_MIN_DISTANCE = 50;
+const TAP_MAX_DISTANCE = 10;
+const TAP_MAX_DURATION = 300;
+// Time that the swipe arrow shows after a swipe.
+const SWIPE_ARROW_DURATION = 600;
+// A press longer than this pauses autoplay. A shorter press is a tap.
+const PRESS_HOLD_DELAY = 200;
 
 export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = ({
   cards,
@@ -25,17 +35,15 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const swipeArrowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const previousCardIndexRef = useRef(0);
 
-  // Create refs for all cards for PDF export using useMemo to avoid render-time mutations
-  const cardRefs = useMemo<React.RefObject<HTMLDivElement>[]>(() => 
-    Array.from({ length: cards.length }, () => React.createRef<HTMLDivElement>()) as React.RefObject<HTMLDivElement>[],
+  // The PDF export reads every card, so each card gets a ref.
+  const cardRefs = useMemo(
+    () => Array.from({ length: cards.length }, () => createRef<HTMLDivElement>()),
     [cards.length]
   );
 
   const totalCards = cards.length;
 
-  // Clear auto-play timer
   const clearAutoPlayTimer = useCallback(() => {
     if (autoPlayTimerRef.current) {
       clearTimeout(autoPlayTimerRef.current);
@@ -43,28 +51,20 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }
   }, []);
 
-  // Start auto-play
   const startAutoPlay = useCallback(() => {
     clearAutoPlayTimer();
     setIsAutoPlaying(true);
 
     autoPlayTimerRef.current = setTimeout(() => {
-      setCurrentCardIndex(prev => {
-        const nextIndex = prev + 1;
-        if (nextIndex >= totalCards) {
-          return 0;  // Cycle back to beginning
-        }
-        return nextIndex;
-      });
+      // After the last card, go back to the first card.
+      setCurrentCardIndex((prev) => (prev + 1 >= totalCards ? 0 : prev + 1));
     }, autoPlayDuration);
   }, [totalCards, autoPlayDuration, clearAutoPlayTimer]);
 
-  // Navigation handlers
   const handleNext = useCallback(() => {
     setCurrentCardIndex(prev => {
       const nextIndex = prev + 1;
-      if (nextIndex >= totalCards) return 0;  // Cycle to beginning
-      previousCardIndexRef.current = prev;
+      if (nextIndex >= totalCards) return 0;
       setIsNavigatingBackward(false);
       return nextIndex;
     });
@@ -78,8 +78,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
   const handlePrevious = useCallback(() => {
     setCurrentCardIndex(prev => {
       const prevIndex = prev - 1;
-      if (prevIndex < 0) return totalCards - 1;  // Cycle to end
-      previousCardIndexRef.current = prev;
+      if (prevIndex < 0) return totalCards - 1;
       setIsNavigatingBackward(true);
       return prevIndex;
     });
@@ -94,7 +93,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     if (index >= 0 && index < totalCards) {
       setCurrentCardIndex(prevIndex => {
         setIsNavigatingBackward(index < prevIndex);
-        previousCardIndexRef.current = prevIndex;
         return index;
       });
       clearAutoPlayTimer();
@@ -116,14 +114,14 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }
   }, [isAutoPlaying, clearAutoPlayTimer, startAutoPlay]);
 
-  // Pause autoplay callback to be called from child components (e.g., ShareButton)
+  // Child components, such as ShareButton, call this to pause autoplay.
   const handlePauseAutoPlay = useCallback(() => {
     clearAutoPlayTimer();
     setIsAutoPlaying(false);
     setUserManuallyPaused(true);
   }, [clearAutoPlayTimer]);
 
-  // Store latest handlers in refs for event listeners
+  // The keydown listener is added one time, so it reads the latest handlers from refs.
   const handleNextRef = useRef(handleNext);
   const handlePreviousRef = useRef(handlePrevious);
   const clearAutoPlayTimerRef = useRef(clearAutoPlayTimer);
@@ -134,7 +132,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     clearAutoPlayTimerRef.current = clearAutoPlayTimer;
   });
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
@@ -155,14 +152,12 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []); // Empty deps - event listener set up once
+  }, []);
 
-  // Touch/swipe handling
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartTimeRef = useRef<number | null>(null);
 
-  // Clear swipe arrow animation
   const clearSwipeArrowTimer = useCallback(() => {
     if (swipeArrowTimerRef.current) {
       clearTimeout(swipeArrowTimerRef.current);
@@ -176,7 +171,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     touchStartTimeRef.current = Date.now();
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (touchStartXRef.current === null || touchStartYRef.current === null || touchStartTimeRef.current === null) return;
 
     const touchEndX = e.changedTouches[0].clientX;
@@ -186,12 +181,14 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     const horizontalDifference = touchStartXRef.current - touchEndX;
     const verticalDifference = Math.abs(touchStartYRef.current - touchEndY);
 
-    const swipeThreshold = 50; // pixels for swipe
-    const tapThreshold = 10; // pixels for tap
-    const tapDurationThreshold = 300; // milliseconds
+    const isSwipe =
+      Math.abs(horizontalDifference) > SWIPE_MIN_DISTANCE && verticalDifference < SWIPE_MIN_DISTANCE;
+    const isTap =
+      Math.abs(horizontalDifference) < TAP_MAX_DISTANCE &&
+      verticalDifference < TAP_MAX_DISTANCE &&
+      touchDuration < TAP_MAX_DURATION;
 
-    // Detect swipe (significant horizontal movement)
-    if (Math.abs(horizontalDifference) > swipeThreshold && verticalDifference < swipeThreshold) {
+    if (isSwipe) {
       if (horizontalDifference > 0) {
         setSwipeArrowDirection('left');
         handleNext();
@@ -200,28 +197,15 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         handlePrevious();
       }
 
-      // Clear previous timer
+      // Hide the arrow when its animation is done.
       clearSwipeArrowTimer();
-
-      // Hide arrow after animation completes
       swipeArrowTimerRef.current = setTimeout(() => {
         setSwipeArrowDirection(null);
-      }, 600);
-    }
-    // Detect tap (minimal movement and quick duration)
-    else if (
-      Math.abs(horizontalDifference) < tapThreshold &&
-      verticalDifference < tapThreshold &&
-      touchDuration < tapDurationThreshold
-    ) {
-      // Get viewport element for width calculation
-      const viewportElement = e.currentTarget as HTMLElement;
-      const viewportWidth = viewportElement.offsetWidth;
-      const tapXPosition = touchStartXRef.current;
-      const midpoint = viewportWidth / 2;
-
-      // Tap on right side = next, tap on left side = previous
-      if (tapXPosition > midpoint) {
+      }, SWIPE_ARROW_DURATION);
+    } else if (isTap) {
+      // A tap on the right half goes to the next card. A tap on the left half goes back.
+      const midpoint = e.currentTarget.offsetWidth / 2;
+      if (touchStartXRef.current > midpoint) {
         handleNext();
       } else {
         handlePrevious();
@@ -233,23 +217,23 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     touchStartTimeRef.current = null;
   };
 
-  // Press-and-hold to pause (Instagram stories style)
+  // Press and hold pauses autoplay, as in Instagram stories.
   const handlePointerDown = useCallback(() => {
     pressHoldTimerRef.current = setTimeout(() => {
       setIsPressHolding(true);
       clearAutoPlayTimer();
       setIsAutoPlaying(false);
-    }, 200); // 200ms threshold to distinguish from tap
+    }, PRESS_HOLD_DELAY);
   }, [clearAutoPlayTimer]);
 
   const handlePointerUp = useCallback(() => {
-    // Clear the press-hold timer if it hasn't fired yet
+    // Cancel the press-hold timer if it has not fired.
     if (pressHoldTimerRef.current) {
       clearTimeout(pressHoldTimerRef.current);
       pressHoldTimerRef.current = null;
     }
 
-    // If we were holding, resume autoplay
+    // At the end of a hold, resume autoplay.
     if (isPressHolding) {
       setIsPressHolding(false);
       setUserManuallyPaused(false);
@@ -257,7 +241,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     }
   }, [isPressHolding, startAutoPlay]);
 
-  // Start auto-play on mount and restart when card changes if autoplay is active
+  // While autoplay is on, start a new timer each time the card changes.
   useEffect(() => {
     if (isAutoPlaying) {
       startAutoPlay();
@@ -269,13 +253,12 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
     };
   }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer, clearSwipeArrowTimer]);
 
-  if (!cards || cards.length === 0) {
+  if (cards.length === 0) {
     return null;
   }
 
   return (
     <div className="wrapped-stories-container">
-      {/* Left arrow - positioned on left side of viewport */}
       <button
         className="side-nav-button side-nav-prev"
         onClick={handlePrevious}
@@ -293,7 +276,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {/* Swipe Arrow Indicators */}
         {swipeArrowDirection === 'left' && (
           <div className="swipe-arrow swipe-arrow-left">→</div>
         )}
@@ -301,7 +283,7 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
           <div className="swipe-arrow swipe-arrow-right">←</div>
         )}
 
-        {/* Render all cards - CSS makes only active one visible */}
+        {/* All cards render, so the PDF export can read them. CSS shows only the active card. */}
         {cards.map((card, index) => (
           <StoryCard
             key={card.id}
@@ -321,7 +303,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         ))}
       </div>
 
-      {/* Right arrow - positioned on right side of viewport */}
       <button
         className="side-nav-button side-nav-next"
         onClick={handleNext}
@@ -331,7 +312,6 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
         →
       </button>
 
-      {/* Pause button stays centered below */}
       <div className="story-controls">
         <button
           className={`control-button autoplay-button ${isAutoPlaying ? 'playing' : ''}`}
