@@ -1,0 +1,129 @@
+import { after, before, describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { createApp } from '../src/app.js';
+
+const ORIGIN = 'https://wrappedforlinkedin.onrender.com';
+const PUBLIC_URN = 'urn:li:share:1';
+const PRIVATE_URN = 'urn:li:share:2';
+const BROKEN_URN = 'urn:li:share:3';
+const PNG = Buffer.from([137, 80, 78, 71]);
+
+const statusFor = (urn) =>
+  urn === PUBLIC_URN ? 'public' : urn === PRIVATE_URN ? 'unavailable' : 'error';
+
+describe('screenshot service', () => {
+  let server;
+  let baseUrl;
+  const logs = [];
+  const calls = { status: 0, screenshot: 0 };
+
+  before(async () => {
+    const app = createApp({
+      allowedOrigins: [ORIGIN],
+      log: (message) => logs.push(message),
+      checkStatus: async (urn) => {
+        calls.status++;
+        return statusFor(urn);
+      },
+      takeScreenshot: async (urn) => {
+        calls.screenshot++;
+        const status = statusFor(urn);
+        return status === 'public' ? { status, image: PNG } : { status };
+      },
+    });
+    await new Promise((resolve) => {
+      server = app.listen(0, resolve);
+    });
+    baseUrl = `http://127.0.0.1:${server.address().port}`;
+  });
+
+  after(() => server.close());
+
+  const get = (path) => fetch(`${baseUrl}${path}`, { headers: { Origin: ORIGIN } });
+
+  it('returns 200 for a public post and 404 for a private post', async () => {
+    assert.equal((await get(`/post-status?urn=${PUBLIC_URN}`)).status, 200);
+    assert.equal((await get(`/post-status?urn=${PRIVATE_URN}`)).status, 404);
+  });
+
+  it('returns 502 when LinkedIn gives an unexpected response', async () => {
+    assert.equal((await get(`/post-status?urn=${BROKEN_URN}`)).status, 502);
+    assert.equal((await get(`/post-image?urn=${BROKEN_URN}`)).status, 502);
+  });
+
+  it('caches post status', async () => {
+    const before = calls.status;
+    await get(`/post-status?urn=${PUBLIC_URN}`);
+    await get(`/post-status?urn=${PUBLIC_URN}`);
+    assert.equal(calls.status, before);
+  });
+
+  it('returns a PNG with CORS and cache headers', async () => {
+    const response = await get(`/post-image?urn=${PUBLIC_URN}`);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/png');
+    assert.equal(response.headers.get('access-control-allow-origin'), ORIGIN);
+    assert.match(response.headers.get('cache-control'), /max-age=86400/);
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), PNG);
+  });
+
+  it('caches images', async () => {
+    const before = calls.screenshot;
+    await get(`/post-image?urn=${PUBLIC_URN}`);
+    assert.equal(calls.screenshot, before);
+  });
+
+  it('returns 404 for the image of a private post', async () => {
+    assert.equal((await get(`/post-image?urn=${PRIVATE_URN}`)).status, 404);
+  });
+
+  it('rejects a full URL, extra parameters, and a missing URN', async () => {
+    const rejected = [
+      '/post-image?urn=https://evil.example.com',
+      '/post-image?url=https://www.linkedin.com',
+      `/post-image?urn=${PUBLIC_URN}&impressions=100`,
+      `/post-status?urn=${PUBLIC_URN}&urn=${PRIVATE_URN}`,
+      '/post-status',
+    ];
+    for (const path of rejected) {
+      assert.equal((await get(path)).status, 400, path);
+    }
+  });
+
+  it('does not send CORS headers to other origins', async () => {
+    const response = await fetch(`${baseUrl}/post-status?urn=${PUBLIC_URN}`, {
+      headers: { Origin: 'https://evil.example.com' },
+    });
+    assert.equal(response.headers.get('access-control-allow-origin'), null);
+  });
+
+  it('logs only status codes', () => {
+    assert.ok(logs.length > 0);
+    for (const line of logs) {
+      assert.match(line, /^\d{3}$/);
+    }
+  });
+});
+
+describe('rate limit', () => {
+  it('returns 429 after the limit', async () => {
+    const app = createApp({
+      allowedOrigins: [],
+      log: () => {},
+      rateLimitPerMinute: 2,
+      checkStatus: async () => 'public',
+      takeScreenshot: async () => ({ status: 'public', image: PNG }),
+    });
+    const server = await new Promise((resolve) => {
+      const s = app.listen(0, () => resolve(s));
+    });
+    const url = `http://127.0.0.1:${server.address().port}/post-status?urn=${PUBLIC_URN}`;
+    try {
+      assert.equal((await fetch(url)).status, 200);
+      assert.equal((await fetch(url)).status, 200);
+      assert.equal((await fetch(url)).status, 429);
+    } finally {
+      server.close();
+    }
+  });
+});
