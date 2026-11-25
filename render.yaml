@@ -1,10 +1,3 @@
-# Make a preview environment for each pull request.
-# Preview URLs are not known in advance, so set VITE_SCREENSHOT_SERVICE_URL
-# and ALLOWED_ORIGIN on the preview services by hand.
-previews:
-  generation: automatic
-  expireAfterDays: 7
-
 services:
   - type: web
     name: wrapped-for-linkedin
