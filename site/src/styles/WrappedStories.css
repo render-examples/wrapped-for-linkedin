@@ -365,8 +365,10 @@
   color: var(--accent);
 }
 
-.post-status-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .post-status-link:hover {
+    text-decoration: underline;
+  }
 }
 
 /* The server-side screenshot of the post, used in exports.
@@ -521,8 +523,10 @@
   transition: border-color 0.2s ease;
 }
 
-.control-button:hover {
-  border-color: var(--accent);
+@media (hover: hover) {
+  .control-button:hover {
+    border-color: var(--accent);
+  }
 }
 
 .control-button.autoplay-button {
@@ -559,8 +563,10 @@
   transition: border-color 0.2s ease;
 }
 
-.side-nav-button:hover {
-  border-color: var(--accent);
+@media (hover: hover) {
+  .side-nav-button:hover {
+    border-color: var(--accent);
+  }
 }
 
 .side-nav-prev {
@@ -623,6 +629,17 @@
 @media (max-width: 768px) {
   .wrapped-stories-container {
     padding: 1rem 0;
+  }
+
+  /* The bar looks 2px high, but the tap area is 22px high. */
+  .progress-bar {
+    height: 22px;
+    background: linear-gradient(var(--border), var(--border)) center / 100% 2px no-repeat;
+  }
+
+  .progress-fill {
+    height: 2px;
+    margin-top: 10px;
   }
 
   /* Touch and tap handle navigation on phones. */
@@ -696,8 +713,10 @@
   color: var(--text-faint);
 }
 
-.instructions-close-btn:hover {
-  color: var(--text);
+@media (hover: hover) {
+  .instructions-close-btn:hover {
+    color: var(--text);
+  }
 }
 
 .instructions-close-icon {
@@ -781,5 +800,10 @@
 
   .instructions-actions {
     padding: 1rem 1rem 0;
+  }
+
+  .instructions-close-btn {
+    width: 44px;
+    height: 44px;
   }
 }

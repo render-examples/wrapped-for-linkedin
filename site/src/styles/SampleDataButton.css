@@ -11,8 +11,10 @@
   transition: border-color 0.2s ease;
 }
 
-.sample-data-button:hover:not(:disabled) {
-  border-color: var(--accent);
+@media (hover: hover) {
+  .sample-data-button:hover:not(:disabled) {
+    border-color: var(--accent);
+  }
 }
 
 .sample-data-button:disabled {

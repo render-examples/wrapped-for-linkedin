@@ -138,13 +138,17 @@ a:focus-visible,
   transition: transform 0.3s cubic-bezier(0.9, 0.1, 0.1, 0.9);
 }
 
-.button.primary:hover:not(:disabled) {
-  color: var(--text);
+@media (hover: hover) {
+  .button.primary:hover:not(:disabled) {
+    color: var(--text);
+  }
 }
 
-.button.primary:hover:not(:disabled)::before {
-  transform: scaleX(1);
-  transform-origin: left;
+@media (hover: hover) {
+  .button.primary:hover:not(:disabled)::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 .button.secondary {
@@ -152,9 +156,11 @@ a:focus-visible,
   color: var(--text);
 }
 
-.button.secondary:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
+@media (hover: hover) {
+  .button.secondary:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 }
 
 .button:disabled {

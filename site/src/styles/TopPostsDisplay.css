@@ -24,8 +24,10 @@
   cursor: pointer;
 }
 
-.faq-summary:hover {
-  color: var(--text);
+@media (hover: hover) {
+  .faq-summary:hover {
+    color: var(--text);
+  }
 }
 
 .faq-content {
@@ -71,8 +73,10 @@
   transition: background 0.2s ease;
 }
 
-.post-card:hover {
-  background: var(--bg-secondary);
+@media (hover: hover) {
+  .post-card:hover {
+    background: var(--bg-secondary);
+  }
 }
 
 .post-header {
@@ -134,8 +138,10 @@
   color: var(--accent);
 }
 
-.fallback-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .fallback-link:hover {
+    text-decoration: underline;
+  }
 }
 
 .top-post-stats {

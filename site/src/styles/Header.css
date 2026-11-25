@@ -64,8 +64,10 @@
   transition: opacity 0.2s ease;
 }
 
-.render-logo-link:hover {
-  opacity: 0.8;
+@media (hover: hover) {
+  .render-logo-link:hover {
+    opacity: 0.8;
+  }
 }
 
 .render-powered-text {
@@ -102,6 +104,11 @@
 
   .render-logo-link {
     gap: 0.4rem;
+  }
+
+  .wrapped-for-linkedin-title-container,
+  .render-logo-link {
+    min-height: 44px;
   }
 
   /* Show the shorter text from data-mobile-text. */

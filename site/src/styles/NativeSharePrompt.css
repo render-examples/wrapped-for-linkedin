@@ -13,4 +13,15 @@
   .native-share-actions {
     padding: 0 1rem 1rem;
   }
+
+  /* Show the prompt as a bottom sheet. */
+  .native-share-overlay {
+    align-items: flex-end;
+  }
+
+  .native-share-overlay .download-instructions-modal {
+    border-width: 1px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: slideUpSheet 0.2s ease;
+  }
 }

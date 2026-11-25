@@ -30,9 +30,14 @@
   transition: border-color 0.2s ease;
 }
 
-.dropzone:hover:not(.disabled),
 .dropzone.active {
   border-color: var(--accent);
+}
+
+@media (hover: hover) {
+  .dropzone:hover:not(.disabled) {
+    border-color: var(--accent);
+  }
 }
 
 .dropzone.disabled {
@@ -143,9 +148,11 @@
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.watch-demo-button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+@media (hover: hover) {
+  .watch-demo-button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 }
 
 .instructions a:not(.watch-demo-button),
@@ -156,9 +163,11 @@
   color: var(--accent);
 }
 
-.instructions a:not(.watch-demo-button):hover,
-.privacy-disclaimer a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .instructions a:not(.watch-demo-button):hover,
+  .privacy-disclaimer a:hover {
+    text-decoration: underline;
+  }
 }
 
 .privacy-disclaimer {

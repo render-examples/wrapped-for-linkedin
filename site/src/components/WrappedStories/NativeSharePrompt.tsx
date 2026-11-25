@@ -42,7 +42,7 @@ export const NativeSharePrompt: React.FC<NativeSharePromptProps> = ({
   }, [file, shareInfo, onShared, onFallback]);
 
   return (
-    <div className="download-instructions-overlay">
+    <div className="download-instructions-overlay native-share-overlay">
       <div className="download-instructions-modal">
         <div className="instructions-header">
           <h3 className="instructions-title">
@@ -58,7 +58,7 @@ export const NativeSharePrompt: React.FC<NativeSharePromptProps> = ({
 
         <div className="instructions-content">
           <p className="instructions-text">
-            Tap <b>Share to LinkedIn</b>, then pick LinkedIn. We copied your post text, so paste it into your post.
+            Tap <b>Share to LinkedIn</b>, then pick LinkedIn. We also copy your post text, so you can paste it into your post.
           </p>
         </div>
 

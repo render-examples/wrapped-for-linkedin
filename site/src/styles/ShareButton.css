@@ -28,9 +28,11 @@
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.share-button:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
+@media (hover: hover) {
+  .share-button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 }
 
 .share-button:disabled {
@@ -114,8 +116,10 @@
   border-bottom: none;
 }
 
-.dropdown-option:hover {
-  background: var(--bg);
+@media (hover: hover) {
+  .dropdown-option:hover {
+    background: var(--bg);
+  }
 }
 
 .option-icon {
@@ -143,12 +147,30 @@
     background: rgba(0, 0, 0, 0.6);
   }
 
+  .share-button {
+    min-height: 44px;
+  }
+
+  /* Show the menu as a bottom sheet. These rules override the position from getDropdownPosition. */
   .share-dropdown-menu {
-    top: 50% !important;
-    left: 50% !important;
-    min-width: calc(100vw - 32px);
-    max-width: calc(100vw - 32px);
-    transform: translate(-50%, -50%) !important;
-    animation: none;
+    top: auto !important;
+    bottom: 0;
+    left: 0 !important;
+    right: 0;
+    transform: none;
+    min-width: 0;
+    max-width: none;
+    border-width: 1px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: slideUpSheet 0.2s ease;
+  }
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
   }
 }
