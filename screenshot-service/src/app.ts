@@ -1,4 +1,4 @@
-import express, { type Request } from 'express';
+import express, { type Request, type Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { isValidUrn } from './urn.ts';
 import { TtlCache } from './cache.ts';
@@ -23,7 +23,7 @@ export type AppOptions = {
 /**
  * Share one pending promise per key, so parallel requests for the same URN do the work once.
  */
-function dedupe<T>() {
+function createDeduper<T>() {
   const pending = new Map<string, Promise<T>>();
   return (key: string, task: () => Promise<T>): Promise<T> => {
     let promise = pending.get(key);
@@ -44,6 +44,15 @@ function readUrn(req: Request): string | null {
   return isValidUrn(req.query.urn) ? req.query.urn : null;
 }
 
+/** Send 404 for a private or deleted post, and 502 for an unexpected LinkedIn response. */
+function sendNotPublic(res: Response, status: 'unavailable' | 'error'): void {
+  if (status === 'unavailable') {
+    res.status(404).set('Cache-Control', CACHE_ONE_HOUR).end();
+    return;
+  }
+  res.status(502).set('Cache-Control', NO_STORE).end();
+}
+
 export function createApp({
   allowedOrigins,
   checkStatus,
@@ -58,8 +67,8 @@ export function createApp({
 
   const statusCache = new TtlCache<PostStatus>({ ttlMs: HOUR_MS, maxEntries: 10_000 });
   const imageCache = new TtlCache<ScreenshotResult>({ ttlMs: DAY_MS, maxEntries: 500 });
-  const statusRequests = dedupe<PostStatus>();
-  const imageRequests = dedupe<ScreenshotResult>();
+  const statusRequests = createDeduper<PostStatus>();
+  const imageRequests = createDeduper<ScreenshotResult>();
 
   // Log only the status code. Never log the URN, the IP address, or headers.
   app.use((_req, res, next) => {
@@ -104,14 +113,11 @@ export function createApp({
       }
     }
 
-    if (status === 'error') {
-      res.status(502).set('Cache-Control', NO_STORE).end();
+    if (status === 'public') {
+      res.status(200).set('Cache-Control', CACHE_ONE_HOUR).end();
       return;
     }
-    res
-      .status(status === 'public' ? 200 : 404)
-      .set('Cache-Control', CACHE_ONE_HOUR)
-      .end();
+    sendNotPublic(res, status);
   });
 
   app.get('/post-image', async (req, res) => {
@@ -138,11 +144,7 @@ export function createApp({
         .send(result.image);
       return;
     }
-    if (result.status === 'unavailable') {
-      res.status(404).set('Cache-Control', CACHE_ONE_HOUR).end();
-      return;
-    }
-    res.status(502).set('Cache-Control', NO_STORE).end();
+    sendNotPublic(res, result.status);
   });
 
   app.use((_req, res) => {

@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { FileUpload } from '@components/FileUpload';
-import { UnifiedDashboard } from '@components/UnifiedDashboard';
-import { ErrorDisplay } from '@components/Error';
-import { Header } from '@components/Header';
-import { useCache } from '@/hooks/useCache';
-import type { ParsedExcelData } from '@utils/excel/types';
-import '@/App.css';
+import { useCallback, useEffect, useState } from "react";
+import { FileUpload } from "@components/FileUpload";
+import { UnifiedDashboard } from "@components/UnifiedDashboard";
+import { ErrorDisplay } from "@components/Error";
+import { Header } from "@components/Header";
+import { useCache } from "@/hooks/useCache";
+import type { ParsedExcelData } from "@utils/excel/types";
+import "@/App.css";
 
-const SESSION_KEY = 'wrapped-session-active';
+const SESSION_KEY = "wrapped-session-active";
 
 function App() {
   const [data, setData] = useState<ParsedExcelData | null>(null);
@@ -19,7 +19,7 @@ function App() {
   useEffect(() => {
     if (!sessionStorage.getItem(SESSION_KEY)) {
       clearCache();
-      sessionStorage.setItem(SESSION_KEY, 'true');
+      sessionStorage.setItem(SESSION_KEY, "true");
     }
   }, [clearCache]);
 
@@ -55,28 +55,28 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Escape returns to the home page.
-      if (event.key === 'Escape' && data) {
+      if (event.key === "Escape" && data) {
         handleClearCache();
         return;
       }
 
       // Ctrl+Shift+R or Cmd+Shift+R stops the hard refresh and returns to the home page.
       if (
-        event.key === 'R' &&
+        event.key === "R" &&
         event.shiftKey &&
         (event.ctrlKey || event.metaKey)
       ) {
         event.preventDefault();
         handleClearCache();
         sessionStorage.clear();
-        sessionStorage.setItem(SESSION_KEY, 'true');
+        sessionStorage.setItem(SESSION_KEY, "true");
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [data, handleClearCache]);
 
@@ -101,11 +101,15 @@ function App() {
 
           {error && <ErrorDisplay error={error} onRetry={resetState} />}
 
-          {!error && (data ? (
-            <UnifiedDashboard data={data} onUploadNewData={handleClearCache} />
-          ) : (
-            <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
-          ))}
+          {!error &&
+            (data ? (
+              <UnifiedDashboard
+                data={data}
+                onUploadNewData={handleClearCache}
+              />
+            ) : (
+              <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
+            ))}
         </main>
       </div>
 
@@ -127,7 +131,7 @@ function App() {
             </a>
             &nbsp; &nbsp; &nbsp; &nbsp;
             <a
-              href="https://x.com/render"
+              href="https://www.linkedin.com/company/renderco"
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
@@ -144,9 +148,7 @@ function App() {
               GitHub
             </a>
           </p>
-          <p className="footer-copyright">
-            © Render {currentYear}
-          </p>
+          <p className="footer-copyright">© Render {currentYear}</p>
         </div>
       </footer>
     </div>

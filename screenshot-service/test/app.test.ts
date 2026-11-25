@@ -2,6 +2,7 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
+import type { Express } from 'express';
 import { createApp } from '../src/app.ts';
 import type { PostStatus } from '../src/linkedin.ts';
 
@@ -11,10 +12,21 @@ const PRIVATE_URN = 'urn:li:share:2';
 const BROKEN_URN = 'urn:li:share:3';
 const PNG = Buffer.from([137, 80, 78, 71]);
 
-const statusFor = (urn: string): PostStatus =>
-  urn === PUBLIC_URN ? 'public' : urn === PRIVATE_URN ? 'unavailable' : 'error';
+const STATUS_BY_URN: Record<string, PostStatus> = {
+  [PUBLIC_URN]: 'public',
+  [PRIVATE_URN]: 'unavailable',
+};
+const statusFor = (urn: string): PostStatus => STATUS_BY_URN[urn] ?? 'error';
 
-const portOf = (server: Server) => (server.address() as AddressInfo).port;
+/** Start the app on a free port. */
+function listen(app: Express): Promise<{ server: Server; baseUrl: string }> {
+  return new Promise((resolve) => {
+    const server = app.listen(0, () => {
+      const { port } = server.address() as AddressInfo;
+      resolve({ server, baseUrl: `http://127.0.0.1:${port}` });
+    });
+  });
+}
 
 describe('screenshot service', () => {
   let server: Server;
@@ -36,10 +48,7 @@ describe('screenshot service', () => {
         return status === 'public' ? { status, image: PNG } : { status };
       },
     });
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => resolve());
-    });
-    baseUrl = `http://127.0.0.1:${portOf(server)}`;
+    ({ server, baseUrl } = await listen(app));
   });
 
   after(() => server.close());
@@ -119,10 +128,8 @@ describe('rate limit', () => {
       checkStatus: async () => 'public',
       takeScreenshot: async () => ({ status: 'public', image: PNG }),
     });
-    const server = await new Promise<Server>((resolve) => {
-      const s = app.listen(0, () => resolve(s));
-    });
-    const url = `http://127.0.0.1:${portOf(server)}/post-status?urn=${PUBLIC_URN}`;
+    const { server, baseUrl } = await listen(app);
+    const url = `${baseUrl}/post-status?urn=${PUBLIC_URN}`;
     try {
       assert.equal((await fetch(url)).status, 200);
       assert.equal((await fetch(url)).status, 200);

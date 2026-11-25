@@ -4,18 +4,18 @@ interface StoryProgressProps {
   currentCardIndex: number;
   totalCards: number;
   onJumpToCard: (index: number) => void;
-  isAutoPlaying?: boolean;
-  autoPlayDuration?: number;
-  isNavigatingBackward?: boolean;
+  isAutoPlaying: boolean;
+  autoPlayDuration: number;
+  isNavigatingBackward: boolean;
 }
 
 export const StoryProgress: React.FC<StoryProgressProps> = ({
   currentCardIndex,
   totalCards,
   onJumpToCard,
-  isAutoPlaying = false,
-  autoPlayDuration = 5000,
-  isNavigatingBackward = false,
+  isAutoPlaying,
+  autoPlayDuration,
+  isNavigatingBackward,
 }) => {
   return (
     <div className="story-progress-container">
@@ -43,9 +43,9 @@ export const StoryProgress: React.FC<StoryProgressProps> = ({
               '--auto-play-duration': `${autoPlayDuration}ms`,
               '--is-autoplay': isAutoPlaying ? '1' : '0',
               '--is-backward': isNavigatingBackward ? '1' : '0',
-            } as React.CSSProperties & { [key: string]: string }}
+            } as React.CSSProperties}
           >
-            <div className="progress-fill"></div>
+            <div className="progress-fill" />
           </div>
         ))}
       </div>

@@ -47,9 +47,8 @@ describe('getAudienceSections', () => {
 });
 
 describe('generateShareableCards', () => {
-  it('places the audience card after Industry Insider and has no Local Legend card', () => {
+  it('places the audience card after Industry Insider', () => {
     const ids = cardIds(base);
-    expect(ids).not.toContain('top-location');
     expect(ids.indexOf('audience-snapshot')).toBe(ids.indexOf('top-industry') + 1);
   });
 

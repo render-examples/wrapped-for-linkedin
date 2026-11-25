@@ -1,6 +1,6 @@
 # Export system
 
-The export system turns story cards into PNG images and a multi-page PDF. All rendering happens in the browser.
+The export system turns story cards into PNG images and a multi-page PDF. The browser renders the files. Only the post screenshot comes from the screenshot service.
 
 ## Files
 
@@ -20,7 +20,7 @@ The PNG is 1080 × 1350 on every device. The function lays out a clone of the ca
 
 The function does these steps:
 
-1. Check the cache. The cache key uses a hash of the card HTML, the background color, and a hash of the post screenshot.
+1. Check the cache. The cache key uses the card `id` or a hash of the card HTML, the background color, and a hash of the post screenshot.
 2. Clone the card and remove screen-only elements, such as the share button and progress bars.
 3. Replace the LinkedIn iframe. The browser cannot read pixels from a cross-origin iframe, so the clone shows the post screenshot or a trophy icon.
 4. Add the clone to a hidden container on the page.
@@ -38,9 +38,9 @@ If you do not give a background color, the function reads the `--card-bg-color` 
 
 ## Batch export: `batchImageExporter.ts`
 
-`exportCardsAsImagesBatch(cards, { concurrency?, onProgress?, postImage? })` returns the PNG data URLs in the same order as the cards.
+`exportCardsAsImagesBatch(cards, { postImage? })` returns the PNG data URLs in the same order as the cards.
 
-The function exports 8 cards at a time by default. It calls `onProgress(done, total)` after each card. If any card fails, the function throws one error with the failure count and the first error message.
+The function exports 8 cards at a time. If any card fails, the function throws one error with the failure count and the first error message.
 
 ## PDF export: `pdfExport.ts`
 

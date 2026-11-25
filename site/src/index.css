@@ -172,6 +172,16 @@ a:focus-visible,
   }
 }
 
+/* Bottom sheet entry. The share menu and the native share prompt use it. */
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -38,9 +38,7 @@ function getVenueComparison(membersReached: number): VenueComparison | null {
 }
 
 /**
- * Format the venue comparison as a sentence.
- * @param membersReached - The number of members reached
- * @returns A string like "That's like filling Fenway Park twice", or null if the reach is too small
+ * @returns A sentence such as "That's like filling Fenway Park twice", or null if the reach is below the smallest venue.
  */
 export function formatVenueComparison(membersReached: number): string | null {
   const comparison = getVenueComparison(membersReached);

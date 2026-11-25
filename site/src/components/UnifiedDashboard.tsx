@@ -22,8 +22,8 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, onUplo
   const topPosts = data.top_posts ?? [];
 
   const wrappedCards = useMemo(
-    () => (discoveryData ? generateShareableCards(data) : []),
-    [discoveryData, data]
+    () => (data.discovery_data ? generateShareableCards(data) : []),
+    [data]
   );
 
   const earnedBadges = useMemo(() => getEarnedBadges(data), [data]);
@@ -42,7 +42,6 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, onUplo
         <WrappedStoriesContainer
           cards={wrappedCards}
           shareInfo={shareInfo}
-          autoPlayDuration={5000}
           onUploadNewData={onUploadNewData}
         />
       )}

@@ -4,11 +4,9 @@
 
 import { exportCardAsImage } from '@exports/imageExport';
 
-const DEFAULT_CONCURRENCY = 8;
+const BATCH_SIZE = 8;
 
 interface BatchExportOptions {
-  concurrency?: number;
-  onProgress?: (current: number, total: number) => void;
   // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
   postImage?: string | null;
 }
@@ -21,26 +19,18 @@ export async function exportCardsAsImagesBatch(
   cardElements: HTMLElement[],
   options: BatchExportOptions = {}
 ): Promise<string[]> {
-  const { concurrency = DEFAULT_CONCURRENCY, onProgress, postImage = null } = options;
+  const { postImage = null } = options;
 
   if (cardElements.length === 0) {
     throw new Error('No cards provided for batch export');
   }
 
   const results: PromiseSettledResult<string>[] = [];
-  let processedCount = 0;
 
-  for (let i = 0; i < cardElements.length; i += concurrency) {
-    const batch = cardElements.slice(i, i + concurrency);
+  for (let i = 0; i < cardElements.length; i += BATCH_SIZE) {
+    const batch = cardElements.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.allSettled(
-      batch.map(async (cardElement) => {
-        try {
-          return await exportCardAsImage(cardElement, { postImage });
-        } finally {
-          processedCount++;
-          onProgress?.(processedCount, cardElements.length);
-        }
-      })
+      batch.map((cardElement) => exportCardAsImage(cardElement, { postImage }))
     );
     results.push(...batchResults);
   }

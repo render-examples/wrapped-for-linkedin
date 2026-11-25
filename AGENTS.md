@@ -37,7 +37,7 @@ After you change `site/og/og-image.html`, run `npm run og` in `site/` and commit
 
 The analytics file must stay in the browser. Do not send file contents to any server.
 
-The site may send only public post URLs to the screenshot service. The service must log only status codes. Do not log post URLs, URNs, IP addresses, or headers.
+The site may send only post URNs to the screenshot service. The service must log only status codes. Do not log post URLs, URNs, IP addresses, or headers.
 
 ## Screenshot service conventions
 

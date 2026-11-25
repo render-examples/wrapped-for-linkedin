@@ -289,9 +289,9 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
             card={card}
             isActive={index === currentCardIndex}
             cardRef={cardRefs[index]}
-            allCards={cardRefs}
+            allCardRefs={cardRefs}
             shareInfo={shareInfo}
-            onPauseAutoplay={handlePauseAutoPlay}
+            onPauseAutoPlay={handlePauseAutoPlay}
             currentCardIndex={currentCardIndex}
             totalCards={totalCards}
             onJumpToCard={handleJumpToCard}

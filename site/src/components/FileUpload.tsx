@@ -56,7 +56,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
       <div className="instructions">
         <h3>Export your LinkedIn analytics</h3>
         <ol>
-          <li>Head to your <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noreferrer">LinkedIn analytics dashboard</a> ↗</li>
+          <li>Head to your <a href="https://www.linkedin.com/analytics/creator/content/?metricType=ENGAGEMENTS&timeRange=past_365_days" target="_blank" rel="noopener noreferrer">LinkedIn analytics dashboard</a> ↗</li>
           <li>Click <b>Export</b> in the top right</li>
           <li>Upload the exported file below ↓</li>
         </ol>

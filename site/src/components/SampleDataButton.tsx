@@ -19,7 +19,7 @@ export const SampleDataButton: React.FC<SampleDataButtonProps> = ({
   >
     {isLoading ? (
       <>
-        <span className="spinner"></span>
+        <span className="spinner" />
         <span>Loading demo data...</span>
       </>
     ) : (

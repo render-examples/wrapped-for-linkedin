@@ -11,30 +11,30 @@ interface StoryCardProps {
   card: ShareableCard;
   isActive: boolean;
   cardRef: React.RefObject<HTMLDivElement | null>;
-  allCards?: React.RefObject<HTMLDivElement | null>[];
+  allCardRefs: React.RefObject<HTMLDivElement | null>[];
   shareInfo: ShareInfo;
-  onPauseAutoplay?: () => void;
+  onPauseAutoPlay: () => void;
   currentCardIndex: number;
   totalCards: number;
   onJumpToCard: (index: number) => void;
-  isAutoPlaying?: boolean;
-  autoPlayDuration?: number;
-  isNavigatingBackward?: boolean;
+  isAutoPlaying: boolean;
+  autoPlayDuration: number;
+  isNavigatingBackward: boolean;
 }
 
 export const StoryCard: React.FC<StoryCardProps> = ({
   card,
   isActive,
   cardRef,
-  allCards,
+  allCardRefs,
   shareInfo,
-  onPauseAutoplay,
+  onPauseAutoPlay,
   currentCardIndex,
   totalCards,
   onJumpToCard,
-  isAutoPlaying = false,
-  autoPlayDuration = 5000,
-  isNavigatingBackward = false,
+  isAutoPlaying,
+  autoPlayDuration,
+  isNavigatingBackward,
 }) => {
   return (
     <div
@@ -83,9 +83,9 @@ export const StoryCard: React.FC<StoryCardProps> = ({
           <ShareButton
             card={card}
             cardRef={cardRef}
-            allCards={allCards}
+            allCardRefs={allCardRefs}
             shareInfo={shareInfo}
-            onPauseAutoplay={onPauseAutoplay}
+            onPauseAutoPlay={onPauseAutoPlay}
           />
         </div>
       </div>
@@ -102,24 +102,12 @@ const CardBody: React.FC<{ card: ShareableCard }> = ({ card }) => {
       return (
         <div className="summary-metrics">
           <div className="metric-row">
-            <div className="metric">
-              <div className="metric-value">{card.data.impressions}</div>
-              <div className="metric-label">Total impressions</div>
-            </div>
-            <div className="metric">
-              <div className="metric-value">{card.data.membersReached}</div>
-              <div className="metric-label">Members reached</div>
-            </div>
+            <SummaryMetric label="Total impressions" value={card.data.impressions} />
+            <SummaryMetric label="Members reached" value={card.data.membersReached} />
           </div>
           <div className="metric-row">
-            <div className="metric">
-              <div className="metric-value">{card.data.engagements}</div>
-              <div className="metric-label">Total engagements</div>
-            </div>
-            <div className="metric">
-              <div className="metric-value">{card.data.newFollowers}</div>
-              <div className="metric-label">New followers</div>
-            </div>
+            <SummaryMetric label="Total engagements" value={card.data.engagements} />
+            <SummaryMetric label="New followers" value={card.data.newFollowers} />
           </div>
         </div>
       );
@@ -176,6 +164,32 @@ const CardBody: React.FC<{ card: ShareableCard }> = ({ card }) => {
   }
 };
 
+const SummaryMetric: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
+  <div className="metric">
+    <div className="metric-value">{value}</div>
+    <div className="metric-label">{label}</div>
+  </div>
+);
+
+interface PeakMetricProps {
+  icon: string;
+  iconAlt: string;
+  label: string;
+  value: React.ReactNode;
+}
+
+const PeakMetric: React.FC<PeakMetricProps> = ({ icon, iconAlt, label, value }) => (
+  <div className="peak-metric">
+    <div className="peak-metric-icon">
+      <img src={icon} alt={iconAlt} />
+    </div>
+    <div className="peak-metric-info">
+      <div className="peak-metric-value">{value}</div>
+      <div className="peak-metric-label">{label}</div>
+    </div>
+  </div>
+);
+
 /**
  * The top post card. It shows the post metrics and the LinkedIn embed.
  * If the post is not public, it shows a trophy and a link to the post.
@@ -187,25 +201,14 @@ const TopPostBody: React.FC<{ data: CardData }> = ({ data }) => {
   return (
     <div className="peak-performer-content">
       <div className="peak-post-metrics">
-        <div className="peak-metric">
-          <div className="peak-metric-icon">
-            <img src="/images/dashboard/heart.png" alt="Heart" />
-          </div>
-          <div className="peak-metric-info">
-            <div className="peak-metric-value">{data.value}</div>
-            <div className="peak-metric-label">Engagements</div>
-          </div>
-        </div>
+        <PeakMetric icon="/images/dashboard/heart.png" iconAlt="Heart" label="Engagements" value={data.value} />
         {data.impressions && (
-          <div className="peak-metric">
-            <div className="peak-metric-icon">
-              <img src="/images/dashboard/sparkle.png" alt="Sparkle" />
-            </div>
-            <div className="peak-metric-info">
-              <div className="peak-metric-value">{data.impressions}</div>
-              <div className="peak-metric-label">Impressions</div>
-            </div>
-          </div>
+          <PeakMetric
+            icon="/images/dashboard/sparkle.png"
+            iconAlt="Sparkle"
+            label="Impressions"
+            value={data.impressions}
+          />
         )}
       </div>
 

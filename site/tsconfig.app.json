@@ -10,17 +10,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@components": ["./src/components"],
       "@components/*": ["./src/components/*"],
-      "@styles": ["./src/styles"],
       "@styles/*": ["./src/styles/*"],
       "@types": ["./src/types/index"],
-      "@utils": ["./src/utils"],
       "@utils/*": ["./src/utils/*"],
-      "@exports": ["./src/exports"],
-      "@exports/*": ["./src/exports/*"],
-      "@store": ["./src/store/index"],
-      "@store/*": ["./src/store/*"]
+      "@exports/*": ["./src/exports/*"]
     },
 
     /* Bundler mode */

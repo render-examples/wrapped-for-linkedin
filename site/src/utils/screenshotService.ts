@@ -47,7 +47,7 @@ interface PostRequest<T> {
 }
 
 /**
- * Make a request to one service path that sends one request per post for the session.
+ * Create a client for one service path. It sends at most one request per post in a session.
  * `read` turns the response into a value. If it throws, the result is null.
  */
 export function createPostRequest<T>(

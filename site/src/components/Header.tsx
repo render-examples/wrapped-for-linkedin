@@ -1,10 +1,11 @@
+import React from 'react';
 import '@styles/Header.css';
 
 interface HeaderProps {
   onLogoClick?: () => void;
 }
 
-export function Header({ onLogoClick }: HeaderProps) {
+export const Header: React.FC<HeaderProps> = ({ onLogoClick }) => {
   return (
     <header className="app-header">
       <div className="header-content">
@@ -43,4 +44,4 @@ export function Header({ onLogoClick }: HeaderProps) {
       </div>
     </header>
   );
-}
+};

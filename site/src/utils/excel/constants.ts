@@ -1,34 +1,19 @@
 /**
- * Constants for Excel parsing
- * ============================
- * Centralized configuration values to avoid magic numbers and improve maintainability.
+ * Constants for Excel parsing.
  */
 
-/**
- * Maximum rows to scan for different operations
- */
+// The maximum number of rows to scan.
 export const MAX_ROWS = {
-  /** Maximum rows to scan when looking for headers */
+  // When looking for a header row.
   HEADER_SCAN: 20,
-  /** Maximum rows to scan for labeled values in discovery sheet */
-  LABEL_SCAN: 100,
-  /** Maximum rows to process for data (posts, metrics, demographics) */
+  // When reading data rows.
   DATA: 1000,
-  /** Maximum rows for follower data */
-  FOLLOWERS: 500,
 };
 
-/**
- * Criteria for detecting when to stop scanning
- */
-export const SCAN_LIMITS = {
-  /** Number of consecutive empty rows before stopping iteration */
-  CONSECUTIVE_EMPTY_ROWS: 5,
-};
+// Stop reading data after this many empty rows in a row.
+export const CONSECUTIVE_EMPTY_ROWS = 5;
 
-/**
- * Sheet name variations that LinkedIn might use
- */
+// Sheet names that LinkedIn uses. The match is not case-sensitive.
 export const SHEET_NAMES = {
   DISCOVERY: ['DISCOVERY'],
   TOP_POSTS: ['Top posts', 'TOP POSTS'],
@@ -37,11 +22,8 @@ export const SHEET_NAMES = {
   ENGAGEMENT: ['ENGAGEMENT'],
 };
 
-/**
- * Column layouts for different sheet types
- */
 export const COLUMN_LAYOUTS = {
-  /** Top Posts sheet has two-column layout side by side */
+  // The Top posts sheet has two tables side by side: top posts by engagements and by impressions.
   TOP_POSTS: {
     ENGAGEMENTS: {
       URL: 'A',
@@ -54,59 +36,30 @@ export const COLUMN_LAYOUTS = {
       VALUE: 'G',
     },
   },
-  /** Engagement sheet has date, impressions, and engagements in adjacent columns */
   ENGAGEMENT: {
     DATE: 'A',
     IMPRESSIONS: 'B',
     ENGAGEMENTS: 'C',
   },
-  /** Demographics sheet has category, name, and percentage */
   DEMOGRAPHICS: {
     CATEGORY: 'A',
     NAME: 'B',
     PERCENTAGE: 'C',
   },
-  /** Followers sheet has date and count */
   FOLLOWERS: {
-    DATE: 'A',
     NEW_FOLLOWERS: 'B',
   },
-  /** Discovery sheet typically has labels in column A and values in column B */
-  DISCOVERY: {
-    LABEL: 'A',
-    VALUE: 'B',
-  },
 };
 
-/**
- * Keywords for finding specific data in sheets
- */
-export const KEYWORDS = {
-  HEADERS: {
-    URL: ['url'],
-    DATE: ['date'],
-    FOLLOWER: ['follower', 'followers', 'new follower'],
-    ENGAGEMENT: ['engagement'],
-    VALUE: ['value'],
-  },
-  LABELS: {
-    OVERALL_PERFORMANCE: ['overall performance'],
-    IMPRESSIONS: ['impression'],
-    MEMBERS_REACHED: ['member'],
-    ENGAGEMENTS: ['engagement'],
-    FOLLOWERS: ['follower'],
-    TOTAL_FOLLOWERS: ['total followers'],
-  },
+// Keywords that find header rows.
+export const HEADER_KEYWORDS = {
+  URL: ['url'],
+  DATE: ['date'],
 };
 
-/**
- * Minimum valid percentage value (for "< 1%" cases)
- */
+// The value for a "< 1%" percentage.
 export const MIN_PERCENTAGE = 0.0001;
 
-/**
- * Excel date offset (days between Excel epoch and Unix epoch)
- */
+// Days from the Excel epoch to the Unix epoch.
 export const EXCEL_DATE_OFFSET = 25569;
 export const MS_PER_DAY = 86400 * 1000;
-

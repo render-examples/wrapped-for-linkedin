@@ -13,24 +13,30 @@ import '@styles/ShareButton.css';
 interface ShareButtonProps {
   card: ShareableCard;
   cardRef: React.RefObject<HTMLDivElement | null>;
-  allCards?: React.RefObject<HTMLDivElement | null>[];
+  allCardRefs: React.RefObject<HTMLDivElement | null>[];
   shareInfo: ShareInfo;
-  onPauseAutoplay?: () => void;
+  onPauseAutoPlay: () => void;
 }
+
+// Keep these values the same as the menu min-width and the phone breakpoint in ShareButton.css.
+const MENU_WIDTH = 280;
+const MENU_GAP = 10;
+const PHONE_MAX_WIDTH = 480;
+
+type MenuPosition = { top: string; left: string };
 
 /**
  * Place the menu below the button and keep it in the viewport.
  * On phones, CSS shows the menu as a bottom sheet and ignores this position.
  */
-function getDropdownPosition(button: HTMLElement): { top: string; left: string } {
-  if (window.innerWidth <= 480) {
+function getDropdownPosition(button: HTMLElement): MenuPosition {
+  if (window.innerWidth <= PHONE_MAX_WIDTH) {
     return { top: '50%', left: '50%' };
   }
   const rect = button.getBoundingClientRect();
-  // The menu is 280px wide. Center it under the button, 10px below it.
-  const left = rect.left + rect.width / 2 - 140;
-  const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
-  return { top: `${rect.bottom + 10}px`, left: `${adjustedLeft}px` };
+  const centeredLeft = rect.left + rect.width / 2 - MENU_WIDTH / 2;
+  const left = Math.max(MENU_GAP, Math.min(window.innerWidth - MENU_WIDTH - MENU_GAP, centeredLeft));
+  return { top: `${rect.bottom + MENU_GAP}px`, left: `${left}px` };
 }
 
 /**
@@ -39,9 +45,9 @@ function getDropdownPosition(button: HTMLElement): { top: string; left: string }
 export const ShareButton: React.FC<ShareButtonProps> = ({
   card,
   cardRef,
-  allCards = [],
+  allCardRefs,
   shareInfo,
-  onPauseAutoplay,
+  onPauseAutoPlay,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -50,7 +56,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [exportedFile, setExportedFile] = useState<File | null>(null);
   const [shareMode, setShareMode] = useState<ShareMode>('download');
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
+  const [dropdownPosition, setDropdownPosition] = useState<MenuPosition>({ top: '0px', left: '0px' });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -80,6 +86,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     }
     setShowInstructions(true);
   }, []);
+
+  const closeInstructions = useCallback(() => setShowInstructions(false), []);
 
   const handleFallbackDownload = useCallback(() => {
     if (exportedFile) {
@@ -118,7 +126,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
    * Export all cards as one PDF.
    */
   const handlePDFExport = useCallback(async () => {
-    if (allCards.length === 0) {
+    if (allCardRefs.length === 0) {
       setError('No cards available for PDF export');
       return;
     }
@@ -130,11 +138,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 
     try {
       const getCardElements = () =>
-        allCards.map((ref) => ref.current).filter((element) => element !== null);
+        allCardRefs.map((ref) => ref.current).filter((element) => element !== null);
 
       // If a ref is still empty, wait for the card to render, then try again.
       let cardElements = getCardElements();
-      if (cardElements.length < allCards.length) {
+      if (cardElements.length < allCardRefs.length) {
         await new Promise(resolve => setTimeout(resolve, 500));
         cardElements = getCardElements();
       }
@@ -155,7 +163,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } finally {
       setIsExporting(false);
     }
-  }, [allCards, shareInfo, deliverFile]);
+  }, [allCardRefs, shareInfo, deliverFile]);
 
   const handleToggleDropdown = useCallback(() => {
     if (isExporting) {
@@ -165,10 +173,10 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       if (buttonRef.current) {
         setDropdownPosition(getDropdownPosition(buttonRef.current));
       }
-      onPauseAutoplay?.();
+      onPauseAutoPlay();
     }
     setIsDropdownOpen(prev => !prev);
-  }, [isExporting, isDropdownOpen, onPauseAutoplay]);
+  }, [isExporting, isDropdownOpen, onPauseAutoPlay]);
 
   return (
     <div className="share-button-wrapper">
@@ -254,15 +262,15 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             file={exportedFile}
             shareInfo={shareInfo}
             exportType={exportType}
-            onShared={() => setShowInstructions(false)}
+            onShared={closeInstructions}
             onFallback={handleFallbackDownload}
-            onDismiss={() => setShowInstructions(false)}
+            onDismiss={closeInstructions}
           />
         ) : (
           <DownloadInstructions
             shareInfo={shareInfo}
             exportType={exportType}
-            onDismiss={() => setShowInstructions(false)}
+            onDismiss={closeInstructions}
           />
         ),
         document.body

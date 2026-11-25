@@ -56,9 +56,9 @@ const CATEGORIES: { key: keyof DemographicInsights; title: string; icon: string 
 
 export const DemographicsView: React.FC<DemographicsViewProps> = ({ demographics }) => {
   const hasData =
-    demographics?.job_titles?.length > 0 ||
-    demographics?.locations?.length > 0 ||
-    demographics?.industries?.length > 0;
+    demographics.job_titles?.length > 0 ||
+    demographics.locations?.length > 0 ||
+    demographics.industries?.length > 0;
 
   if (!hasData) {
     return (

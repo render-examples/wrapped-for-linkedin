@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CARD_CONTROL_SELECTOR, isCardNavigationTouch } from './storyTouch';
+import { isCardNavigationTouch } from './storyTouch';
 
 const viewport = (containsTarget: boolean) => ({ contains: () => containsTarget }) as unknown as Element;
 // A fake element. closest() finds a match when the element is one of the given tags or roles.
@@ -34,8 +34,8 @@ describe('isCardNavigationTouch', () => {
     expect(isCardNavigationTouch(null, viewport(true))).toBe(false);
   });
 
-  it('lists the menu and dialog roles as controls', () => {
-    expect(CARD_CONTROL_SELECTOR).toContain('[role="menu"]');
-    expect(CARD_CONTROL_SELECTOR).toContain('[role="dialog"]');
+  it('ignores touches on the share menu and the share prompt', () => {
+    expect(isCardNavigationTouch(element(['[role="menu"]']), viewport(true))).toBe(false);
+    expect(isCardNavigationTouch(element(['[role="dialog"]']), viewport(true))).toBe(false);
   });
 });

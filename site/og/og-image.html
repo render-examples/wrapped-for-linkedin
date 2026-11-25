@@ -26,6 +26,7 @@
         font-weight: 400;
       }
 
+      /* A copy of the tokens in src/index.css. Keep the two in sync. */
       :root {
         --bg: #0d0d0d;
         --border: #303030;
@@ -35,6 +36,10 @@
         --accent: #c29eff;
         --accent-fill: #8a05ff;
         --art-surface: #1c0037;
+
+        --font-heading: 'Roobert', Arial, sans-serif;
+        --font-body: 'PP Neue Montreal', Arial, sans-serif;
+        --font-mono: 'PP Neue Montreal Mono', monospace;
       }
 
       * {
@@ -49,7 +54,7 @@
         overflow: hidden;
         background: var(--bg);
         color: var(--text);
-        font-family: 'PP Neue Montreal', Arial, sans-serif;
+        font-family: var(--font-body);
       }
 
       .frame {
@@ -63,7 +68,7 @@
       }
 
       .mono {
-        font-family: 'PP Neue Montreal Mono', monospace;
+        font-family: var(--font-mono);
         font-size: 18px;
         letter-spacing: 0.045em;
         text-transform: uppercase;
@@ -78,7 +83,7 @@
 
       h1 {
         margin-top: 28px;
-        font-family: 'Roobert', Arial, sans-serif;
+        font-family: var(--font-heading);
         font-size: 96px;
         font-weight: 600;
         line-height: 0.98;
@@ -112,7 +117,7 @@
 
       .tile-value {
         margin-top: 24px;
-        font-family: 'Roobert', Arial, sans-serif;
+        font-family: var(--font-heading);
         font-size: 104px;
         font-weight: 300;
         line-height: 1;
@@ -134,7 +139,7 @@
       }
 
       .badge-name {
-        font-family: 'Roobert', Arial, sans-serif;
+        font-family: var(--font-heading);
         font-size: 34px;
         font-weight: 600;
         letter-spacing: -0.03em;

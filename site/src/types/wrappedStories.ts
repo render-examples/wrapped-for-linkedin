@@ -3,6 +3,7 @@
  */
 
 import type { IconName } from '@components/Icon';
+import type { Badge } from '@utils/badges';
 
 type CardType =
   | 'total-impressions'
@@ -38,12 +39,7 @@ export interface AudienceSection {
   items: { name: string; percentage: number }[];
 }
 
-interface StoryBadge {
-  id: string;
-  name: string;
-  description: string;
-  icon: IconName;
-}
+type StoryBadge = Pick<Badge, 'id' | 'name' | 'description' | 'icon'>;
 
 interface CardBase {
   id: string;

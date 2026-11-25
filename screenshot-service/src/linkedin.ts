@@ -1,4 +1,4 @@
-import { chromium, type Browser } from 'playwright';
+import { chromium, type Browser, type Page } from 'playwright';
 import { embedUrlForUrn } from './urn.ts';
 import { createLimiter } from './limiter.ts';
 
@@ -79,46 +79,52 @@ function getBrowser(): Promise<Browser> {
   return browserPromise;
 }
 
+/** Open the embed page for the URN and take a screenshot of the post. */
+async function capturePost(page: Page, urn: string): Promise<ScreenshotResult> {
+  const response = await page.goto(embedUrlForUrn(urn), {
+    waitUntil: 'load',
+    timeout: NAVIGATION_TIMEOUT_MS,
+  });
+  if (!response) {
+    return { status: 'error' };
+  }
+  const status = classifyEmbedResponse(response.status(), await page.content());
+  if (status !== 'public') {
+    return { status };
+  }
+
+  const post = page.locator(POST_SELECTOR).first();
+  await post.waitFor({ state: 'visible', timeout: NAVIGATION_TIMEOUT_MS });
+  // LinkedIn loads profile and post images after the load event.
+  await page
+    .waitForLoadState('networkidle', { timeout: IMAGE_SETTLE_TIMEOUT_MS })
+    .catch(() => {});
+
+  const postBox = await post.boundingBox();
+  const actionBarBox = await post
+    .locator(ACTION_BAR_SELECTOR)
+    .first()
+    .boundingBox({ timeout: ACTION_BAR_TIMEOUT_MS })
+    .catch(() => null);
+  const clip = postBox && clipAboveActionBar(postBox, actionBarBox);
+  const image = clip
+    ? await page.screenshot({ type: 'png', clip, fullPage: true })
+    : await post.screenshot({ type: 'png' });
+  return { status: 'public', image };
+}
+
 const runWithPageLimit = createLimiter(MAX_CONCURRENT_PAGES);
 
-/** Take a screenshot of the post in the embed page. */
+/** Take a screenshot of the post in a new browser context. */
 export function takePostScreenshot(urn: string): Promise<ScreenshotResult> {
-  return runWithPageLimit(async (): Promise<ScreenshotResult> => {
+  return runWithPageLimit(async () => {
     const browser = await getBrowser();
     const context = await browser.newContext({
       viewport: { width: EMBED_WIDTH, height: VIEWPORT_HEIGHT },
       deviceScaleFactor: DEVICE_SCALE_FACTOR,
     });
     try {
-      const page = await context.newPage();
-      const response = await page.goto(embedUrlForUrn(urn), {
-        waitUntil: 'load',
-        timeout: NAVIGATION_TIMEOUT_MS,
-      });
-      if (!response) {
-        return { status: 'error' };
-      }
-      const status = classifyEmbedResponse(response.status(), await page.content());
-      if (status !== 'public') {
-        return { status };
-      }
-      const post = page.locator(POST_SELECTOR).first();
-      await post.waitFor({ state: 'visible', timeout: NAVIGATION_TIMEOUT_MS });
-      // LinkedIn loads profile and post images after the load event.
-      await page
-        .waitForLoadState('networkidle', { timeout: IMAGE_SETTLE_TIMEOUT_MS })
-        .catch(() => {});
-      const postBox = await post.boundingBox();
-      const actionBarBox = await post
-        .locator(ACTION_BAR_SELECTOR)
-        .first()
-        .boundingBox({ timeout: ACTION_BAR_TIMEOUT_MS })
-        .catch(() => null);
-      const clip = postBox && clipAboveActionBar(postBox, actionBarBox);
-      const image = clip
-        ? await page.screenshot({ type: 'png', clip, fullPage: true })
-        : await post.screenshot({ type: 'png' });
-      return { status: 'public', image };
+      return await capturePost(await context.newPage(), urn);
     } catch {
       return { status: 'error' };
     } finally {

@@ -4,7 +4,7 @@
 
 Wrapped for LinkedIn turns your LinkedIn analytics export into a year-in-review story, inspired by Spotify Wrapped. It shows your top posts, who saw your posts, and the badges you earned this year.
 
-The app parses your analytics file in your browser, and the file never leaves your device. To add post screenshots to exported images, the app sends the URLs of your top posts to a screenshot service. The service accepts only public posts and does not log the URLs. The app runs on [Render](https://render.com/).
+All of your analytics data stays in your browser. The app runs on [Render](https://render.com/). See [Architecture](#architecture) for what the backend does.
 
 Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [Venkata Naga Sai Kumar Bysani](https://www.linkedin.com/in/saibysani18/).
 
@@ -21,7 +21,7 @@ Created by [Shifra Williams](https://www.linkedin.com/in/shifra-williams/) and [
 - **Audience demographics**: See who saw your posts by job title, location, industry, seniority, company size, and company.
 - **Story navigation**: Swipe through cards like Instagram stories. Cards autoplay, and you can press and hold to pause.
 - **Demo data**: Try the app with sample data before you upload your own file.
-- **Local caching**: The app caches your data in your browser, so it loads again when you return.
+- **Local caching**: The app caches your data in your browser, so it loads again when you reload the page. A new tab starts empty.
 
 ## Get your Wrapped for LinkedIn
 
@@ -59,6 +59,28 @@ npm test --prefix site
 npm test --prefix screenshot-service
 ```
 
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Browser
+        File[LinkedIn analytics file] --> Site[React app]
+        Site --> Cards[PNG and PDF exports]
+    end
+    Site -- "Public post URLs only" --> Service[Screenshot service]
+    Service -- "Post screenshot" --> Site
+    Service --> LinkedIn[LinkedIn post embed]
+```
+
+All of your analytics data stays in your browser. The React app parses the file, builds the cards, and renders the PNG and PDF exports on your device. The file and its contents are never sent to a server.
+
+The screenshot service is the only backend. It gets the URLs of your public top posts and does two things:
+
+- It checks whether each top post is public, so the app shows an embed only for posts that other people can see.
+- It takes a screenshot of the Peak Performer post for card exports. The browser can't capture a LinkedIn embed, because the embed comes from another site.
+
+The service logs only status codes. It does not log post URLs, IP addresses, or headers.
+
 ## Project structure
 
 | Path | Contents |
@@ -72,7 +94,7 @@ npm test --prefix screenshot-service
 
 Click **Deploy to Render** at the top of this README. The Blueprint creates two services:
 
-- `wrapped-for-linkedin` is a static site.
+- `wrappedforlinkedin` is a static site.
 - `wrapped-for-linkedin-screenshots` is a Docker web service. It uses the Standard plan because Chromium needs about 1 GB of memory.
 
 If you deploy under different service names, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGIN` in `render.yaml` to match the new URLs.

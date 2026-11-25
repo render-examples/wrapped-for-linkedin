@@ -25,9 +25,9 @@ export interface Badge {
 }
 
 /**
- * Count the posts with at least the Thought leader engagement count.
- * The export lists only the top 50 posts by engagement. Posts that are only in the
- * impressions list have 0 engagements here, so the count can be low only when it is already 50.
+ * Count the posts with at least THOUGHT_LEADER_ENGAGEMENTS engagements.
+ * The export lists only the top 50 posts by engagement, and posts that are only in the
+ * impressions list have 0 engagements here. So the count is exact below 50.
  */
 function countEngagedPosts(data: ParsedExcelData): number {
   return (data.top_posts ?? []).filter(

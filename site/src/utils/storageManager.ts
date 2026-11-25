@@ -1,21 +1,15 @@
+/**
+ * Keep the parsed data in localStorage.
+ */
+
 import type { ParsedExcelData } from '@utils/excel/types';
 
-export interface CachedData {
+interface CachedData {
   data: ParsedExcelData;
   uploadDate: number;
 }
 
 const CACHE_KEY = 'wrapped-for-linkedin-cache';
-
-const getCachedItem = (): CachedData | null => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    return cached ? (JSON.parse(cached) as CachedData) : null;
-  } catch (error) {
-    console.error('Failed to load cache:', error);
-    return null;
-  }
-};
 
 export const storageManager = {
   save: (data: ParsedExcelData): void => {
@@ -26,7 +20,15 @@ export const storageManager = {
     }
   },
 
-  load: (): CachedData | null => getCachedItem(),
+  load: (): CachedData | null => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      return cached ? (JSON.parse(cached) as CachedData) : null;
+    } catch (error) {
+      console.error('Failed to load cache:', error);
+      return null;
+    }
+  },
 
   clear: (): void => {
     try {
@@ -35,6 +37,4 @@ export const storageManager = {
       console.error('Failed to clear cache:', error);
     }
   },
-
-  exists: (): boolean => getCachedItem() !== null,
 };

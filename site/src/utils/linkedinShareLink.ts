@@ -2,21 +2,17 @@
  * Build LinkedIn share links with prefilled post text.
  */
 
+import type { ShareInfo } from '@/types/wrappedStories';
+
 const APP_URL = 'https://wrappedforlinkedin.onrender.com/';
 
-interface ShareTextInput {
-  impressions?: string | number;
-  membersReached?: string | number;
-  year: number;
-  /** The share sentence of the user's top badge, if they earned one. */
-  topBadgeSentence?: string;
-}
+type ShareTextInput = Pick<ShareInfo, 'impressions' | 'membersReached' | 'year' | 'topBadgeSentence'>;
 
 /**
  * Build the prefilled post text. If the user has a badge, the text starts with the badge sentence.
  */
 export function buildShareText({ impressions, membersReached, year, topBadgeSentence }: ShareTextInput): string {
-  const hashtags = `#WrappedForLinkedIn #${year}Recap`;
+  const hashtags = `#WrappedForLinkedIn #${year}Recap #Render`;
 
   if (topBadgeSentence) {
     return `${topBadgeSentence}\n\nGet your Wrapped for LinkedIn ${year}: ${APP_URL}\n\n${hashtags}`;

@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { describe, expect, it } from 'vitest';
-import { processExcelFile } from '@utils/excel';
+import { processExcelFile } from '@utils/excel/excelProcessor';
 import { BADGES, getEarnedBadges } from '@utils/badges';
 
 describe('fixtures/all-badges.xlsx', () => {

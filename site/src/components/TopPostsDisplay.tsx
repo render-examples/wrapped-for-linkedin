@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import type { TopPost } from '@types';
 import { Icon } from '@components/Icon';
 import { formatDateString } from '@utils/formatters';
@@ -23,15 +23,6 @@ function formatCount(num: number): string {
 }
 
 export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
-  const displayedPosts = useMemo(
-    () =>
-      posts.slice(0, MAX_DISPLAYED_POSTS).map((post) => ({
-        ...post,
-        embedUrl: getLinkedInEmbedUrl(post.url),
-      })),
-    [posts]
-  );
-
   if (posts.length === 0) {
     return null;
   }
@@ -62,7 +53,7 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
       </details>
 
       <div className="posts-container">
-        {displayedPosts.map((post) => {
+        {posts.slice(0, MAX_DISPLAYED_POSTS).map((post) => {
           const handlePostClick = () => {
             window.open(post.url, '_blank');
           };
@@ -76,30 +67,14 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
 
               <div className="post-content">
                 <div className="post-embed-wrapper">
-                  <PostEmbed url={post.url} embedUrl={post.embedUrl} rank={post.rank} />
+                  <PostEmbed url={post.url} rank={post.rank} />
                 </div>
               </div>
 
               <div className="top-post-stats">
-                <div className="top-post-stat-box">
-                  <div className="top-post-stat-icon">
-                    <img src="/images/dashboard/heart.png" alt="Engagements" />
-                  </div>
-                  <div className="top-post-stat-info">
-                    <div className="top-post-stat-value">{formatCount(post.engagements)}</div>
-                    <div className="top-post-stat-label">Engagements</div>
-                  </div>
-                </div>
+                <PostStat icon="/images/dashboard/heart.png" label="Engagements" value={post.engagements} />
                 {post.impressions && post.impressions > 0 && (
-                  <div className="top-post-stat-box">
-                    <div className="top-post-stat-icon">
-                      <img src="/images/dashboard/sparkle.png" alt="Impressions" />
-                    </div>
-                    <div className="top-post-stat-info">
-                      <div className="top-post-stat-value">{formatCount(post.impressions)}</div>
-                      <div className="top-post-stat-label">Impressions</div>
-                    </div>
-                  </div>
+                  <PostStat icon="/images/dashboard/sparkle.png" label="Impressions" value={post.impressions} />
                 )}
               </div>
             </div>
@@ -110,9 +85,26 @@ export const TopPostsDisplay: React.FC<TopPostsDisplayProps> = ({ posts }) => {
   );
 };
 
+interface PostStatProps {
+  icon: string;
+  label: string;
+  value: number;
+}
+
+const PostStat: React.FC<PostStatProps> = ({ icon, label, value }) => (
+  <div className="top-post-stat-box">
+    <div className="top-post-stat-icon">
+      <img src={icon} alt={label} />
+    </div>
+    <div className="top-post-stat-info">
+      <div className="top-post-stat-value">{formatCount(value)}</div>
+      <div className="top-post-stat-label">{label}</div>
+    </div>
+  </div>
+);
+
 interface PostEmbedProps {
   url: string;
-  embedUrl: string | null;
   rank: number;
 }
 
@@ -120,7 +112,8 @@ interface PostEmbedProps {
  * Show the LinkedIn embed for a public post. For a post that is not public,
  * show a trophy and a link to the post. If the check fails, keep the embed.
  */
-const PostEmbed: React.FC<PostEmbedProps> = ({ url, embedUrl, rank }) => {
+const PostEmbed: React.FC<PostEmbedProps> = ({ url, rank }) => {
+  const embedUrl = getLinkedInEmbedUrl(url);
   const isPublic = usePostStatus(embedUrl ? url : undefined);
 
   if (embedUrl && isPublic !== false) {

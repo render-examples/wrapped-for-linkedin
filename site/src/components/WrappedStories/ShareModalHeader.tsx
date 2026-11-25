@@ -5,7 +5,7 @@ import '@styles/WrappedStories.css';
 interface ShareModalHeaderProps {
   title: string;
   closeLabel: string;
-  onDismiss?: () => void;
+  onDismiss: () => void;
 }
 
 /**

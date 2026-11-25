@@ -15,7 +15,7 @@ describe('generateLinkedInShareUrl', () => {
     expect(textOf(url)).toBe(
       'I hit a million impressions on LinkedIn this year. Did you?\n\n' +
         'Get your Wrapped for LinkedIn 2026: https://wrappedforlinkedin.onrender.com/\n\n' +
-        '#WrappedForLinkedIn #2026Recap'
+        '#WrappedForLinkedIn #2026Recap #Render'
     );
   });
 
@@ -25,7 +25,7 @@ describe('generateLinkedInShareUrl', () => {
       '🎁 Just got my Wrapped for LinkedIn 2026!\n\n' +
         'This year: 50K impressions, 20K people reached, and countless connections that mattered.\n\n' +
         "What's your LinkedIn story? Get yours here: https://wrappedforlinkedin.onrender.com/\n\n" +
-        '#WrappedForLinkedIn #2026Recap'
+        '#WrappedForLinkedIn #2026Recap #Render'
     );
   });
 });
