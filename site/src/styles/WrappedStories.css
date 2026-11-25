@@ -448,35 +448,40 @@
 .story-badges {
   display: flex;
   flex-direction: column;
-  gap: 5cqw;
+  gap: 4cqw;
 }
 
 .story-badge-list {
   display: flex;
   flex-direction: column;
-  gap: 3cqw;
+  gap: 2.5cqw;
 }
 
 .story-badge {
   display: flex;
   align-items: center;
-  gap: 4cqw;
+  gap: 3.5cqw;
 }
 
 .story-badge-art {
-  width: 11cqw;
+  width: 8cqw;
   flex-shrink: 0;
 }
 
 .story-badge-text {
   display: flex;
   flex-direction: column;
-  gap: 1cqw;
+  gap: 0.8cqw;
+}
+
+/* Smaller than the shared label size, so five badges fit on the card. */
+.story-badge-rule {
+  font-size: 2.3cqw;
 }
 
 .story-badge-name {
   font-family: var(--font-heading);
-  font-size: 6cqw;
+  font-size: 4.8cqw;
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.03em;

@@ -3,7 +3,6 @@ import {
   Briefcase,
   CalendarBlank,
   Confetti,
-  Diamond,
   Fire,
   Handshake,
   IconBase,
@@ -42,13 +41,53 @@ const ThoughtBubble: PhosphorIcon = React.forwardRef((props, ref) => (
 ));
 ThoughtBubble.displayName = 'ThoughtBubble';
 
+// Phosphor has no cut gem, so this draws one on the Phosphor 256 by 256 grid.
+// The facets are the icon color at different opacities, and the outline and facet edges are solid lines.
+const GEM_FACETS: [points: string, opacity: number][] = [
+  ['20,100 68,40 88,100', 0.7],
+  ['68,40 128,40 88,100', 0.45],
+  ['128,40 168,100 88,100', 0.7],
+  ['128,40 188,40 168,100', 0.45],
+  ['188,40 236,100 168,100', 0.7],
+  ['20,100 88,100 128,220', 0.2],
+  ['88,100 168,100 128,220', 0.45],
+  ['168,100 236,100 128,220', 0.2],
+];
+const GEM_EDGES =
+  'M 68 40 L 188 40 L 236 100 L 128 220 L 20 100 Z M 20 100 L 236 100 ' +
+  'M 68 40 L 88 100 L 128 220 L 168 100 L 188 40 M 88 100 L 128 40 L 168 100';
+
+const GEM_WEIGHTS = new Map<IconWeight, React.ReactElement>([
+  [
+    'fill',
+    <>
+      {GEM_FACETS.map(([points, opacity]) => (
+        <polygon key={points} points={points} fillOpacity={opacity} />
+      ))}
+      <path
+        d={GEM_EDGES}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="14"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </>,
+  ],
+]);
+
+const Gem: PhosphorIcon = React.forwardRef((props, ref) => (
+  <IconBase ref={ref} {...props} weights={GEM_WEIGHTS} />
+));
+Gem.displayName = 'Gem';
+
 // Data files keep icon names as strings. This map turns a name into an icon.
 const ICONS = {
   briefcase: Briefcase,
   calendar: CalendarBlank,
   confetti: Confetti,
-  diamond: Diamond,
   fire: Fire,
+  gem: Gem,
   handshake: Handshake,
   pin: PushPin,
   rocket: RocketLaunch,

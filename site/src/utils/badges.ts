@@ -56,7 +56,7 @@ export const BADGES: Badge[] = [
     description: '1M+ total impressions',
     shareSentence:
       'I hit a million impressions on LinkedIn this year. Did you?',
-    icon: 'diamond',
+    icon: 'gem',
     isEarned: (data) =>
       (data.discovery_data?.total_impressions ?? 0) >= MILLIONAIRE_IMPRESSIONS,
   },
