@@ -72,10 +72,12 @@ function App() {
       isFromCache: fromCache ?? false,
       error: null,
     });
+    window.scrollTo(0, 0);
   };
 
   const resetState = () => {
     setState(INITIAL_STATE);
+    window.scrollTo(0, 0);
   };
 
   const handleClearCache = () => {
