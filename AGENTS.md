@@ -15,11 +15,11 @@ The root `package.json` is not used for development. Run npm commands in `site/`
 Run these before you commit:
 
 ```bash
-cd site && npm run lint && npm test && npm run build
+cd site && npx prettier --check . && npm run lint && npm test && npm run build
 cd screenshot-service && npm test
 ```
 
-Start the site with `bin/preview.sh`. Start the screenshot service with `ALLOWED_ORIGIN=http://localhost:5173 npm start` in `screenshot-service/`.
+Start the site with `bin/preview.sh`. Start the screenshot service with `ALLOWED_ORIGINS=http://localhost:5173 npm start` in `screenshot-service/`.
 
 After you change `site/og/og-image.html`, run `npm run og` in `site/` and commit the new `site/public/images/og-image.png`.
 
@@ -45,7 +45,7 @@ The site may send only post URNs to the screenshot service. The service must log
 - Node cannot run TypeScript syntax that generates code, such as `enum`, `namespace`, and constructor parameter properties. `erasableSyntaxOnly` in `tsconfig.json` rejects them. Import local files with the `.ts` extension.
 - `src/app.ts` builds the Express app with injected dependencies, so tests run without Chromium. Keep Playwright calls in `src/linkedin.ts`.
 - Keep the Playwright version in `package.json` the same as the image tag in `Dockerfile`.
-- If you change a service URL, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGIN` in `render.yaml`.
+- If you change a service URL, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGINS` in `render.yaml`.
 
 ## Writing
 

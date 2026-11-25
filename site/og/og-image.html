@@ -22,11 +22,12 @@
       }
       @font-face {
         font-family: 'PP Neue Montreal Mono';
-        src: url('../public/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2') format('woff2');
+        src: url('../public/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2')
+          format('woff2');
         font-weight: 400;
       }
 
-      /* A copy of the tokens in src/index.css. Keep the two in sync. */
+      /* A copy of the tokens in src/index.css. og/ogTokens.test.ts checks that they match. */
       :root {
         --bg: #0d0d0d;
         --border: #303030;
@@ -169,10 +170,28 @@
           <svg class="badge-art" viewBox="0 0 100 120" fill="currentColor" aria-hidden="true">
             <path d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z" />
             <path d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z" />
-            <path d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z" fill="#fff" fill-opacity="0.45" />
-            <path d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z" fill="#fff" fill-opacity="0.45" />
-            <path d="M 50.00 6.00 A 8.15 8.15 0 0 1 64.54 8.89 A 8.15 8.15 0 0 1 76.87 17.13 A 8.15 8.15 0 0 1 85.11 29.46 A 8.15 8.15 0 0 1 88.00 44.00 A 8.15 8.15 0 0 1 85.11 58.54 A 8.15 8.15 0 0 1 76.87 70.87 A 8.15 8.15 0 0 1 64.54 79.11 A 8.15 8.15 0 0 1 50.00 82.00 A 8.15 8.15 0 0 1 35.46 79.11 A 8.15 8.15 0 0 1 23.13 70.87 A 8.15 8.15 0 0 1 14.89 58.54 A 8.15 8.15 0 0 1 12.00 44.00 A 8.15 8.15 0 0 1 14.89 29.46 A 8.15 8.15 0 0 1 23.13 17.13 A 8.15 8.15 0 0 1 35.46 8.89 A 8.15 8.15 0 0 1 50.00 6.00 Z" />
-            <circle cx="50" cy="44" r="29" fill="none" stroke="#fff" stroke-opacity="0.4" stroke-width="1.5" />
+            <path
+              d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z"
+              fill="#fff"
+              fill-opacity="0.45"
+            />
+            <path
+              d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z"
+              fill="#fff"
+              fill-opacity="0.45"
+            />
+            <path
+              d="M 50.00 6.00 A 8.15 8.15 0 0 1 64.54 8.89 A 8.15 8.15 0 0 1 76.87 17.13 A 8.15 8.15 0 0 1 85.11 29.46 A 8.15 8.15 0 0 1 88.00 44.00 A 8.15 8.15 0 0 1 85.11 58.54 A 8.15 8.15 0 0 1 76.87 70.87 A 8.15 8.15 0 0 1 64.54 79.11 A 8.15 8.15 0 0 1 50.00 82.00 A 8.15 8.15 0 0 1 35.46 79.11 A 8.15 8.15 0 0 1 23.13 70.87 A 8.15 8.15 0 0 1 14.89 58.54 A 8.15 8.15 0 0 1 12.00 44.00 A 8.15 8.15 0 0 1 14.89 29.46 A 8.15 8.15 0 0 1 23.13 17.13 A 8.15 8.15 0 0 1 35.46 8.89 A 8.15 8.15 0 0 1 50.00 6.00 Z"
+            />
+            <circle
+              cx="50"
+              cy="44"
+              r="29"
+              fill="none"
+              stroke="#fff"
+              stroke-opacity="0.4"
+              stroke-width="1.5"
+            />
             <!-- Gem icon from Icon.tsx, fill weight, centered on the seal. -->
             <svg x="32" y="26" width="36" height="36" viewBox="0 0 256 256" fill="#fff">
               <polygon points="20,100 68,40 88,100" fill-opacity="0.7" />
@@ -183,7 +202,14 @@
               <polygon points="20,100 88,100 128,220" fill-opacity="0.2" />
               <polygon points="88,100 168,100 128,220" fill-opacity="0.45" />
               <polygon points="168,100 236,100 128,220" fill-opacity="0.2" />
-              <path d="M 68 40 L 188 40 L 236 100 L 128 220 L 20 100 Z M 20 100 L 236 100 M 68 40 L 88 100 L 128 220 L 168 100 L 188 40 M 88 100 L 128 40 L 168 100" fill="none" stroke="#fff" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" />
+              <path
+                d="M 68 40 L 188 40 L 236 100 L 128 220 L 20 100 Z M 20 100 L 236 100 M 68 40 L 88 100 L 128 220 L 168 100 L 188 40 M 88 100 L 128 40 L 168 100"
+                fill="none"
+                stroke="#fff"
+                stroke-width="14"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
             </svg>
           </svg>
           <div>
