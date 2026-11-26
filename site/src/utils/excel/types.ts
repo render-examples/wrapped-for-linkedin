@@ -1,8 +1,14 @@
 /**
- * Excel-specific types and interfaces for parsing LinkedIn analytics data
+ * Types for the parsed LinkedIn analytics export.
  */
 
-import type { TopPost } from '@types';
+export interface TopPost {
+  rank: number;
+  url: string;
+  publish_date: string;
+  engagements: number;
+  impressions?: number;
+}
 
 export interface DiscoveryData {
   start_date: string;
@@ -10,7 +16,8 @@ export interface DiscoveryData {
   total_impressions: number;
   members_reached: number;
   total_engagements?: number;
-  average_impressions_per_day?: number;
+  // The median of the daily impressions on the ENGAGEMENT sheet.
+  median_daily_impressions?: number;
   new_followers?: number;
 }
 

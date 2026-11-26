@@ -1,41 +1,49 @@
 # Wrapped for LinkedIn
 
-This is the frontend application for Wrapped for LinkedIn, built with React, TypeScript, and Vite.
+This is the frontend app for Wrapped for LinkedIn. It uses React, TypeScript, and Vite.
 
-The app is powered by and deployed on [Render](https://render.com/).
+The app runs on [Render](https://render.com/).
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js 20.19+ or 22.12+ or 23.x+ (with npm)
+- Node.js 22.18 or later, with npm
 
 ### Development
 
+From the repository root, run:
+
 ```bash
+npm install --prefix site
 bin/preview.sh
 ```
 
-Open your browser to `http://localhost:5173`
+Open `http://localhost:5173`.
 
-### Production Build
+### Checks and Production Build
+
+Run these commands in `site/`:
 
 ```bash
-cd site
+npm run lint
+npm test
 npm run build
 npm run preview
-npm run lint
 ```
+
+`npm run preview` serves the production build from `dist/`.
 
 ## Tech Stack
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **XLSX** - Excel file parsing
-- **html2canvas & jsPDF** - Export functionality
-- **Render** - Deployment
+- **React 19**: UI framework
+- **TypeScript**: Type checking
+- **Vite**: Build tool and dev server
+- **Vitest**: Tests
+- **SheetJS (xlsx)**: Excel file parsing
+- **html-to-image and jsPDF**: PNG and PDF export
+- **Render**: Hosting
 
 ## Live App
 
-Visit [wrappedforlinkedin.onrender.com/](https://wrappedforlinkedin.onrender.com/)
+Visit [wrappedforlinkedin.onrender.com](https://wrappedforlinkedin.onrender.com/).

@@ -1,18 +1,37 @@
 @import '@styles/fonts.css';
 
+/* Design tokens. Values come from the Render Wrapped dark theme. */
 :root {
-  /* Typography */
-  --font-title: 'PP Neue Montreal', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Roobert', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'PP Neue Montreal Mono', 'Monaco', 'Courier New', monospace;
+  --bg: #0d0d0d;
+  --bg-secondary: #141414;
+  --border: #303030;
+  --text: #fff;
+  --text-secondary: #c7c7c7;
+  --text-faint: #b3b3b3;
+  --accent: #c29eff;
+  --accent-fill: #8a05ff;
+  --art-surface: #1c0037;
+  --error: #f4b3b7;
+  /* Dark backdrop behind modals and menus. */
+  --scrim: rgba(0, 0, 0, 0.7);
 
+  /* Story card accents, from the Render palette. */
+  --accent-purple: var(--accent);
+  --accent-blue: #7aa7ff;
+  --accent-green: #5cffb8;
+  --accent-yellow: #ffe17a;
+  --accent-pink: #ff9ee8;
+
+  --font-heading: 'Roobert', Arial, sans-serif;
+  --font-body: 'PP Neue Montreal', Arial, sans-serif;
+  --font-mono: 'PP Neue Montreal Mono', monospace;
+
+  color-scheme: dark;
   font-family: var(--font-body);
-  line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light;
-  color: #2D2D2D;
-  background-color: #F5F5F5;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,12 +39,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+*,
+*::before,
+*::after {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   min-width: 320px;
   min-height: 100vh;
-  background-color: #F5F5F5;
-  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
 }
 
 #root {
@@ -33,33 +59,137 @@ body {
   height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-title);
-  font-weight: 700;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
 }
 
 button {
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #0A66C2;
-  color: white;
   cursor: pointer;
-  transition: all 0.25s;
+  background: none;
+  border: none;
 }
 
-button:hover {
-  background-color: #004182;
+button:disabled {
+  cursor: default;
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+button:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* Small uppercase mono label. Section eyebrows use the same style. */
+.mono-label,
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Buttons, from Render Wrapped. */
+.button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 12px 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.button.primary {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.button.primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--accent-fill);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.9, 0.1, 0.1, 0.9);
+}
+
+@media (hover: hover) {
+  .button.primary:hover:not(:disabled) {
+    color: var(--text);
+  }
+
+  .button.primary:hover:not(:disabled)::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+.button.secondary {
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+@media (hover: hover) {
+  .button.secondary:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+.button:disabled {
+  opacity: 0.5;
+}
+
+/* Spinner rotation. Spinners set their own duration. */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Bottom sheet entry. The share menu and the native share prompt use it. */
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

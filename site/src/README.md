@@ -1,329 +1,244 @@
-# Wrapped for LinkedIn architecture
+# Wrapped for LinkedIn Architecture
 
-This document describes how the Wrapped for LinkedIn application is structured and how data flows through the system. The entire application runs client-side in the browser with no backend required.
+This document describes how the site is structured and how data moves through it. The site parses the analytics file in the browser, and the file never leaves the browser. A separate screenshot service in `screenshot-service/` checks whether a top post is public and takes screenshots of public posts for exported cards. The site sends it only post URNs.
 
-The app is powered by and deployed on [Render](https://render.com/).
+The site uses React 19, TypeScript, and Vite. It runs on [Render](https://render.com/).
 
-**Tech Stack:** React 18 + TypeScript + Vite
+## Contents
 
-## 📋 Table of contents
+- [Overview](#overview)
+- [Directory Structure](#directory-structure)
+- [Data Flow](#data-flow)
+- [Components](#components)
+- [Excel Parsing](#excel-parsing)
+- [State](#state)
+- [Utilities](#utilities)
+- [Styles](#styles)
+- [Deployment](#deployment)
 
-- [Architecture overview](#architecture-overview)
-- [Directory structure](#directory-structure)
-- [Data flow](#data-flow)
-- [Key components](#key-components)
-- [Data processing pipeline](#data-processing-pipeline)
-- [State management](#state-management)
-- [Utilities & helpers](#utilities--helpers)
-- [Types & interfaces](#types--interfaces)
-- [Styling](#styling)
-- [Development guide](#development-guide)
+## Overview
 
-## 🏗️ Architecture overview
+- All data stays in the browser. There is no backend for analytics data.
+- React components show the data. Parsers in `utils/excel/` read the file. Code in `exports/` makes PNG and PDF files.
+- The site uses strict TypeScript.
+- The story cards work like Instagram stories. They autoplay, pause when you press and hold, and change when you tap or swipe.
 
-The application follows a **component-driven architecture** with:
-- **Separation of concerns**: UI components, data processing, state management
-- **Type safety**: Full TypeScript with strict mode
-- **Client-side only**: All data stays in the user's browser
-- **Responsive design**: Mobile-friendly with CSS media queries
-- **Instagram-inspired UX**: Autoplay carousel with pause, swipe navigation, and keyboard controls
-- **Render deployment**: Hosted on [Render](https://render.com/) for reliable, fast global delivery
-
-## 📁 Directory structure
+## Directory Structure
 
 ```
 src/
 ├── components/          # React UI components
-│   ├── WrappedStories/  # Shareable story cards (Instagram Stories-style)
-│   ├── Header.tsx       # App header with navigation
-│   ├── FileUpload.tsx   # File input interface
-│   ├── UnifiedDashboard.tsx  # Main dashboard container
-│   ├── SpotifyDashboard.tsx  # Summary metrics display
-│   ├── TopPostsDisplay.tsx   # Top posts analytics
+│   ├── WrappedStories/  # Story cards and sharing
+│   │   ├── WrappedStoriesContainer.tsx # Carousel with autoplay and navigation
+│   │   ├── StoryCard.tsx           # One story card
+│   │   ├── StoryProgress.tsx       # Progress bars
+│   │   ├── ShareButton.tsx         # Export and share menu
+│   │   ├── NativeSharePrompt.tsx   # Phone share prompt
+│   │   ├── DownloadInstructions.tsx # Desktop share steps
+│   │   ├── ShareModal.tsx          # Native dialog used by the two share modals
+│   │   ├── ShareModalHeader.tsx    # Header shared by the two share modals
+│   │   └── menuPosition.ts         # Share menu position on desktop
+│   ├── Header.tsx            # App header
+│   ├── FileUpload.tsx        # File drop zone and upload steps
+│   ├── UnifiedDashboard.tsx  # Dashboard container
+│   ├── YearSummary.tsx       # Summary metrics
+│   ├── BadgesSection.tsx     # Earned badges
+│   ├── BadgeEmblem.tsx       # One badge emblem
+│   ├── TopPostsDisplay.tsx   # Top posts
+│   ├── PostEmbed.tsx         # LinkedIn post embed, or a link when the post has no embed
 │   ├── DemographicsView.tsx  # Audience demographics
-│   ├── FinalMessage.tsx      # End of wrapped message
-│   ├── SampleDataButton.tsx  # Demo data loader
-│   ├── Loading.tsx      # Loading state
-│   └── Error.tsx        # Error display
-├── hooks/               # Custom React hooks
-│   ├── useCache.ts      # Browser cache management
-│   └── useSampleData.ts # Demo data functionality
-├── styles/              # CSS module files
-│   ├── App.css
-│   ├── Components*.css  # Component-specific styles
-│   └── WrappedStories.css
-├── types/               # TypeScript type definitions
-│   ├── index.ts         # Main types
-│   └── wrappedStories.ts # Card generation types
+│   ├── FinalMessage.tsx      # Closing message
+│   ├── SampleDataButton.tsx  # Demo data button
+│   ├── Icon.tsx              # SVG icon set
+│   └── ErrorDisplay.tsx      # Error display
+├── exports/             # PNG and PDF export (see exports/README.md)
+│   ├── imageExport.ts   # Export one card as PNG
+│   ├── batchImageExporter.ts # Export many cards
+│   ├── pdfExport.ts     # Export cards as PDF
+│   ├── imageCache.ts    # Cache for exported images
+│   └── postScreenshot.ts # Get post screenshots from the screenshot service
+├── hooks/               # React hooks
+│   ├── useCache.ts      # Load, save, and clear cached data
+│   ├── useShortcutKeys.ts # Window key shortcuts that skip modals, menus, and text fields
+│   ├── useStoryNavigation.ts # Current story card and moves between cards
+│   ├── usePostStatus.ts # Check whether a post is public
+│   └── useSampleData.ts # Load the demo file
+├── styles/              # Component styles
+├── types/               # TypeScript types
+│   ├── index.ts         # Shared types
+│   └── wrappedStories.ts # Story card types
 ├── utils/               # Helper functions
-│   ├── excel/           # Excel file parsing
-│   │   ├── excelProcessor.ts     # Main orchestrator
-│   │   ├── discoveryParser.ts    # Parse summary metrics
-│   │   ├── topPostsParser.ts     # Parse top posts
-│   │   ├── demographicsParser.ts # Parse audience data
-│   │   ├── followersParser.ts    # Parse follower counts
-│   │   ├── engagementParser.ts   # Parse engagement metrics
-│   │   └── types.ts              # Parser types
-│   ├── api.ts           # Mock API helpers
-│   ├── cardDataMapper.ts # Map data for story cards
-│   ├── dateFormatter.ts # Date formatting helpers
-│   ├── imageExport.ts   # Export cards as images
-│   ├── linkedinShareLink.ts # Generate LinkedIn share URLs
-│   ├── pdfExport.ts     # Export dashboard as PDF
-│   ├── profileExtractor.ts # Extract profile info
-│   ├── shareTextTemplates.ts # Share message templates
-│   └── storageManager.ts # Local storage wrapper
+│   ├── excel/           # Excel parsing, one parser per sheet
+│   ├── badges.ts        # Badge rules
+│   ├── bestMonthCalculator.ts # Find the best month
+│   ├── cardDataMapper.ts # Map parsed data to story cards
+│   ├── formatters.ts    # Number and date formatting
+│   ├── linkedinEmbed.ts # Build LinkedIn embed URLs
+│   ├── linkedinShareLink.ts # Build LinkedIn share URLs
+│   ├── postStatus.ts    # Ask the screenshot service if a post is public
+│   ├── screenshotService.ts # Client for the screenshot service
+│   ├── storageManager.ts # localStorage wrapper
+│   ├── storyTouch.ts    # Decide which taps change the story card
+│   ├── venueComparison.ts # Compare reach to venue sizes
+│   └── webShare.ts      # Share files through the system share sheet, or download them
 ├── App.tsx              # Root component
 ├── main.tsx             # Entry point
-├── index.css            # Global styles
+├── index.css            # Global styles and design tokens
+├── App.css              # Page layout and footer styles
 └── README.md            # This file
 ```
 
-## 🔄 Data flow
+## Data Flow
 
-### 1. **File upload flow**
+### File Upload
 
 ```
-User selects Excel file
+User drops or selects an .xlsx file
         ↓
-FileUpload component triggers
+FileUpload calls processExcelFile(file)
         ↓
-excelProcessor.processFile()
+SheetJS reads the workbook
         ↓
-XLSX library reads file
+One parser per sheet
+├── parseDiscovery → Date range, impressions, members reached
+├── parseFollowers → New followers
+├── parseTopPosts → Top posts
+├── parseDemographics → Audience demographics
+└── parseEngagement → Impressions and engagements by day
         ↓
-Route to specific parsers
-├── discoveryParser → Summary metrics
-├── topPostsParser → Top posts data
-├── demographicsParser → Audience info
-├── followersParser → Follower counts
-└── engagementParser → Engagement stats
+ParsedExcelData
         ↓
-Aggregate into ParsedExcelData
+Saved to localStorage and passed to App
         ↓
-Store in local storage + state
-        ↓
-Render UnifiedDashboard
+App shows UnifiedDashboard
 ```
 
-### 2. **Component render flow**
+### Component Tree
 
 ```
-App.tsx (root)
-    ↓
-Header (navigation + cache management)
-    ↓
-UnifiedDashboard (main container)
-    ├── WrappedStoriesContainer (shareable cards)
-    ├── SpotifyDashboard (summary stats)
-    ├── TopPostsDisplay (engagement rankings)
-    └── DemographicsView (audience insights)
+App
+├── Header
+├── ErrorDisplay (when parsing fails)
+├── FileUpload (before upload)
+│   └── SampleDataButton
+└── UnifiedDashboard (after upload)
+    ├── WrappedStoriesContainer (story cards)
+    ├── BadgesSection
+    ├── YearSummary (summary metrics)
+    ├── TopPostsDisplay
+    ├── DemographicsView
+    └── FinalMessage
 ```
 
-### 3. **Export flow**
+### Export
 
 ```
-User clicks Share/Export
+User opens the share menu
     ↓
-cardDataMapper transforms data
-    ↓
-Choose export format:
-├── PDF → pdfExport.ts → jsPDF library
-├── Image → imageExport.ts → html2canvas library
-└── LinkedIn → linkedinShareLink.ts → Pre-filled share URL
+ShareButton exports the cards
+├── PNG → imageExport.ts → html-to-image
+├── PDF → pdfExport.ts → jsPDF
+├── Phone → webShare.ts → system share sheet → LinkedIn app
+└── Desktop → download → linkedinShareLink.ts → pre-filled share URL
 ```
 
-## 🎨 Key components
+## Components
 
-### **App.tsx** (Main app container)
-- Root component that manages application state
-- Handles file upload and demo data loading
-- Routes between FileUpload and UnifiedDashboard views
-- Manages error states and loading indicators
-- Integrates with browser cache for data persistence
+### App.tsx
 
-### **FileUpload.tsx** (Data input)
-- Accepts Excel files via file input or drag-and-drop
-- Includes demo data button for trying the app without uploading
-- Validates file format
-- Triggers processing pipeline
-- Shows loading state during processing
+- Holds the parsed data and the error message in state.
+- Shows `FileUpload` when there is no data, and `UnifiedDashboard` when there is.
+- The logo and the Escape key return to the home page and clear the cache. Escape does nothing while a modal or menu is open.
 
-### **UnifiedDashboard.tsx** (Main view)
-- Container component for all dashboard sections
-- Conditionally renders sub-components based on data availability
-- Orchestrates data aggregation for exports
+`main.tsx` clears the cache when a new tab opens. It does this before the first render, so `FileUpload` cannot load old data.
 
-### **SpotifyDashboard.tsx** (Summary card)
-- Spotify Wrapped-style summary card
-- Displays key metrics (views, engagements, impressions)
-- Shows wrapped year from extracted date
-- Animated statistics with formatting
+### FileUpload.tsx
 
-### **TopPostsDisplay.tsx** (Post analytics)
-- Rankings by impressions, engagement rate, comments
-- Interactive sorting and filtering
-- Individual post statistics and preview
+- Accepts `.xlsx` files by drop or file picker.
+- Shows an error when the file is not `.xlsx`.
+- Shows the demo data button and the export steps.
+- Loads cached data on mount, and saves uploaded data to the cache.
 
-### **DemographicsView.tsx** (Audience insights)
-- Top industries, locations, job titles
-- Seniority level distribution
-- Company size analysis
-- Visual percentage bars
+### UnifiedDashboard.tsx
 
-### **WrappedStories/** (Shareable cards)
-- **WrappedStoriesContainer.tsx**: Main container with Instagram Stories-style carousel including autoplay, pause-on-hold, and keyboard/swipe navigation
-- **StoryCard.tsx**: Individual story card component with responsive design
-- **StoryProgress.tsx**: Progress indicators and card navigation
-- **ShareButton.tsx**: Export cards as images/PDFs and pre-filled LinkedIn share functionality
-- **DownloadInstructions.tsx**: Guide for saving cards
+- Builds the story cards and the earned badges from the parsed data.
+- Shows each section only when its data exists.
 
-### **WrappedStoriesContainer.tsx** (Wrapped Stories)
-- Instagram Stories-inspired carousel with autoplay (5s per card by default)
-- **Press-and-hold to pause**: Long-press on any card to pause autoplay (mobile)
-- **Swipe/Tap navigation**: Tap left/right or swipe on mobile to navigate
-- **Keyboard controls**: Arrow keys to navigate, Escape to pause autoplay
-- **Progress indicators**: Visual progress bars at top of each card
-- Cycles through cards with wrapping (loops back to start)
+### YearSummary.tsx
 
-## 🔧 Data processing pipeline
+Shows total impressions, members reached, new followers, total engagements, best month, and median daily impressions.
 
-### **Excel processing** (`utils/excel/`)
+### TopPostsDisplay.tsx
 
-The excel processor is the gateway for converting raw Excel exports to structured data:
+Shows the top posts in the order of the export, which ranks them by engagements. Public posts show a LinkedIn embed.
 
-```
-excelProcessor.processFile(file)
-    ↓
-Read file with FileReader API
-    ↓
-Parse with XLSX.read()
-    ↓
-Extract sheet names
-    ↓
-For each sheet, delegate to specific parser:
-```
+### DemographicsView.tsx
 
-**Parsers by sheet type:**
+Shows job titles, locations, industries, seniority levels, company sizes, and companies, each with percentage bars.
 
-1. **discoveryParser.ts**
-   - Extracts summary metrics (views, engagements, impressions)
-   - Calculates engagement rate
-   - Identifies peak engagement times
-   - Formats engagement by day/time
+### WrappedStories/
 
-2. **topPostsParser.ts**
-   - Processes post-level data
-   - Calculates post metrics and engagement
-   - Ranks by impressions/comments
-   - Extracts post content preview
+- `WrappedStoriesContainer.tsx` shows one card at a time. Cards autoplay every 5 seconds by default and loop back to the start.
+- Press and hold a card to pause. Tap the left or right side, or swipe, to change cards. Taps on buttons, links, progress bars, and menus do not change the card.
+- The arrow keys change cards, except when the focus is in a modal, menu, or text field.
+- `StoryCard.tsx` renders one card.
+- `StoryProgress.tsx` shows a progress bar above the active card. The bar has one segment for each card. Each segment is a button that opens its card.
+- `ShareButton.tsx` exports cards as PNG or PDF and opens the share flow.
+- `NativeSharePrompt.tsx` opens the system share sheet on phones.
+- `DownloadInstructions.tsx` shows the steps to attach a downloaded card on desktop, or when sharing fails.
 
-3. **demographicsParser.ts**
-   - Parses follower demographics
-   - Groups by industry, location, job title, seniority
-   - Calculates percentage distributions
-   - Filters and sorts for top items
+## Excel Parsing
 
-4. **engagementParser.ts**
-   - Aggregates engagement totals
-   - Calculates median daily impressions
-   - Derives peak engagement time
-   - Generates engagement stats
+`processExcelFile(file)` in `utils/excel/excelProcessor.ts` reads the file into an `ArrayBuffer`, parses it with SheetJS, and calls one parser per sheet. Every sheet is optional.
 
-5. **followersParser.ts**
-   - Extracts total follower counts
-   - Tracks follower growth
-   - Calculates growth metrics
+| Parser                  | Sheet                                 | Result                                                                                        |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `discoveryParser.ts`    | Discovery                             | Date range, total impressions, and members reached                                            |
+| `followersParser.ts`    | Followers                             | Sum of new followers                                                                          |
+| `topPostsParser.ts`     | Top posts                             | Posts in export order, which ranks them by engagements                                        |
+| `demographicsParser.ts` | Demographics or Audience demographics | Items grouped by category and sorted by percentage. Category names can be singular or plural. |
+| `engagementParser.ts`   | Engagement                            | Impressions and engagements by day, total engagements, and median daily impressions           |
 
-### **Data aggregation** (`cardDataMapper.ts`)
+`generateShareableCards(data)` in `utils/cardDataMapper.ts` turns `ParsedExcelData` into the list of story cards.
 
-Maps parsed Excel data into the specific format needed for story card generation:
+## State
+
+`App.tsx` holds the state with `useState` and passes it to child components as props:
 
 ```typescript
-generateShareableCards(excelData)
-    ├── Extract top posts
-    ├── Extract demographics
-    ├── Calculate engagement metrics
-    ├── Format for each card type
-    └── Return array of card data
+const [data, setData] = useState<ParsedExcelData | null>(null);
+const [error, setError] = useState<string | null>(null);
 ```
 
-## 🎯 State management
+`hooks/useCache.ts` stores the parsed data in localStorage with an upload timestamp. A reload in the same tab loads the data again. A new tab clears it.
 
-### **React State** (`App.tsx`)
+`hooks/useSampleData.ts` loads the demo file from `public/demo-data/`.
 
-The app uses React's built-in `useState` hook for state management:
+## Utilities
 
-```typescript
-interface DataState {
-  engagement: EngagementMetrics | null;
-  demographics: DemographicInsights | undefined;
-  uploadDate: number | null;
-  isFromCache: boolean;
-  error: string | null;
-}
+- `storageManager.ts` wraps localStorage.
+- `formatters.ts` formats numbers and dates.
+- `venueComparison.ts` compares reach to the capacity of a known venue.
+- `linkedinShareLink.ts` builds LinkedIn share URLs with pre-filled text.
+- `webShare.ts` shares files through the system share sheet, or downloads them.
+- `badges.ts` decides which badges the user earned.
+- `bestMonthCalculator.ts` finds the month with the most engagement.
+- `screenshotService.ts` is the client for the screenshot service. It sends only post URNs.
+- `postStatus.ts` asks whether a post is public.
+- `exports/postScreenshot.ts` gets a post screenshot for export. See `exports/README.md`.
 
-// In App.tsx
-const [loading, setLoading] = useState(false);
-const [state, setState] = useState<DataState>({
-  engagement: null,
-  demographics: undefined,
-  uploadDate: null,
-  isFromCache: false,
-  error: null,
-});
-```
+## Styles
 
-State is managed at the root `App` component level and passed down to child components via props.
+Most components have one CSS file in `styles/`. `SectionTitles.css` and `SectionSubtitles.css` hold the section header styles that several components share. `MetricCards.css` holds the metric card grid that `YearSummary` and `BadgesSection` share. `ShareModal.css` holds the styles for both share modals. `fonts.css` loads the fonts. `index.css` defines the color and font tokens, base element styles, the shared `.button` and `.mono-label` styles, and the shared keyframes.
 
-### **Cache hook** (`hooks/useCache.ts`)
+## Deployment
 
-Manages browser localStorage for caching:
-- Stores parsed Excel data with timestamp
-- Reuses data on return visits without re-uploading
-- Shows cache indicator
-- Allows manual cache clearing
-- Improves user experience for returning visitors
+`render.yaml` at the repository root defines the static site and the screenshot service. For the site, Render runs `npm ci` and `npm run build` in `site/`, then serves `site/dist/`. All paths rewrite to `index.html`. `VITE_SCREENSHOT_SERVICE_URL` gives the public URL of the screenshot service at build time.
 
-### **Sample data hook** (`hooks/useSampleData.ts`)
+## Resources
 
-Manages demo data functionality:
-- Provides sample analytics data for testing
-- Loads demo data on button click
-- Allows users to explore features without uploading
-
-## 🛠️ Utilities & helpers
-
-### **File I/O**
-- `storageManager.ts`: Wrapper for localStorage API
-- `imageExport.ts`: Convert components to PNG using html2canvas with batch optimization
-- `pdfExport.ts`: Export dashboard as PDF with batch rendering for performance
-- `batchImageExporter.ts`: Batch export multiple cards as images efficiently
-
-### **Formatting**
-- `dateFormatter.ts`: Format dates, times, and extract years from LinkedIn data
-- `shareTextTemplates.ts`: Pre-written share messages
-
-### **Interaction**
-- `linkedinShareLink.ts`: Generate LinkedIn share URLs with pre-filled text and wrapped link
-
-### **Data processing**
-- `profileExtractor.ts`: Extract user info from data
-- `cardDataMapper.ts`: Transform data for card generation
-- `api.ts`: Mock API for future backend integration
-
-### **Deployment**
-
-The app is automatically deployed to [Render](https://render.com/) when changes are pushed to the main branch. Render:
-- Builds the app using `npm run build`
-- Serves the static files from the `dist/` directory
-- Provides automatic SSL certificates
-- Offers global CDN distribution for fast loading times
-
-## 📚 Additional resources
-- [Render website](https://render.com)
-- [Render docs](https://render.com/docs) 
-- [React Documentation](https://react.dev)
+- [Render docs](https://render.com/docs)
+- [React docs](https://react.dev)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Vite Guide](https://vitejs.dev/)
-- [XLSX Documentation](https://docs.sheetjs.com/)
+- [Vite docs](https://vite.dev/)
+- [SheetJS docs](https://docs.sheetjs.com/)

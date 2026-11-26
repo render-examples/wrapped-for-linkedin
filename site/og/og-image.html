@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Wrapped for LinkedIn OG image</title>
+    <!-- Render with `npm run og`. The page is 1200 × 630, the Open Graph image size. -->
+    <style>
+      @font-face {
+        font-family: 'Roobert';
+        src: url('../public/FONTS/Roobert_OTF/Roobert-Light.otf') format('opentype');
+        font-weight: 300;
+      }
+      @font-face {
+        font-family: 'Roobert';
+        src: url('../public/FONTS/Roobert_OTF/Roobert-SemiBold.otf') format('opentype');
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: 'PP Neue Montreal';
+        src: url('../public/FONTS/PPNeueMontreal OTF/PPNeueMontreal-Regular.otf') format('opentype');
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'PP Neue Montreal Mono';
+        src: url('../public/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2')
+          format('woff2');
+        font-weight: 400;
+      }
+
+      /* A copy of the tokens in src/index.css. og/ogTokens.test.ts checks that they match. */
+      :root {
+        --bg: #0d0d0d;
+        --border: #303030;
+        --text: #fff;
+        --text-secondary: #c7c7c7;
+        --text-faint: #b3b3b3;
+        --accent: #c29eff;
+        --accent-fill: #8a05ff;
+        --art-surface: #1c0037;
+
+        --font-heading: 'Roobert', Arial, sans-serif;
+        --font-body: 'PP Neue Montreal', Arial, sans-serif;
+        --font-mono: 'PP Neue Montreal Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+      }
+
+      .frame {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 64px;
+        height: 100%;
+        padding: 64px 72px;
+        border-top: 8px solid var(--accent);
+      }
+
+      .mono {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+
+      .copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      h1 {
+        margin-top: 28px;
+        font-family: var(--font-heading);
+        font-size: 96px;
+        font-weight: 600;
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .tagline {
+        margin-top: 24px;
+        font-size: 30px;
+        color: var(--text-secondary);
+      }
+
+      .url {
+        color: var(--accent);
+      }
+
+      .tiles {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-left: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        align-self: center;
+      }
+
+      .tile {
+        padding: 28px;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .tile-value {
+        margin-top: 24px;
+        font-family: var(--font-heading);
+        font-size: 104px;
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .badge {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      /* Same shape as the BadgeEmblem component. */
+      .badge-art {
+        display: block;
+        width: 76px;
+        flex-shrink: 0;
+        color: var(--accent-fill);
+      }
+
+      .badge-name {
+        font-family: var(--font-heading);
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      .badge .mono {
+        margin-top: 6px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="copy">
+        <div>
+          <h1>Wrapped for LinkedIn</h1>
+          <p class="tagline">Your LinkedIn year in review</p>
+        </div>
+        <p class="mono url">wrappedforlinkedin.onrender.com</p>
+      </div>
+      <div class="tiles">
+        <div class="tile">
+          <p class="mono">Total impressions</p>
+          <p class="tile-value">1.2M</p>
+        </div>
+        <div class="tile badge">
+          <svg class="badge-art" viewBox="0 0 100 120" fill="currentColor" aria-hidden="true">
+            <path d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z" />
+            <path d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z" />
+            <path
+              d="M 30 64 L 18 116 L 31 106 L 40 118 L 48 76 Z"
+              fill="#fff"
+              fill-opacity="0.45"
+            />
+            <path
+              d="M 70 64 L 82 116 L 69 106 L 60 118 L 52 76 Z"
+              fill="#fff"
+              fill-opacity="0.45"
+            />
+            <path
+              d="M 50.00 6.00 A 8.15 8.15 0 0 1 64.54 8.89 A 8.15 8.15 0 0 1 76.87 17.13 A 8.15 8.15 0 0 1 85.11 29.46 A 8.15 8.15 0 0 1 88.00 44.00 A 8.15 8.15 0 0 1 85.11 58.54 A 8.15 8.15 0 0 1 76.87 70.87 A 8.15 8.15 0 0 1 64.54 79.11 A 8.15 8.15 0 0 1 50.00 82.00 A 8.15 8.15 0 0 1 35.46 79.11 A 8.15 8.15 0 0 1 23.13 70.87 A 8.15 8.15 0 0 1 14.89 58.54 A 8.15 8.15 0 0 1 12.00 44.00 A 8.15 8.15 0 0 1 14.89 29.46 A 8.15 8.15 0 0 1 23.13 17.13 A 8.15 8.15 0 0 1 35.46 8.89 A 8.15 8.15 0 0 1 50.00 6.00 Z"
+            />
+            <circle
+              cx="50"
+              cy="44"
+              r="29"
+              fill="none"
+              stroke="#fff"
+              stroke-opacity="0.4"
+              stroke-width="1.5"
+            />
+            <!-- Gem icon from Icon.tsx, fill weight, centered on the seal. -->
+            <svg x="32" y="26" width="36" height="36" viewBox="0 0 256 256" fill="#fff">
+              <polygon points="20,100 68,40 88,100" fill-opacity="0.7" />
+              <polygon points="68,40 128,40 88,100" fill-opacity="0.45" />
+              <polygon points="128,40 168,100 88,100" fill-opacity="0.7" />
+              <polygon points="128,40 188,40 168,100" fill-opacity="0.45" />
+              <polygon points="188,40 236,100 168,100" fill-opacity="0.7" />
+              <polygon points="20,100 88,100 128,220" fill-opacity="0.2" />
+              <polygon points="88,100 168,100 128,220" fill-opacity="0.45" />
+              <polygon points="168,100 236,100 128,220" fill-opacity="0.2" />
+              <path
+                d="M 68 40 L 188 40 L 236 100 L 128 220 L 20 100 Z M 20 100 L 236 100 M 68 40 L 88 100 L 128 220 L 168 100 L 188 40 M 88 100 L 128 40 L 168 100"
+                fill="none"
+                stroke="#fff"
+                stroke-width="14"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+            </svg>
+          </svg>
+          <div>
+            <p class="badge-name">Millionaire</p>
+            <p class="mono">1M+ total impressions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

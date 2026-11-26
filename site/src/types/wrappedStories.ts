@@ -1,43 +1,69 @@
 /**
- * Types for Wrapped Stories components
+ * Types for the story cards.
  */
 
-export type CardType =
+import type { IconName } from '@components/Icon';
+import type { Badge } from '@utils/badges';
+
+type CardType =
   | 'total-impressions'
   | 'members-reached'
   | 'best-month'
   | 'top-post'
   | 'audience-industry'
-  | 'audience-location'
+  | 'audience-snapshot'
+  | 'badges'
   | 'new-followers'
-  | 'year-summary'
-  | 'peak-performer';
+  | 'year-summary';
 
+// Fields shared by most cards. Each card sets only the fields it shows.
 export interface CardData {
-  value?: number | string;
+  value?: string;
   label?: string;
-  icon?: string;
+  icon?: IconName;
   context?: string;
-  venueComparison?: {
-    // Venue comparison for reach visualization
-    venue: string;
-    times: number;
-  };
-  [key: string]: any; // Allow card-specific properties
+  // Top post card.
+  impressions?: string;
+  url?: string;
+  date?: string;
+  // Top industry card. A fraction from 0 to 1.
+  percentage?: number;
+  // Year summary card.
+  membersReached?: string;
+  engagements?: string;
+  newFollowers?: string;
 }
 
-export interface ShareableCard {
+export interface AudienceSection {
+  label: string;
+  items: { name: string; percentage: number }[];
+}
+
+type StoryBadge = Pick<Badge, 'id' | 'name' | 'description' | 'icon'>;
+
+interface CardBase {
   id: string;
-  type: CardType;
   title: string;
-  data: CardData;
-  backgroundColor: string;
-  gradient: string;
+  // CSS color for the card's accent.
+  accent: string;
 }
 
-export interface WrappedStoriesState {
-  currentCardIndex: number;
-  totalCards: number;
-  isAutoPlaying: boolean;
-  cards: ShareableCard[];
+export type ShareableCard = CardBase &
+  (
+    | { type: 'audience-snapshot'; data: CardData & { sections: AudienceSection[] } }
+    | { type: 'badges'; data: CardData & { badges: StoryBadge[] } }
+    | { type: Exclude<CardType, 'audience-snapshot' | 'badges'>; data: CardData }
+  );
+
+/**
+ * Values the share button needs for file names and the LinkedIn share text.
+ */
+export interface ShareInfo {
+  impressions: string;
+  membersReached: string;
+  year: number;
+  // URL of the top post, used for the Peak Performer screenshot in exports.
+  topPostUrl?: string;
+  // Share sentence of the user's top badge, if they earned one.
+  topBadgeSentence?: string;
 }

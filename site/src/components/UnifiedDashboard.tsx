@@ -1,86 +1,80 @@
 import React, { useMemo } from 'react';
-import { SpotifyDashboard } from '@components/SpotifyDashboard';
+import { ErrorBoundary } from 'react-error-boundary';
+import { YearSummary } from '@components/YearSummary';
 import { TopPostsDisplay } from '@components/TopPostsDisplay';
 import { DemographicsView } from '@components/DemographicsView';
 import { WrappedStoriesContainer } from '@components/WrappedStories/WrappedStoriesContainer';
 import { FinalMessage } from '@components/FinalMessage';
+import { BadgesSection } from '@components/BadgesSection';
+import { getEarnedBadges } from '@utils/badges';
 import { generateShareableCards } from '@utils/cardDataMapper';
-import type { EngagementMetrics, TopPost, DemographicInsights, DiscoveryData } from '@types';
+import { formatNumber, getWrappedYear } from '@utils/formatters';
 import type { ParsedExcelData } from '@utils/excel/types';
+import type { ShareInfo } from '@/types/wrappedStories';
 import '@styles/UnifiedDashboard.css';
 
 interface UnifiedDashboardProps {
-  data: EngagementMetrics;
-  demographics?: DemographicInsights;
+  data: ParsedExcelData;
   onUploadNewData?: () => void;
 }
 
-export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({
-  data,
-  demographics,
-  onUploadNewData,
-}) => {
-  // Extract discovery data if available
-  const discoveryData: DiscoveryData | undefined = data.discovery_data;
-  const topPosts: TopPost[] = data.top_posts || [];
+export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, onUploadNewData }) => {
+  const { discovery_data: discoveryData, demographics, engagement_by_day: engagementByDay } = data;
+  const topPosts = data.top_posts ?? [];
+  const topPostUrl = topPosts[0]?.url;
+  const hasAnyData = Boolean(discoveryData || demographics || topPosts.length > 0);
 
-  // Generate shareable cards for wrapped stories
-  const wrappedCards = useMemo(() => {
-    if (!discoveryData) return [];
-    const excelData: ParsedExcelData = {
-      discovery_data: discoveryData,
-      top_posts: data.top_posts,
-      demographics,
-      engagement_by_day: data.engagementByDay,
-    };
-    return generateShareableCards(excelData);
-  }, [discoveryData, data.top_posts, demographics, data.engagementByDay]);
+  const wrappedCards = useMemo(
+    () => (discoveryData ? generateShareableCards(data) : []),
+    [data, discoveryData],
+  );
+
+  const earnedBadges = useMemo(() => getEarnedBadges(data), [data]);
+
+  const shareInfo = useMemo<ShareInfo>(
+    () => ({
+      impressions: formatNumber(discoveryData?.total_impressions || 0),
+      membersReached: formatNumber(discoveryData?.members_reached || 0),
+      year: getWrappedYear(discoveryData),
+      topPostUrl,
+      topBadgeSentence: earnedBadges[0]?.shareSentence,
+    }),
+    [discoveryData, topPostUrl, earnedBadges],
+  );
 
   return (
     <div className="unified-dashboard">
-      {/* Wrapped Stories Section (at the top) */}
       {wrappedCards.length > 0 && (
-        <WrappedStoriesContainer 
-          cards={wrappedCards} 
-          autoPlayDuration={5000}
-          onUploadNewData={onUploadNewData}
-        />
+        // A story error closes the stories and keeps the dashboard.
+        <ErrorBoundary
+          fallback={null}
+          onError={(error) => console.error('Stories render error:', error)}
+        >
+          <WrappedStoriesContainer
+            cards={wrappedCards}
+            shareInfo={shareInfo}
+            onUploadNewData={onUploadNewData}
+          />
+        </ErrorBoundary>
       )}
 
-      {/* Main Dashboard Section */}
-      {discoveryData && (
-        <SpotifyDashboard
-          discovery={discoveryData}
-          engagementByDay={data.engagementByDay}
-        />
-      )}
+      <BadgesSection badges={earnedBadges} />
 
-      {/* Top posts Section */}
-      {topPosts.length > 0 && (
-        <TopPostsDisplay posts={topPosts} />
-      )}
+      {discoveryData && <YearSummary discovery={discoveryData} engagementByDay={engagementByDay} />}
 
-      {/* Demographics Section */}
-      {demographics && (
-        <DemographicsView demographics={demographics} />
-      )}
+      {topPosts.length > 0 && <TopPostsDisplay posts={topPosts} />}
 
-      {/* Fallback content if no discovery data */}
-      {!discoveryData && !demographics && (
+      {demographics && <DemographicsView demographics={demographics} />}
+
+      {!hasAnyData && (
         <div className="fallback-section">
           <h1 className="fallback-title">Your LinkedIn year in review</h1>
-
-          {topPosts.length > 0 ? (
-            <TopPostsDisplay posts={topPosts} />
-          ) : (
-            <div className="empty-state">
-              <p>No analytics data available for this file.</p>
-            </div>
-          )}
+          <div className="empty-state">
+            <p>No analytics data available for this file.</p>
+          </div>
         </div>
       )}
 
-      {/* Final Message - That's a wrap! */}
       <FinalMessage />
     </div>
   );

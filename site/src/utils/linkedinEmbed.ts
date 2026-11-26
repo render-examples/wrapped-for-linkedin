@@ -11,17 +11,26 @@ const decode = (url: string): string => {
 };
 
 /**
- * Get the LinkedIn embed URL for a post URL from the analytics export.
+ * Get the post URN, for example `urn:li:share:123`, from a post URL in the analytics export.
  * Old exports use `/feed/update/urn:li:<type>:<id>` URLs.
  * New exports use `/posts/<slug>-<type>-<id>-<suffix>` URLs.
  * Returns null when the URL does not contain a post ID.
  */
-export function getLinkedInEmbedUrl(postUrl: string): string | null {
+export function getLinkedInPostUrn(postUrl: string): string | null {
   const cleanUrl = decode(postUrl.split('?')[0]);
   const match = cleanUrl.match(URN_PATTERN) ?? cleanUrl.match(SLUG_PATTERN);
   if (!match) {
     return null;
   }
   const [, type, id] = match;
-  return `${EMBED_BASE}urn:li:${type}:${id}`;
+  return `urn:li:${type}:${id}`;
+}
+
+/**
+ * Get the LinkedIn embed URL for a post URL from the analytics export.
+ * Returns null when the URL does not contain a post ID.
+ */
+export function getLinkedInEmbedUrl(postUrl: string): string | null {
+  const urn = getLinkedInPostUrn(postUrl);
+  return urn ? `${EMBED_BASE}${urn}` : null;
 }

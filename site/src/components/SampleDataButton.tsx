@@ -6,10 +6,7 @@ interface SampleDataButtonProps {
   isLoading: boolean;
 }
 
-export const SampleDataButton: React.FC<SampleDataButtonProps> = ({
-  onClick,
-  isLoading,
-}) => (
+export const SampleDataButton: React.FC<SampleDataButtonProps> = ({ onClick, isLoading }) => (
   <button
     onClick={onClick}
     disabled={isLoading}
@@ -19,12 +16,12 @@ export const SampleDataButton: React.FC<SampleDataButtonProps> = ({
   >
     {isLoading ? (
       <>
-        <span className="spinner"></span>
+        <span className="spinner" />
         <span>Loading demo data...</span>
       </>
     ) : (
       <>
-        <img src="/images/upload/icon-profile.svg" alt="Profile" className="sample-data-button-icon"/>
+        <img src="/images/upload/icon-profile.svg" alt="" className="sample-data-button-icon" />
         <span className="sample-data-button-text">Try with sample data</span>
       </>
     )}

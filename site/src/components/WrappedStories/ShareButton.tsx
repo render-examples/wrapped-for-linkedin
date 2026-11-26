@@ -1,218 +1,235 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCardAsImage } from '@exports/imageExport';
-import { exportCardsAsPDFBatch } from '@exports/pdfExport';
-import { DownloadInstructions } from '@components/WrappedStories/DownloadInstructions';
-import type { ShareableCard } from '@/types/wrappedStories';
+import { buildCardsPDF } from '@exports/pdfExport';
+import { getPostImage } from '@exports/postScreenshot';
+import {
+  DownloadInstructions,
+  type ExportType,
+} from '@components/WrappedStories/DownloadInstructions';
+import { NativeSharePrompt } from '@components/WrappedStories/NativeSharePrompt';
+import {
+  canShareFiles,
+  dataUrlToFile,
+  downloadFile,
+  getShareMode,
+  shareFile,
+  type ShareMode,
+} from '@utils/webShare';
+import { buildShareText } from '@utils/linkedinShareLink';
+import { Icon } from '@components/Icon';
+import { getMenuPosition, type MenuPosition } from '@components/WrappedStories/menuPosition';
+import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
 import '@styles/ShareButton.css';
 
 interface ShareButtonProps {
-  cardId: string;
   card: ShareableCard;
-  cardRef: React.RefObject<HTMLDivElement>;
-  allCards?: React.RefObject<HTMLDivElement>[];
-  summaryMetrics?: {
-    impressions: string;
-    membersReached: string;
-  };
-  onPauseAutoplay?: () => void;
+  cardRef: React.RefObject<HTMLDivElement | null>;
+  allCardRefs: React.RefObject<HTMLDivElement | null>[];
+  shareInfo: ShareInfo;
+  onPauseAutoPlay: () => void;
 }
 
-type ExportOption = 'current-card' | 'all-cards' | null;
+type CardFile = { cardId: string; file: File };
 
 /**
- * ShareButton component with dropdown menu for export options
- * Supports PNG export for single cards and PDF export for all cards
+ * A share button with a menu. Export the current card as a PNG, or all cards as one PDF.
  */
 export const ShareButton: React.FC<ShareButtonProps> = ({
-  cardId,
+  card,
   cardRef,
-  allCards = [],
-  summaryMetrics,
-  onPauseAutoplay,
+  allCardRefs,
+  shareInfo,
+  onPauseAutoPlay,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-  const [exportType, setExportType] = useState<ExportOption>(null);
+  const [exportType, setExportType] = useState<ExportType>('current-card');
   const [error, setError] = useState<string | null>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: string; left: string }>({ top: '0px', left: '0px' });
+  const [exportedFile, setExportedFile] = useState<File | null>(null);
+  const [shareMode, setShareMode] = useState<ShareMode>('download');
+  const [dropdownPosition, setDropdownPosition] = useState<MenuPosition | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
+  // On phones, the PNG renders when the menu opens, so the PNG tap can open the share sheet at once.
+  // Both values store the card ID. Each use checks it, so a file for another card is never shared.
+  const [prerendered, setPrerendered] = useState<CardFile | null>(null);
+  const prerenderRef = useRef<{ cardId: string; promise: Promise<File> } | null>(null);
 
-  // Update dropdown position when it opens
+  // Move focus into the menu when it opens, so keyboard users can reach the options.
+  // The menu is in a portal at the end of the page, so Tab from the button does not reach it.
   useEffect(() => {
-    if (isDropdownOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const isMobile = window.innerWidth <= 480;
-
-      if (isMobile) {
-        // On mobile, center the menu in viewport
-        const top = '50%';
-        const left = '50%';
-        setDropdownPosition({ top, left });
-      } else {
-        // On desktop, position below button
-        const top = rect.bottom + 10; // 10px below button
-        const left = rect.left + (rect.width / 2) - 140; // Center dropdown (280px / 2)
-
-        // Keep dropdown within viewport
-        const adjustedLeft = Math.max(10, Math.min(window.innerWidth - 290, left));
-
-        setDropdownPosition({ top: `${top}px`, left: `${adjustedLeft}px` });
-      }
-    }
-  }, [isDropdownOpen]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
     if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      dropdownRef.current?.querySelector('button')?.focus();
     }
-
-    return undefined;
   }, [isDropdownOpen]);
 
+  const closeDropdown = useCallback(() => setIsDropdownOpen(false), []);
+
+  // Close the menu on Escape and return focus to the share button.
+  // Stop the event, so the story viewer does not also handle it.
+  const handleMenuKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      event.preventDefault();
+      setIsDropdownOpen(false);
+      buttonRef.current?.focus();
+    }
+  }, []);
+
   /**
-   * Handle single card PNG export
+   * Download the file on desktop. On touch devices, keep it for the share prompt.
    */
-  const handlePNGExport = useCallback(async () => {
-    if (!cardRef.current) {
-      setError('Card element not found');
+  const deliverFile = useCallback((file: File) => {
+    const mode = getShareMode(file);
+    setExportedFile(file);
+    setShareMode(mode);
+    if (mode === 'download') {
+      downloadFile(file);
+    }
+    setShowInstructions(true);
+  }, []);
+
+  const closeInstructions = useCallback(() => setShowInstructions(false), []);
+
+  const handleFallbackDownload = useCallback(() => {
+    if (exportedFile) {
+      downloadFile(exportedFile);
+    }
+    setShareMode('download');
+  }, [exportedFile]);
+
+  /**
+   * Render the current card as a PNG file.
+   */
+  const renderCardFile = useCallback(async (): Promise<File> => {
+    const element = cardRef.current;
+    if (!element) {
+      throw new Error('Card element not found');
+    }
+    const postImage =
+      card.type === 'top-post' && card.data.url ? await getPostImage(card.data.url) : null;
+    const imageDataUrl = await exportCardAsImage(element, { postImage });
+    return dataUrlToFile(imageDataUrl, `wrapped-for-linkedin-${card.id}.png`);
+  }, [cardRef, card]);
+
+  /**
+   * Start the PNG render in the background, once per card.
+   */
+  const startPrerender = useCallback(() => {
+    const cardId = card.id;
+    if (prerenderRef.current?.cardId === cardId) {
       return;
     }
-
-    setIsExporting(true);
-    setError(null);
-    setIsDropdownOpen(false);
-    setExportType('current-card');
-
-    try {
-      const imageDataUrl = await exportCardAsImage(cardRef.current);
-
-      // Download image from data URL
-      const link = document.createElement('a');
-      link.href = imageDataUrl;
-      link.download = `wrapped-for-linkedin-${cardId}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Show instructions
-      setShowInstructions(true);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to export card';
-      setError(errorMessage);
-      console.error('Card export failed:', err);
-    } finally {
-      setIsExporting(false);
-    }
-  }, [cardRef, cardId]);
+    const promise = renderCardFile();
+    prerenderRef.current = { cardId, promise };
+    promise.then(
+      (file) => {
+        if (prerenderRef.current?.promise === promise) {
+          setPrerendered({ cardId, file });
+        }
+      },
+      () => {
+        // The normal export path shows the error. Clear the ref so that path renders again.
+        if (prerenderRef.current?.promise === promise) {
+          prerenderRef.current = null;
+        }
+      },
+    );
+  }, [card.id, renderCardFile]);
 
   /**
-   * Handle PDF export of all cards using optimized batch processing
-   * Waits for all cards to be rendered as they auto-play through
+   * Close the menu and clear the last error before an export or a share.
    */
-  const handlePDFExport = useCallback(async () => {
-    if (!allCards || allCards.length === 0) {
-      setError('No cards available for PDF export');
-      return;
-    }
-
-    setIsExporting(true);
+  const beginExport = useCallback((type: ExportType) => {
     setError(null);
     setIsDropdownOpen(false);
-    setExportType('all-cards');
-
-    try {
-      // Collect all card elements - some might not be refs yet, so wait for them
-      const cardElements: HTMLElement[] = [];
-
-      // First, add any already-rendered cards from the refs
-      for (const ref of allCards) {
-        if (ref && ref.current) {
-          cardElements.push(ref.current);
-        }
-      }
-
-      // If we don't have all cards yet, wait for them to be rendered
-      if (cardElements.length < allCards.length) {
-        // Wait a bit for all refs to be populated
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Try again to get all card elements
-        cardElements.length = 0;
-        for (const ref of allCards) {
-          if (ref && ref.current) {
-            cardElements.push(ref.current);
-          }
-        }
-      }
-
-      if (cardElements.length === 0) {
-        setError('Card elements not found. Make sure cards are displayed first.');
-        return;
-      }
-
-      const year = new Date().getFullYear();
-      const filename = `wrapped-for-linkedin-${year}.pdf`;
-
-      // Use optimized batch export
-      await exportCardsAsPDFBatch(cardElements, filename);
-
-      // Show instructions
-      setShowInstructions(true);
-    } catch (err) {
-      if (err instanceof Error && err.message === 'Export cancelled') {
-        setError(null);
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to export PDF';
-        setError(errorMessage);
-        console.error('PDF export failed:', err);
-      }
-    } finally {
-      setIsExporting(false);
-    }
-  }, [allCards]);
+    setExportType(type);
+  }, []);
 
   /**
-   * Handle export option selection
+   * Run an export, show the spinner while it runs, and deliver the file.
+   * The task throws to show an error message.
    */
-  const handleExportOption = useCallback(
-    (option: ExportOption) => {
-      if (option === 'current-card') {
-        handlePNGExport();
-      } else if (option === 'all-cards') {
-        handlePDFExport();
+  const runExport = useCallback(
+    async (type: ExportType, task: () => Promise<File>, fallbackMessage: string) => {
+      beginExport(type);
+      setIsExporting(true);
+      try {
+        deliverFile(await task());
+      } catch (err) {
+        setError(err instanceof Error ? err.message : fallbackMessage);
+        console.error('Export failed:', err);
+      } finally {
+        setIsExporting(false);
       }
     },
-    [handlePNGExport, handlePDFExport]
+    [beginExport, deliverFile],
   );
 
+  const handlePNGExport = useCallback(async () => {
+    // Call share before any await. Browsers allow a share only during or just after a tap.
+    if (prerendered?.cardId === card.id) {
+      const file = prerendered.file;
+      beginExport('current-card');
+      const result = await shareFile(file, buildShareText(shareInfo));
+      if (result === 'failed') {
+        setExportedFile(file);
+        setShareMode('native');
+        setShowInstructions(true);
+      }
+      return;
+    }
+
+    const pending = prerenderRef.current?.cardId === card.id ? prerenderRef.current.promise : null;
+    await runExport('current-card', () => pending ?? renderCardFile(), 'Failed to export card');
+  }, [card.id, prerendered, shareInfo, beginExport, renderCardFile, runExport]);
+
   /**
-   * Toggle dropdown visibility
+   * Export all cards as one PDF.
    */
+  const handlePDFExport = useCallback(async () => {
+    await runExport(
+      'all-cards',
+      async () => {
+        const cardElements = allCardRefs
+          .map((ref) => ref.current)
+          .filter((element) => element !== null);
+        if (cardElements.length === 0) {
+          throw new Error('Card elements not found. Make sure cards are displayed first.');
+        }
+        const postImage = shareInfo.topPostUrl ? await getPostImage(shareInfo.topPostUrl) : null;
+        const pdf = await buildCardsPDF(cardElements, { postImage });
+        return new File([pdf], `wrapped_${shareInfo.year}.pdf`, { type: 'application/pdf' });
+      },
+      'Failed to export PDF',
+    );
+  }, [allCardRefs, shareInfo, runExport]);
+
   const handleToggleDropdown = useCallback(() => {
-    if (!isExporting) {
-      setIsDropdownOpen(prev => !prev);
-      // Pause autoplay when share button is clicked
-      if (!isDropdownOpen && onPauseAutoplay) {
-        onPauseAutoplay();
+    if (isExporting) {
+      return;
+    }
+    if (!isDropdownOpen) {
+      if (buttonRef.current) {
+        setDropdownPosition(
+          getMenuPosition(buttonRef.current.getBoundingClientRect(), window.innerWidth),
+        );
+      }
+      setError(null);
+      onPauseAutoPlay();
+      if (canShareFiles()) {
+        startPrerender();
       }
     }
-  }, [isExporting, isDropdownOpen, onPauseAutoplay]);
+    setIsDropdownOpen((prev) => !prev);
+  }, [isExporting, isDropdownOpen, onPauseAutoPlay, startPrerender]);
 
   return (
     <div className="share-button-wrapper">
       <div className="share-button-container">
-        {/* Main Share Button */}
         <button
           ref={buttonRef}
           className="share-button"
@@ -220,7 +237,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           disabled={isExporting}
           aria-label="Share and export Wrapped for LinkedIn"
           aria-expanded={isDropdownOpen}
-          aria-haspopup="menu"
+          aria-controls={isDropdownOpen ? menuId : undefined}
         >
           {isExporting ? (
             <>
@@ -229,73 +246,76 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             </>
           ) : (
             <>
-              <img
-                src="/images/dashboard/linkedin-logo.png"
-                alt="LinkedIn"
-                className="linkedin-logo-btn"
-              />
+              <img src="/images/dashboard/linkedin-logo.png" alt="" className="linkedin-logo-btn" />
               <span>Share</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Dropdown Menu - Rendered as Portal to escape stacking context */}
-      {isDropdownOpen && !isExporting && createPortal(
-        <>
-          <div className="share-dropdown-backdrop" onClick={() => setIsDropdownOpen(false)} />
-          <div
-            className="share-dropdown-menu"
-            role="menu"
-            style={dropdownPosition}
-            ref={dropdownRef}
-          >
-            <button
-              className="dropdown-option"
-              onClick={() => handleExportOption('current-card')}
-              role="menuitem"
+      {/* The portal puts the menu outside the card's stacking context. */}
+      {isDropdownOpen &&
+        !isExporting &&
+        createPortal(
+          <>
+            <div className="share-dropdown-backdrop" onClick={closeDropdown} />
+            <div
+              id={menuId}
+              className="share-dropdown-menu"
+              style={dropdownPosition ?? undefined}
+              ref={dropdownRef}
+              onKeyDown={handleMenuKeyDown}
             >
-              <img src="/images/share/png-file.png" alt="PNG" className="option-icon" style={{ height: '2rem' }} />
-              <div className="option-content">
-                <div className="option-title">PNG</div>
-                <div className="option-description">Export current card as a PNG</div>
-              </div>
-            </button>
+              <button className="dropdown-option" onClick={handlePNGExport}>
+                <img src="/images/share/png-file.png" alt="" className="option-icon" />
+                <div className="option-content">
+                  <div className="option-title">PNG</div>
+                  <div className="option-description">Export current card as a PNG</div>
+                </div>
+              </button>
 
-            <button
-              className="dropdown-option"
-              onClick={() => handleExportOption('all-cards')}
-              role="menuitem"
-            >
-              <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" style={{ height: '2rem' }} />
-              <div className="option-content">
-                <div className="option-title">PDF</div>
-                <div className="option-description">Export all cards as a single PDF</div>
-              </div>
-            </button>
-          </div>
-        </>,
-        document.body
-      )}
+              <button className="dropdown-option" onClick={handlePDFExport}>
+                <img src="/images/share/pdf-file.png" alt="" className="option-icon" />
+                <div className="option-content">
+                  <div className="option-title">PDF</div>
+                  <div className="option-description">Export all cards as a single PDF</div>
+                </div>
+              </button>
+            </div>
+          </>,
+          document.body,
+        )}
 
-      {/* Error Message */}
       {error && (
         <div className="share-feedback error">
-          ❌ {error}
+          <span className="share-feedback-icon">
+            <Icon name="error" />
+          </span>
+          {error}
         </div>
       )}
 
-      {/* Download Instructions Modal - Rendered as Portal to escape stacking context */}
-      {showInstructions && createPortal(
-        <DownloadInstructions
-          isVisible={showInstructions}
-          impressions={summaryMetrics?.impressions || '0'}
-          membersReached={summaryMetrics?.membersReached || '0'}
-          exportType={exportType ?? 'current-card'}
-          onDismiss={() => setShowInstructions(false)}
-        />,
-        document.body
-      )}
+      {/* The portal puts the modal outside the card's stacking context. */}
+      {showInstructions &&
+        createPortal(
+          shareMode === 'native' && exportedFile ? (
+            <NativeSharePrompt
+              file={exportedFile}
+              shareInfo={shareInfo}
+              exportType={exportType}
+              onShared={closeInstructions}
+              onFallback={handleFallbackDownload}
+              onDismiss={closeInstructions}
+            />
+          ) : (
+            <DownloadInstructions
+              shareInfo={shareInfo}
+              exportType={exportType}
+              onDismiss={closeInstructions}
+            />
+          ),
+          document.body,
+        )}
     </div>
   );
 };

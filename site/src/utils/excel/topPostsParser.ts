@@ -1,39 +1,20 @@
 /**
- * Top posts Parser
- * ================
- * Parses the "Top posts" sheet from LinkedIn analytics Excel export.
- *
- * The Top posts sheet contains individual post performance metrics:
- * - Post URL (unique identifier)
- * - Publish date
- * - Engagement count
- * - Impression count
- *
- * Expected Excel Structure:
- * - Sheet name: "Top posts"
- * - Two-column layout: left side (engagements) and right side (impressions)
- * - Left: Columns A=URL, B=Date, C=Engagements
- * - Right: Columns E=URL, F=Date, G=Impressions
- * - Data rows start after header row
- *
- * Performance Notes:
- * - Uses Map for O(1) URL deduplication
- * - Single pass through rows
- * - ~5-50ms processing time depending on post count
- * - Memory efficient: only stores unique URLs
+ * Parse the Top posts sheet. It has two tables side by side:
+ * columns A to C list the top posts by engagements, and columns E to G list the top posts by impressions.
+ * Each table has a URL, a publish date, and a value.
  */
 import type { WorkBook } from 'xlsx';
-import type { TopPost } from '@types';
-import { 
-  parseDate, 
-  parseNumber, 
-  parseURL, 
+import type { TopPost } from '@utils/excel/types';
+import {
+  parseDate,
+  parseNumber,
+  parseURL,
   findSheet,
   findRowWithKeywords,
   iterateRowsUntilEmpty,
-  getRowValues
+  getRowValues,
 } from '@utils/excel/utils';
-import { SHEET_NAMES, COLUMN_LAYOUTS, KEYWORDS, MAX_ROWS } from '@utils/excel/constants';
+import { SHEET_NAMES, COLUMN_LAYOUTS, HEADER_KEYWORDS, MAX_ROWS } from '@utils/excel/constants';
 
 interface PostData {
   url: string;
@@ -42,14 +23,8 @@ interface PostData {
   impressions: number;
 }
 
-/**
- * Type for specifying which metric type is being processed
- */
 type MetricType = 'engagements' | 'impressions';
 
-/**
- * Column configuration for a metric side (left or right)
- */
 interface MetricColumns {
   URL: string;
   DATE: string;
@@ -57,17 +32,13 @@ interface MetricColumns {
 }
 
 /**
- * Process a single post entry and update the posts map
- * @param postsMap - Map storing all posts indexed by URL
- * @param columns - Column configuration for this metric type
- * @param rowValues - Values from the current row
- * @param metricType - Type of metric being processed
+ * Add the metric from one table to the post with the same URL. Keep the higher value if the URL repeats.
  */
-function processPostEntry(
-  postsMap: Map<string, PostData>,
+function addPostMetric(
+  postsByUrl: Map<string, PostData>,
   columns: MetricColumns,
-  rowValues: Record<string, any>,
-  metricType: MetricType
+  rowValues: Record<string, unknown>,
+  metricType: MetricType,
 ): void {
   const url = parseURL(rowValues[columns.URL]);
   if (!url) return;
@@ -75,30 +46,21 @@ function processPostEntry(
   const date = parseDate(rowValues[columns.DATE]);
   const metric = parseNumber(rowValues[columns.VALUE]);
 
-  // Get or create post entry
-  if (!postsMap.has(url)) {
-    postsMap.set(url, {
-      url,
-      date,
-      engagements: 0,
-      impressions: 0,
-    });
+  let post = postsByUrl.get(url);
+  if (!post) {
+    post = { url, date, engagements: 0, impressions: 0 };
+    postsByUrl.set(url, post);
   }
 
-  // Update post with new metric (use max value if duplicate)
-  const post = postsMap.get(url)!;
   post[metricType] = Math.max(post[metricType], metric);
-  
-  // Update date if not already set
   if (!post.date && date) {
     post.date = date;
   }
 }
 
 /**
- * Parse the Top posts sheet to extract top performing posts
- * @param workbook - Parsed Excel workbook from xlsx library
- * @returns Array of TopPost objects in the order they appear in the spreadsheet (already sorted by engagement)
+ * @returns The posts in sheet order: posts from the engagements table come first, by rank.
+ * Returns an empty array if the sheet is missing or cannot be read.
  */
 export function parseTopPosts(workbook: WorkBook): TopPost[] {
   const sheet = findSheet(workbook, SHEET_NAMES.TOP_POSTS);
@@ -108,39 +70,27 @@ export function parseTopPosts(workbook: WorkBook): TopPost[] {
   }
 
   try {
-    // Use Map to deduplicate posts by URL
-    const postsMap = new Map<string, PostData>();
-
-    // Find header row
-    const headerRow = findRowWithKeywords(sheet, ['A', 'B'], KEYWORDS.HEADERS.URL);
+    const layout = COLUMN_LAYOUTS.TOP_POSTS;
+    const headerRow = findRowWithKeywords(
+      sheet,
+      [layout.ENGAGEMENTS.URL, layout.ENGAGEMENTS.DATE],
+      HEADER_KEYWORDS.URL,
+    );
     if (!headerRow) {
       console.warn('Could not find header row in top posts sheet');
       return [];
     }
 
-    const layout = COLUMN_LAYOUTS.TOP_POSTS;
-    const allColumns = [
-      layout.ENGAGEMENTS.URL, 
-      layout.ENGAGEMENTS.DATE, 
-      layout.ENGAGEMENTS.VALUE,
-      layout.IMPRESSIONS.URL, 
-      layout.IMPRESSIONS.DATE, 
-      layout.IMPRESSIONS.VALUE
-    ];
+    const allColumns = [...Object.values(layout.ENGAGEMENTS), ...Object.values(layout.IMPRESSIONS)];
+    const postsByUrl = new Map<string, PostData>();
 
-    // Process data rows using iterator
     for (const row of iterateRowsUntilEmpty(sheet, headerRow + 1, allColumns, MAX_ROWS.DATA)) {
       const values = getRowValues(sheet, row, allColumns);
-
-      // Process left side (Engagements)
-      processPostEntry(postsMap, layout.ENGAGEMENTS, values, 'engagements');
-
-      // Process right side (Impressions)
-      processPostEntry(postsMap, layout.IMPRESSIONS, values, 'impressions');
+      addPostMetric(postsByUrl, layout.ENGAGEMENTS, values, 'engagements');
+      addPostMetric(postsByUrl, layout.IMPRESSIONS, values, 'impressions');
     }
 
-    // Convert map to array with ranks
-    return Array.from(postsMap.values()).map((post, index) => ({
+    return Array.from(postsByUrl.values(), (post, index) => ({
       rank: index + 1,
       url: post.url,
       publish_date: post.date,

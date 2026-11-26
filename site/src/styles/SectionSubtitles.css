@@ -1,44 +1,12 @@
-/* ============================================================================
-   Unified Section Subtitle Styles
-   Used across all dashboard sections for consistent typography
-   ============================================================================ */
-
-.section-subtitle,
-.demographics-subtitle {
-  color: var(--Gray-400, #C3C3C3);
-  font-family: "PP Neue Montreal", var(--font-title), -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 138%; /* 24.84px */
-  letter-spacing: 0.18px;
+.section-subtitle {
   margin: 0;
-}
-
-/* Responsive adjustments for section subtitles */
-@media (max-width: 1024px) {
-  .section-subtitle,
-  .demographics-subtitle {
-    font-size: 17px;
-    letter-spacing: 0.17px;
-    font-family: "Roobert", sans-serif;
-  }
+  font-size: 18px;
+  line-height: 1.38;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {
-  .section-subtitle,
-  .demographics-subtitle {
+  .section-subtitle {
     font-size: 16px;
-    letter-spacing: 0.16px;
-    font-family: "Roobert", sans-serif;
-  }
-}
-
-@media (max-width: 480px) {
-  .section-subtitle,
-  .demographics-subtitle {
-    font-size: 15px;
-    letter-spacing: 0.15px;
-    font-family: "Roobert", sans-serif;
   }
 }

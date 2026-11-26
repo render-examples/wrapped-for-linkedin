@@ -1,0 +1,20 @@
+@import '@styles/SectionTitles.css';
+@import '@styles/SectionSubtitles.css';
+@import '@styles/MetricCards.css';
+
+.metric-card-value {
+  font-family: var(--font-heading);
+  font-size: clamp(48px, 5vw, 84px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+@media (max-width: 600px) {
+  .metric-card-value {
+    font-size: 48px;
+  }
+}

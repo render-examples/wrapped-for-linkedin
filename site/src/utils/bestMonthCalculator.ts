@@ -1,84 +1,38 @@
 /**
- * Best Month Calculator
- * =====================
- * Calculates the best performing month based on engagement data.
- *
- * Logic:
- * - Groups engagement data by month/year
- * - Sums engagements for each month
- * - Returns the month with highest total engagement
- * - Returns the month name, total engagement, and count of people engaged
+ * Find the month with the most engagements.
  */
 
 import type { EngagementByDay } from '@utils/excel/types';
 
-export interface BestMonthData {
-  month: string; // e.g., "Nov"
-  monthYear: string; // e.g., "Nov 2024"
+interface BestMonthData {
+  // For example "Nov".
+  month: string;
+  // For example "Nov 2024".
+  monthYear: string;
   engagements: number;
-  peopleEngaged: number; // Total unique people who engaged
 }
 
+const monthYearFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+
 /**
- * Calculate the best month based on engagement data
- * @param engagementByDay - Array of daily engagement metrics
- * @returns BestMonthData with best month info, or null if no data
+ * @returns The month with the most engagements, or null if no month has engagements.
  */
 export function calculateBestMonth(engagementByDay: EngagementByDay[]): BestMonthData | null {
-  if (!engagementByDay || engagementByDay.length === 0) {
-    return null;
-  }
-
-  // Group engagement by month/year
-  const monthlyEngagement = new Map<
-    string,
-    { engagements: number; peopleEngaged: number; date: Date }
-  >();
-
+  // Engagements by month key (YYYY-MM). Dates are ISO strings, so the first 7 characters are the month.
+  // Do not use new Date() here. It parses an ISO date as UTC, which moves the 1st of a month
+  // into the previous month west of UTC.
+  const months = new Map<string, number>();
   for (const item of engagementByDay) {
-    const date = new Date(item.date);
-    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-    if (!monthlyEngagement.has(monthKey)) {
-      monthlyEngagement.set(monthKey, {
-        engagements: 0,
-        peopleEngaged: 0,
-        date,
-      });
-    }
-
-    const monthData = monthlyEngagement.get(monthKey)!;
-    monthData.engagements += item.engagement;
-    // Each day with engagement represents people who engaged
-    // Add the engagement count as a proxy for people (conservative estimate)
-    if (item.engagement > 0) {
-      monthData.peopleEngaged += item.engagement;
-    }
+    const monthKey = item.date.slice(0, 7);
+    months.set(monthKey, (months.get(monthKey) ?? 0) + item.engagement);
   }
 
-  // Find month with highest engagement
   let bestMonth: BestMonthData | null = null;
-  let maxEngagement = 0;
-
-  for (const [, data] of monthlyEngagement) {
-    if (data.engagements > maxEngagement) {
-      maxEngagement = data.engagements;
-
-      const monthFormatter = new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        year: 'numeric',
-      });
-      const formattedMonth = monthFormatter.format(data.date);
-
-      // Extract just the month name
-      const monthName = formattedMonth.split(' ')[0];
-
-      bestMonth = {
-        month: monthName,
-        monthYear: formattedMonth,
-        engagements: data.engagements,
-        peopleEngaged: data.peopleEngaged,
-      };
+  for (const [monthKey, engagements] of months) {
+    if (engagements > (bestMonth?.engagements ?? 0)) {
+      const [year, month] = monthKey.split('-').map(Number);
+      const monthYear = monthYearFormatter.format(new Date(year, month - 1, 1));
+      bestMonth = { month: monthYear.split(' ')[0], monthYear, engagements };
     }
   }
 

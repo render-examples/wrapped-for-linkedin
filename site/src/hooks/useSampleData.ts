@@ -8,7 +8,7 @@ interface UseSampleDataReturn {
 
 export function useSampleData(
   onDataLoaded: (data: ParsedExcelData) => void,
-  onError: (error: Error) => void
+  onError: (error: Error) => void,
 ): UseSampleDataReturn {
   const [isLoading, setIsLoading] = useState(false);
 

@@ -114,9 +114,13 @@
 /* PP Neue Montreal Mono Font Family */
 @font-face {
   font-family: 'PP Neue Montreal Mono';
-  src: url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2') format('woff2'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff') format('woff'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.otf') format('opentype');
+  src:
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff2')
+      format('woff2'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.woff')
+      format('woff'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Regular v1.0/PPNeueMontrealMono-Regular.otf')
+      format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -124,9 +128,13 @@
 
 @font-face {
   font-family: 'PP Neue Montreal Mono';
-  src: url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.woff2') format('woff2'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.woff') format('woff'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.otf') format('opentype');
+  src:
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.woff2')
+      format('woff2'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.woff')
+      format('woff'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Medium v1.0/PPNeueMontrealMono-Medium.otf')
+      format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -134,9 +142,13 @@
 
 @font-face {
   font-family: 'PP Neue Montreal Mono';
-  src: url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.woff2') format('woff2'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.woff') format('woff'),
-       url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.otf') format('opentype');
+  src:
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.woff2')
+      format('woff2'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.woff')
+      format('woff'),
+    url('/FONTS/PPNeueMontreal Mono_OTF/PP Neue Montreal Mono - Bold v1.0/PPNeueMontrealMono-Bold.otf')
+      format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;

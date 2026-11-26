@@ -2,31 +2,53 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Load the sample file early, so "Try with sample data" opens fast. -->
+    <link rel="prefetch" href="/demo-data/linkedin-demo.xlsx" />
 
     <!-- Primary Meta Tags -->
     <title>Wrapped for LinkedIn</title>
-    <meta name="title" content="Wrapped for LinkedIn - Your year in review" />
-    <meta name="description" content="Wrapped for LinkedIn transforms your LinkedIn activity into an engaging visual story. Discover your most impactful posts, audience demographics, and get your LinkedIn year in review with shareable cards inspired by Spotify Wrapped." />
-    <meta name="keywords" content="Wrapped for LinkedIn, LinkedIn year in review, Spotify Wrapped, LinkedIn analytics, LinkedIn Year, LinkedIn Review, Wrapped" />
+    <meta
+      name="description"
+      content="Wrapped for LinkedIn transforms your LinkedIn activity into an engaging visual story. Discover your most impactful posts, audience demographics, and get your LinkedIn year in review with shareable cards inspired by Spotify Wrapped."
+    />
     <meta name="author" content="Shifra Williams, Venkata Naga Sai Kumar Bysani" />
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://wrappedforlinkedin.onrender.com/" />
     <meta property="og:title" content="Wrapped for LinkedIn" />
-    <meta property="og:description" content="See your most impactful posts, audience insights, and get a beautiful summary of your LinkedIn year in review with shareable cards." />
-    <meta property="og:image" content="https://wrappedforlinkedin.onrender.com//share-image.png" />
-    <meta property="og:image:secure_url" content="https://wrappedforlinkedin.onrender.com//share-image.png" />
+    <meta
+      property="og:description"
+      content="See your top posts, your audience, and a summary of your LinkedIn year in review as shareable cards."
+    />
+    <meta
+      property="og:image"
+      content="https://wrappedforlinkedin.onrender.com/images/og-image.png"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://wrappedforlinkedin.onrender.com/images/og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Wrapped for LinkedIn: your LinkedIn year in review" />
     <meta property="og:site_name" content="Wrapped for LinkedIn" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://wrappedforlinkedin.onrender.com/" />
     <meta name="twitter:title" content="Wrapped for LinkedIn - Your year in review" />
-    <meta name="twitter:description" content="Transform your LinkedIn activity into an engaging visual story. Discover your top posts, audience demographics, and get your LinkedIn year in review." />
-    <meta name="twitter:image" content="https://wrappedforlinkedin.onrender.com//share-image.png" />
+    <meta
+      name="twitter:description"
+      content="Transform your LinkedIn activity into an engaging visual story. Discover your top posts, audience demographics, and get your LinkedIn year in review."
+    />
+    <meta
+      name="twitter:image"
+      content="https://wrappedforlinkedin.onrender.com/images/og-image.png"
+    />
 
     <!-- Additional SEO Tags -->
     <meta name="robots" content="index, follow" />
@@ -35,36 +57,31 @@
 
     <!-- Schema.org Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Wrapped for LinkedIn",
-      "description": "Transform your LinkedIn activity into an engaging visual story. Get your LinkedIn year in review with shareable cards.",
-      "url": "https://wrappedforlinkedin.onrender.com/",
-      "applicationCategory": "BusinessApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "creator": [
-        {
-          "@type": "Person",
-          "name": "Shifra Williams",
-          "url": "https://www.linkedin.com/in/shifra-williams/"
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Wrapped for LinkedIn",
+        "description": "Transform your LinkedIn activity into an engaging visual story. Get your LinkedIn year in review with shareable cards.",
+        "url": "https://wrappedforlinkedin.onrender.com/",
+        "applicationCategory": "BusinessApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
         },
-        {
-          "@type": "Person",
-          "name": "Venkata Naga Sai Kumar Bysani",
-          "url": "https://www.linkedin.com/in/saibysani18/"
-        }
-      ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5",
-        "ratingCount": "1"
+        "creator": [
+          {
+            "@type": "Person",
+            "name": "Shifra Williams",
+            "url": "https://www.linkedin.com/in/shifra-williams/"
+          },
+          {
+            "@type": "Person",
+            "name": "Venkata Naga Sai Kumar Bysani",
+            "url": "https://www.linkedin.com/in/saibysani18/"
+          }
+        ]
       }
-    }
     </script>
   </head>
   <body>

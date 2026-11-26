@@ -1,90 +1,22 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  /* Typography */
-  --font-title: 'PP Neue Montreal', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Roobert', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'PP Neue Montreal Mono', 'Monaco', 'Courier New', monospace;
-
-  /* Primary Colors - LinkedIn Blue */
-  --primary-color: #0A66C2;
-  --primary-dark: #004182;
-  --primary-light: #0A8FFF;
-  --text-accent: #0A66C2;
-
-  /* Dark Mode Base */
-  --bg-primary: #0F0F0F;
-  --bg-secondary: #1A1A1A;
-  --bg-tertiary: #242424;
-  --bg-card: #181818;
-
-  /* Text Colors */
-  --text-primary: #FFFFFF;
-  --text-secondary: #E2E2E2;
-  --text-tertiary: #7F7F7F;
-  --text-pink: #F79BFE;
-  --Gray-400: #C3C3C3;
-
-  /* Spotify-inspired Accent Colors */
-  --accent-green: #1DB954;
-  --accent-pink: #FF006E;
-  --accent-purple: #9945FF;
-  --accent-cyan: #00D9FF;
-
-  /* Borders & Shadows */
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-color-light: rgba(255, 255, 255, 0.15);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
-
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #0A66C2 0%, #0A8FFF 100%);
-  --gradient-accent: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
-  --gradient-warm: linear-gradient(135deg, #FF006E 0%, #FF4B70 100%);
-  --gradient-card: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
-  --pink-blue-gradient: linear-gradient(89deg, #F339FF 1.26%, #22A5FF 106.44%);
-  
-  /* Glassmorphism Container - Shared Style */
-  --glass-bg: rgba(13, 13, 13, 0.88);
-  --glass-blur: 8px;
-}
-
-body {
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: var(--text-primary);
-  background: var(--Background-Primary, #0D0D0D);
-  min-height: 100vh;
-}
-
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--Background-Primary, #0D0D0D);
+  background: var(--bg);
 }
 
 .landing-content {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   padding-top: 80px;
-  position: relative;
 }
 
 .landing-content::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: url('/images/background.svg') no-repeat center top;
   background-size: cover;
   pointer-events: none;
@@ -93,92 +25,43 @@ body {
 
 .background-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, 
-    rgba(13, 13, 13, 0.50) 0%, 
-    rgba(13, 13, 13, 0.75) 70%,
-    rgba(13, 13, 13, 0.90) 85%,
-    #0D0D0D 100%);
+  inset: 0;
+  background: var(--bg);
   pointer-events: none;
   z-index: 0;
-  transition: none;
-  animation: none;
 }
 
-/* Fixed header styles moved to Header.css */
-
-/* Upload New Data Button - Below Header */
+/* Upload new data button, below the header. */
 .upload-new-data-btn {
   position: fixed;
-  top: 96px; /* 16px gap from 80px header */
+  top: 96px;
   right: 20px;
   z-index: 999;
-  padding: 0.7rem 1.5rem;
-  background: rgba(13, 13, 13, 0.88);
-  backdrop-filter: blur(8px);
-  color: #FFFFFF;
-  font-size: 0.95rem;
-  font-weight: 500;
-  font-family: var(--font-body);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  animation: slideInFromTop 0.4s ease-out;
-}
-
-.upload-new-data-btn.desktop-only {
-  display: block;
-}
-
-.upload-new-data-btn:hover {
-  background: rgba(13, 13, 13, 0.96);
-  border-color: var(--text-pink);
-  box-shadow: 0 0 10px rgba(247, 155, 254, 0.6), 0 0 40px rgba(247, 155, 254, 0.3);
-}
-
-@keyframes slideInFromTop {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background: var(--bg);
 }
 
 .app-main {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  background: transparent;
   position: relative;
   z-index: 1;
-  /* Fixed header is 80px, but app-container has padding-top: 80px */
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .app-footer {
-  background-color: var(--Background-Primary, #0D0D0D);
-  border-top: 1px solid var(--border-color-light);
-  padding: 2rem 2rem 2rem 4rem;
-  color: #FFFFFF;
-  font-size: 1.1rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   position: relative;
   z-index: 1;
-}
-
-.app-footer p {
-  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2rem 2rem 4rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.25;
 }
 
 .footer-disclaimer-row {
@@ -194,70 +77,33 @@ body {
 
 .footer-links {
   order: 1;
-  color: var(--Text-Secondary, #E2E2E2);
-
-  /* Desktop/Body SM */
-  font-family: "PP Neue Montreal";
-  font-size: 16px;
-  font-style: thin;
-  line-height: 125%; /* 20px */
-  letter-spacing: 0.16px;
+  display: flex;
+  gap: 1.75em;
 }
 
 .footer-copyright {
   order: 3;
   flex: 0 0 auto;
   padding-right: 1rem;
-  color: var(--text-secondary, #E2E2E2);
   text-align: right;
-  font-family: "PP Neue Montreal";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 125%; /* 20px */
-  letter-spacing: 0.16px;
 }
 
 .footer-disclaimer {
-  color: var(--Gray-400, #8F8F8F);
-  font-family: "PP Neue Montreal";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 125%; /* 20px */
-  letter-spacing: 0.16px;
+  color: var(--text-faint);
 }
 
 .footer-link {
-  color: var(--Text-Secondary, #E2E2E2);
+  color: var(--text-secondary);
   text-decoration: none;
-  font-family: "PP Neue Montreal";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 125%; /* 20px */
-  letter-spacing: 0.16px;
 }
 
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1.2;
-  }
+.footer-link:hover {
+  color: var(--accent);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-  .app-header {
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 2rem 1rem;
-  }
-
-  .upload-new-data-btn.desktop-only {
-    display: none !important;
+  .upload-new-data-btn {
+    display: none;
   }
 
   .landing-content {
@@ -265,58 +111,27 @@ body {
   }
 
   .app-main {
-    padding: 0;
-  }
-
-  .unified-dashboard {
-    padding: 0;
+    padding: 0 16px;
   }
 
   .app-footer {
     flex-direction: column;
-    gap: 1.75rem;
-    padding: 1.5rem 1rem;
     align-items: stretch;
+    gap: 1.75rem;
+    padding: 1.5rem 16px;
+    font-size: 14px;
   }
 
   .footer-disclaimer-row {
     order: 1;
-    text-align: center;
     width: 100%;
-  }
-
-  .footer-disclaimer {
-    font-size: 0.9rem;
-    font-family: "Roobert", sans-serif;
   }
 
   .footer-bottom-row {
     order: 2;
-    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .footer-links {
-    order: 1;
-    font-size: 0.9rem;
-    font-family: "Roobert", sans-serif;
-  }
-
-  .footer-copyright {
-    order: 2;
-    font-size: 0.9rem;
-    font-family: "Roobert", sans-serif;
-  }
-}
-
-@media (max-width: 480px) {
-  .upload-new-data-btn.desktop-only {
-    display: none !important;
-  }
-
-  .landing-content {
-    padding-top: 65px;
+    width: 100%;
   }
 }

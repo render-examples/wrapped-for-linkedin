@@ -1,191 +1,143 @@
-/* Header Component Styles */
 .app-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  height: 80px;
-  background: rgb(15, 15, 15);
-  border-bottom: 1.5px solid white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
   padding: 0 2rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .header-content {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  width: 100%;
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .header-left {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
 }
 
 .header-right {
-  display: flex;
-  align-items: center;
   gap: 1.5rem;
 }
 
 .wrapped-for-linkedin-title-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  background: none;
-  border: none;
   padding: 0;
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  outline: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  -webkit-user-select: none;
-}
-
-.wrapped-for-linkedin-title-container:hover,
-.wrapped-for-linkedin-title-container:focus,
-.wrapped-for-linkedin-title-container:active {
-  outline: none;
-  background: none;
-  transform: none;
-}
-
-.wrapped-for-linkedin-title-svg {
-  height: 32px;
-  width: auto;
-  display: block;
 }
 
 .logo-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
 }
 
-/* Render Logo */
+.wrapped-for-linkedin-title-svg {
+  display: block;
+  width: auto;
+  height: 32px;
+}
+
 .render-logo-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  transition: opacity 0.2s ease;
   text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) {
+  .render-logo-link:hover {
+    opacity: 0.8;
+  }
 }
 
 .render-powered-text {
-  color: var(--Gray-400, #C3C3C3);
-  font-family: "PP Neue Montreal Mono";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 125%; /* 15px */
-  letter-spacing: 0.24px;
-  text-transform: uppercase;
-  white-space: nowrap;
   margin-top: 2px;
   margin-right: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-faint);
 }
 
 .render-logo {
-  height: 22px;
-  width: auto;
-  object-fit: contain;
   flex-shrink: 0;
+  width: auto;
+  height: 22px;
+  object-fit: contain;
 }
 
-/* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .app-header {
     height: 70px;
-    padding: 0 1.5rem;
+    padding: 0 16px;
   }
 
   .wrapped-for-linkedin-title-svg {
     height: 24px;
   }
 
-  .logo-wrapper {
-    gap: 0.5rem;
-  }
-
   .render-logo {
     height: 20px;
   }
 
-  .render-powered-text {
-    font-size: 0;
-    color: var(--Gray-400, #C3C3C3);
-    font-family: "Roobert", sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 125%;
-    letter-spacing: 0.24px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    margin-top: 4px;
-    margin-right: 0.25rem;
-  }
-  
-  .render-powered-text::before {
-    content: attr(data-mobile-text);
-    font-size: 0.7rem;
-  }
-  
   .render-logo-link {
     gap: 0.4rem;
+  }
+
+  .wrapped-for-linkedin-title-container,
+  .render-logo-link {
+    min-height: 44px;
+  }
+
+  /* Show the shorter text from data-mobile-text. */
+  .render-powered-text {
+    margin-top: 4px;
+    margin-right: 0.25rem;
+    font-size: 0;
+  }
+
+  .render-powered-text::before {
+    content: attr(data-mobile-text);
+    font-size: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .app-header {
     height: 65px;
-    padding: 0 1rem;
   }
 
   .wrapped-for-linkedin-title-svg {
     height: 20px;
   }
 
-  .logo-wrapper {
-    gap: 0.4rem;
-  }
-
   .render-logo {
     height: 16px;
-    padding-right: 0.05rem;
-  }
-
-  .render-powered-text {
-    font-size: 0;
-    font-weight: 500;
-    margin-top: 8px;
-    margin-right: 0.05rem;
-  }
-  
-  .render-powered-text::before {
-    content: attr(data-mobile-text);
-    font-size: 0.6rem;
-  }
-
-  .render-logo-link {
-    gap: 0.3rem;
   }
 
   .header-right {
     gap: 1rem;
   }
-
-  
 }

@@ -1,195 +1,195 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { ShareButton } from '@components/WrappedStories/ShareButton';
-import { StoryProgress } from '@components/WrappedStories/StoryProgress';
-import type { ShareableCard } from '@/types/wrappedStories';
-import { getLinkedInEmbedUrl } from '@utils/linkedinEmbed';
+import { Icon } from '@components/Icon';
+import { BadgeEmblem } from '@components/BadgeEmblem';
+import type { CardData, ShareableCard, ShareInfo } from '@/types/wrappedStories';
+import { PostEmbed } from '@components/PostEmbed';
 
 interface StoryCardProps {
   card: ShareableCard;
   isActive: boolean;
-  cardIndex: number;
-  cardRef?: React.RefObject<HTMLDivElement>;
-  allCards?: React.RefObject<HTMLDivElement>[];
-  summaryMetrics?: {
-    impressions: string;
-    membersReached: string;
-  };
-  onPauseAutoplay?: () => void;
-  currentCardIndex: number;
-  totalCards: number;
-  onJumpToCard: (index: number) => void;
-  isAutoPlaying?: boolean;
-  autoPlayDuration?: number;
-  isNavigatingBackward?: boolean;
+  cardRef: React.RefObject<HTMLDivElement | null>;
+  allCardRefs: React.RefObject<HTMLDivElement | null>[];
+  shareInfo: ShareInfo;
+  onPauseAutoPlay: () => void;
 }
 
 export const StoryCard: React.FC<StoryCardProps> = ({
   card,
   isActive,
-  cardRef: externalCardRef,
-  allCards,
-  summaryMetrics,
-  onPauseAutoplay,
-  currentCardIndex,
-  totalCards,
-  onJumpToCard,
-  isAutoPlaying = false,
-  autoPlayDuration = 5000,
-  isNavigatingBackward = false,
+  cardRef,
+  allCardRefs,
+  shareInfo,
+  onPauseAutoPlay,
 }) => {
-  const internalCardRef = useRef<HTMLDivElement>(null);
-  const cardRef = externalCardRef || internalCardRef;
-  const peakEmbedUrl = card.data.url ? getLinkedInEmbedUrl(card.data.url) : null;
-
   return (
     <div
       ref={cardRef}
       className={`story-card ${card.type} ${isActive ? 'active' : ''}`}
-      style={{
-        '--card-gradient': card.gradient,
-        '--card-bg-color': card.backgroundColor,
-      } as React.CSSProperties & { [key: string]: string }}
+      style={{ '--card-accent': card.accent } as React.CSSProperties}
       role="region"
       aria-label={card.title}
+      // Hidden cards stay in the page, so remove them from the screen reader and Tab order.
+      inert={!isActive}
     >
-      {/* Progress Bars - Inside Card at Top */}
-      <div className="card-progress-wrapper">
-        <StoryProgress
-          currentCardIndex={currentCardIndex}
-          totalCards={totalCards}
-          onJumpToCard={onJumpToCard}
-          isAutoPlaying={isAutoPlaying}
-          autoPlayDuration={autoPlayDuration}
-          isNavigatingBackward={isNavigatingBackward}
-        />
-      </div>
-
-      {/* Card Content */}
       <div className="card-content-wrapper">
         <div className="card-header">
           <h2 className="card-title">{card.title}</h2>
+          <img
+            src="/images/dashboard/wrapped-logo.png"
+            alt="Wrapped for LinkedIn"
+            className="card-logo"
+          />
         </div>
 
-        {/* Circular Logo */}
-        <img
-          src="/images/dashboard/wrapped-logo.png"
-          alt="Wrapped for LinkedIn"
-          className="card-circular-logo"
-        />
-
-
         <div className="card-body">
-          {card.data.icon && <span className="card-icon">{card.data.icon}</span>}
-
-          {card.type === 'year-summary' ? (
-            // Summary card with multiple metrics
-            <div className="summary-metrics">
-              <div className="metric-row">
-                <div className="metric">
-                  <div className="metric-value">{card.data.impressions}</div>
-                  <div className="metric-label">Total impressions</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-value">{card.data.membersReached}</div>
-                  <div className="metric-label">Members reached</div>
-                </div>
-              </div>
-              <div className="metric-row">
-                <div className="metric">
-                  <div className="metric-value">{card.data.engagements}</div>
-                  <div className="metric-label">Total engagements</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-value">{card.data.newFollowers}</div>
-                  <div className="metric-label">New followers</div>
-                </div>
-              </div>
-            </div>
-          ) : card.type === 'top-post' ? (
-            // Peak Performer card with LinkedIn embed and metrics
-            <div className="peak-performer-content">
-              {/* Metrics Display */}
-              <div className="peak-post-metrics">
-                <div className="peak-metric">
-                  <div className="peak-metric-icon">
-                    <img src="/images/dashboard/heart.png" alt="Heart" />
-                  </div>
-                  <div className="peak-metric-info">
-                    <div className="peak-metric-value">{card.data.value}</div>
-                    <div className="peak-metric-label">Engagements</div>
-                  </div>
-                </div>
-                {card.data.impressions && (
-                  <div className="peak-metric">
-                    <div className="peak-metric-icon">
-                      <img src="/images/dashboard/sparkle.png" alt="Sparkle" />
-                    </div>
-                    <div className="peak-metric-info">
-                      <div className="peak-metric-value">{card.data.impressions}</div>
-                      <div className="peak-metric-label">Impressions</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* LinkedIn Post Embed */}
-              <div className="peak-post-embed-wrapper">
-                {peakEmbedUrl ? (
-                  <div className="peak-post-embed-container">
-                    <iframe
-                      src={peakEmbedUrl}
-                      height="300"
-                      width="100%"
-                      allowFullScreen
-                      loading="lazy"
-                      className="peak-post-iframe"
-                      title="Peak Performer Post"
-                    />
-                  </div>
-                ) : (
-                  <div className="peak-post-fallback">
-                    <div className="fallback-emoji">📌</div>
-                    <p className="fallback-message">Top Post</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Post Context */}
-              {card.data.date && (
-                <div className="peak-post-context">
-                  Your most impactful moment
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              {card.data.value && (
-                <div className="card-value">{card.data.value}</div>
-              )}
-
-              {card.data.label && (
-                <div className="card-label">{card.data.label}</div>
-              )}
-
-              {card.data.context && (
-                <div className="card-context">{card.data.context}</div>
-              )}
-            </>
+          {card.data.icon && (
+            <span className="card-icon">
+              <Icon name={card.data.icon} />
+            </span>
           )}
+
+          <CardBody card={card} />
         </div>
 
         <div className="card-footer">
           <div className="branding">Wrapped for LinkedIn</div>
           <ShareButton
-            cardId={card.id}
             card={card}
-            cardRef={cardRef as React.RefObject<HTMLDivElement>}
-            allCards={allCards}
-            summaryMetrics={summaryMetrics}
-            onPauseAutoplay={onPauseAutoplay}
+            cardRef={cardRef}
+            allCardRefs={allCardRefs}
+            shareInfo={shareInfo}
+            onPauseAutoPlay={onPauseAutoPlay}
           />
         </div>
       </div>
     </div>
   );
 };
+
+/**
+ * The main content of a card. The layout depends on the card type.
+ */
+const CardBody: React.FC<{ card: ShareableCard }> = ({ card }) => {
+  switch (card.type) {
+    case 'year-summary':
+      return (
+        <div className="summary-metrics">
+          <SummaryMetric label="Total impressions" value={card.data.impressions} />
+          <SummaryMetric label="Members reached" value={card.data.membersReached} />
+          <SummaryMetric label="Total engagements" value={card.data.engagements} />
+          <SummaryMetric label="New followers" value={card.data.newFollowers} />
+        </div>
+      );
+
+    case 'audience-snapshot':
+      return (
+        <div className="audience-snapshot">
+          {card.data.context && <div className="card-context">{card.data.context}</div>}
+          {card.data.sections.map((section) => (
+            <div key={section.label} className="audience-section">
+              <div className="audience-section-label">{section.label}</div>
+              <ol className="audience-list">
+                {section.items.map((item) => (
+                  <li key={item.name} className="audience-item">
+                    <span className="audience-item-name">{item.name}</span>
+                    <span className="audience-item-percentage">
+                      {item.percentage < 1 ? '<1' : item.percentage}%
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
+      );
+
+    case 'badges':
+      return (
+        <div className="story-badges">
+          {card.data.context && <div className="card-context">{card.data.context}</div>}
+          <div className="story-badge-list">
+            {card.data.badges.map((badge) => (
+              <div key={badge.id} className="story-badge">
+                <BadgeEmblem icon={badge.icon} className="story-badge-art" />
+                <div className="story-badge-text">
+                  <div className="story-badge-name">{badge.name}</div>
+                  <div className="story-badge-rule">{badge.description}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'top-post':
+      return <TopPostBody data={card.data} />;
+
+    default:
+      return (
+        <>
+          {card.data.value && <div className="card-value">{card.data.value}</div>}
+          {card.data.label && <div className="card-label">{card.data.label}</div>}
+          {card.data.context && <div className="card-context">{card.data.context}</div>}
+        </>
+      );
+  }
+};
+
+const SummaryMetric: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
+  <div className="metric">
+    <div className="metric-value">{value}</div>
+    <div className="metric-label">{label}</div>
+  </div>
+);
+
+interface PeakMetricProps {
+  icon: string;
+  label: string;
+  value: React.ReactNode;
+}
+
+const PeakMetric: React.FC<PeakMetricProps> = ({ icon, label, value }) => (
+  <div className="peak-metric">
+    <div className="peak-metric-icon">
+      <img src={icon} alt="" />
+    </div>
+    <div className="peak-metric-info">
+      <div className="peak-metric-value">{value}</div>
+      <div className="peak-metric-label">{label}</div>
+    </div>
+  </div>
+);
+
+/**
+ * The top post card. It shows the post metrics and the LinkedIn embed.
+ */
+const TopPostBody: React.FC<{ data: CardData }> = ({ data }) => (
+  <div className="peak-performer-content">
+    <div className="peak-post-metrics">
+      <PeakMetric icon="/images/dashboard/heart.png" label="Engagements" value={data.value} />
+      {data.impressions && (
+        <PeakMetric
+          icon="/images/dashboard/sparkle.png"
+          label="Impressions"
+          value={data.impressions}
+        />
+      )}
+    </div>
+
+    <div className="peak-post-embed-wrapper">
+      {data.url ? (
+        <PostEmbed url={data.url} title="Peak performer post" variant="card" />
+      ) : (
+        <div className="peak-post-fallback">
+          <div className="peak-post-fallback-icon">
+            <Icon name="pin" />
+          </div>
+          <p className="fallback-message">Top post</p>
+        </div>
+      )}
+    </div>
+
+    {data.date && <div className="peak-post-context">Your most impactful moment</div>}
+  </div>
+);

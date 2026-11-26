@@ -1,84 +1,75 @@
 /**
- * Utility functions for Excel parsing
- * ====================================
- * Common patterns and helpers used across all sheet parsers.
+ * Helpers shared by the sheet parsers.
  */
 import type { WorkSheet, WorkBook } from 'xlsx';
-import { MAX_ROWS, SCAN_LIMITS, EXCEL_DATE_OFFSET, MS_PER_DAY, MIN_PERCENTAGE } from '@utils/excel/constants';
+import {
+  MAX_ROWS,
+  CONSECUTIVE_EMPTY_ROWS,
+  EXCEL_DATE_OFFSET,
+  MS_PER_DAY,
+  MIN_PERCENTAGE,
+} from '@utils/excel/constants';
 
 /**
- * Get cell value safely from a worksheet
- * @param sheet - The worksheet to read from
- * @param cellAddress - Cell address in A1 notation (e.g., "A1", "B5")
- * @returns The cell value or undefined if cell doesn't exist
- * @note Returns `any` because Excel cells can contain various types (string, number, Date, etc.)
+ * Get the value of a cell, for example "B5". Returns undefined if the cell is empty.
  */
-export function getCellValue(sheet: WorkSheet, cellAddress: string): any {
+export function getCellValue(sheet: WorkSheet, cellAddress: string): unknown {
   return sheet[cellAddress]?.v;
 }
 
 /**
- * Parse percentage strings like "25.5%" or "< 1%"
- * @param value - Percentage value (number or string)
- * @returns Percentage as a decimal (0-1 range) for consistent UI handling
+ * Parse a percentage such as 25.5, 0.255, "25.5%", or "< 1%".
+ * @returns A fraction from 0 to 1.
  */
-export function parsePercentage(value: any): number {
+export function parsePercentage(value: unknown): number {
   if (typeof value === 'number') {
-    // If it's already a number between 0-100, convert to decimal
-    if (value > 1 && value <= 100) {
-      return value / 100;
-    }
-    // If it's already in decimal form (0-1), return as-is
-    if (value >= 0 && value <= 1) {
-      return value;
-    }
-    return value;
+    // A number above 1 is a percentage. A number from 0 to 1 is already a fraction.
+    return value > 1 && value <= 100 ? value / 100 : value;
   }
-  
+
   if (typeof value !== 'string') {
     return 0;
   }
 
-  const lowerValue = value.toLowerCase().trim();
-
-  // Handle "< 1%" or similar by returning a small value
-  if (lowerValue.includes('<')) {
+  if (value.includes('<')) {
     return MIN_PERCENTAGE;
   }
 
-  // Extract all digits and decimal points
-  const cleaned = value.replace(/[^\d.]/g, '');
-  const parsed = parseFloat(cleaned);
-
-  // Convert percentage to decimal (e.g., "1" → 0.01, "50" → 0.5)
+  const parsed = parseFloat(value.replace(/[^\d.]/g, ''));
   return isNaN(parsed) ? 0 : parsed / 100;
 }
 
+// Format a Date as YYYY-MM-DD in local time. toISOString() uses UTC, which changes the day east of UTC.
+function toLocalISODate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 /**
- * Parse date strings in various formats
- * @param value - Date value (can be Date object, string, or Excel serial number)
- * @returns ISO date string (YYYY-MM-DD) or empty string if invalid
+ * Parse a Date, a date string such as "1/15/2024", or an Excel serial date.
+ * @returns An ISO date (YYYY-MM-DD). Returns the input string if it is not a valid date,
+ * and an empty string for other values that are not dates.
  */
-export function parseDate(value: any): string {
+export function parseDate(value: unknown): string {
   if (!value) return '';
 
-  // If it's already a date, format it
   if (value instanceof Date) {
-    return value.toISOString().split('T')[0];
+    return toLocalISODate(value);
   }
 
-  // If it's a string, try to parse it
   if (typeof value === 'string') {
-    const date = new Date(value);
-    if (!isNaN(date.getTime())) {
-      return date.toISOString().split('T')[0];
+    // new Date() parses an ISO date as UTC midnight, so keep it as is.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
     }
-    return value;
+    // new Date() parses other formats, such as MM/DD/YYYY, as local time.
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? value : toLocalISODate(date);
   }
 
-  // If it's a number (Excel serial date), convert it
   if (typeof value === 'number') {
-    // Excel stores dates as number of days since 1900-01-01
+    // The serial date is a UTC midnight, so the UTC day is the correct day.
     const excelDate = new Date((value - EXCEL_DATE_OFFSET) * MS_PER_DAY);
     return excelDate.toISOString().split('T')[0];
   }
@@ -87,9 +78,9 @@ export function parseDate(value: any): string {
 }
 
 /**
- * Parse number values safely
+ * Parse a number. A string such as "1,234" loses all characters that are not digits.
  */
-export function parseNumber(value: any): number {
+export function parseNumber(value: unknown): number {
   if (typeof value === 'number') {
     return value;
   }
@@ -101,71 +92,51 @@ export function parseNumber(value: any): number {
 }
 
 /**
- * Find a sheet by name (case-insensitive)
- * Supports multiple possible sheet names
- * @param workbook - The Excel workbook
- * @param sheetNames - Single sheet name or array of possible names
- * @returns The worksheet if found, null otherwise
+ * Find the first sheet whose name matches one of `sheetNames`. The match is not case-sensitive.
  */
-export function findSheet(workbook: WorkBook, sheetNames: string | string[]): WorkSheet | null {
-  const namesToTry = Array.isArray(sheetNames) ? sheetNames : [sheetNames];
-  
-  for (const sheetName of namesToTry) {
+export function findSheet(workbook: WorkBook, sheetNames: string[]): WorkSheet | null {
+  for (const sheetName of sheetNames) {
     const found = workbook.SheetNames.find(
-      (name: string) => name.toLowerCase() === sheetName.toLowerCase()
+      (name) => name.toLowerCase() === sheetName.toLowerCase(),
     );
     if (found) {
       return workbook.Sheets[found];
     }
   }
-  
   return null;
 }
 
 /**
- * Parse a URL from a cell (may contain formula or link)
+ * Get the first URL in a cell. Returns the text as is if it has no URL.
  */
-export function parseURL(value: any): string {
+export function parseURL(value: unknown): string {
   if (!value) return '';
   if (typeof value === 'string') {
-    // Try to extract URL if it's in a common format
     const urlMatch = value.match(/https?:\/\/[^\s"]+/);
     return urlMatch ? urlMatch[0] : value;
   }
   return String(value);
 }
 
-/**
- * Check if a cell value contains any of the given keywords (case-insensitive)
- * @param value - The cell value to check
- * @param keywords - Array of keywords to search for
- * @returns True if any keyword is found
- */
-export function containsKeyword(value: any, keywords: string[]): boolean {
+function containsKeyword(value: unknown, keywords: string[]): boolean {
   if (!value) return false;
   const text = String(value).toLowerCase().trim();
-  return keywords.some(keyword => text.includes(keyword));
+  return keywords.some((keyword) => text.includes(keyword));
 }
 
 /**
- * Find the first row that contains specific keywords in any of the specified columns
- * Used for finding header rows or section starts
- * @param sheet - The worksheet to search
- * @param columns - Array of column letters to check (e.g., ['A', 'B'])
- * @param keywords - Array of keywords to search for
- * @param maxRow - Maximum row to scan (default from constants)
- * @returns Row number if found, or null
+ * Find the first row where one of `columns` contains one of `keywords`. Use it to find a header row.
+ * @returns The row number, or null if no row matches.
  */
 export function findRowWithKeywords(
   sheet: WorkSheet,
   columns: string[],
   keywords: string[],
-  maxRow: number = MAX_ROWS.HEADER_SCAN
+  maxRow: number = MAX_ROWS.HEADER_SCAN,
 ): number | null {
   for (let row = 1; row <= maxRow; row++) {
     for (const col of columns) {
-      const value = getCellValue(sheet, `${col}${row}`);
-      if (containsKeyword(value, keywords)) {
+      if (containsKeyword(getCellValue(sheet, `${col}${row}`), keywords)) {
         return row;
       }
     }
@@ -174,26 +145,20 @@ export function findRowWithKeywords(
 }
 
 /**
- * Iterator that yields rows until a stopping condition is met
- * Stops after encountering consecutive empty rows
- * @param sheet - The worksheet to iterate
- * @param startRow - Starting row number
- * @param columns - Array of column letters to check for emptiness
- * @param maxRow - Maximum row to scan
- * @param maxEmptyRows - Number of consecutive empty rows before stopping
+ * Yield the row numbers from `startRow` that have a value in at least one of `columns`.
+ * Stop after `maxEmptyRows` empty rows in a row.
  */
 export function* iterateRowsUntilEmpty(
   sheet: WorkSheet,
   startRow: number,
   columns: string[],
   maxRow: number = MAX_ROWS.DATA,
-  maxEmptyRows: number = SCAN_LIMITS.CONSECUTIVE_EMPTY_ROWS
+  maxEmptyRows: number = CONSECUTIVE_EMPTY_ROWS,
 ): Generator<number> {
   let emptyRowCount = 0;
 
   for (let row = startRow; row <= maxRow; row++) {
-    // Check if all specified columns are empty
-    const isEmpty = columns.every(col => !getCellValue(sheet, `${col}${row}`));
+    const isEmpty = columns.every((col) => !getCellValue(sheet, `${col}${row}`));
 
     if (isEmpty) {
       emptyRowCount++;
@@ -209,18 +174,14 @@ export function* iterateRowsUntilEmpty(
 }
 
 /**
- * Get values from multiple columns in a single row
- * @param sheet - The worksheet to read from
- * @param row - Row number
- * @param columns - Array of column letters
- * @returns Object mapping column letters to their values
+ * Get the values of `columns` in one row, keyed by column letter.
  */
 export function getRowValues(
   sheet: WorkSheet,
   row: number,
-  columns: string[]
-): Record<string, any> {
-  const result: Record<string, any> = {};
+  columns: string[],
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
   for (const col of columns) {
     result[col] = getCellValue(sheet, `${col}${row}`);
   }

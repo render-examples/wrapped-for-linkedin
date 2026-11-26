@@ -1,295 +1,185 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { createRef, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryCard } from '@components/WrappedStories/StoryCard';
-import type { ShareableCard } from '@/types/wrappedStories';
+import { StoryProgress } from '@components/WrappedStories/StoryProgress';
+import type { ShareableCard, ShareInfo } from '@/types/wrappedStories';
+import { isCardNavigationTouch } from '@utils/storyTouch';
+import { useShortcutKeys } from '@/hooks/useShortcutKeys';
+import { useStoryNavigation } from '@/hooks/useStoryNavigation';
 import '@styles/WrappedStories.css';
 
 interface WrappedStoriesContainerProps {
   cards: ShareableCard[];
-  autoPlayDuration?: number; // milliseconds
+  shareInfo: ShareInfo;
+  // Time that each card shows during autoplay, in milliseconds.
+  autoPlayDuration?: number;
   onUploadNewData?: () => void;
+}
+
+// Touch gesture limits, in pixels and milliseconds.
+const SWIPE_MIN_DISTANCE = 50;
+const TAP_MAX_DISTANCE = 10;
+const TAP_MAX_DURATION = 300;
+// Time that the swipe arrow shows after a swipe.
+const SWIPE_ARROW_DURATION = 600;
+// A press longer than this pauses autoplay. A shorter press is a tap.
+const PRESS_HOLD_DELAY = 200;
+
+interface TouchStart {
+  x: number;
+  y: number;
+  time: number;
+}
+
+interface SwipeArrow {
+  direction: 'left' | 'right';
+  // A new key for each swipe makes the arrow animation play again.
+  key: number;
 }
 
 export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = ({
   cards,
+  shareInfo,
   autoPlayDuration = 5000,
   onUploadNewData,
 }) => {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [userManuallyPaused, setUserManuallyPaused] = useState(false);
-  const [isNavigatingBackward, setIsNavigatingBackward] = useState(false);
-  const [swipeArrowDirection, setSwipeArrowDirection] = useState<'left' | 'right' | null>(null);
+  const totalCards = cards.length;
+  const { currentIndex, isBackward, next, previous, jumpTo } = useStoryNavigation(totalCards);
+  // The user paused autoplay with the pause button or the share menu.
+  const [userPaused, setUserPaused] = useState(false);
+  // The user holds a press on the card. Autoplay pauses until the press ends.
   const [isPressHolding, setIsPressHolding] = useState(false);
-  const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [swipeArrow, setSwipeArrow] = useState<SwipeArrow | null>(null);
   const swipeArrowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const previousCardIndexRef = useRef(0);
 
-  // Create refs for all cards for PDF export using useMemo to avoid render-time mutations
-  const cardRefs = useMemo<React.RefObject<HTMLDivElement>[]>(() => 
-    Array.from({ length: cards.length }, () => React.createRef<HTMLDivElement>()) as React.RefObject<HTMLDivElement>[],
-    [cards.length]
+  const isAutoPlaying = !userPaused && !isPressHolding;
+
+  // The PDF export reads every card, so each card gets a ref.
+  const cardRefs = useMemo(
+    () => Array.from({ length: totalCards }, () => createRef<HTMLDivElement>()),
+    [totalCards],
   );
 
-  // Validate we have cards
-  if (!cards || cards.length === 0) {
-    return null;
-  }
+  // While autoplay is on, go to the next card after each card's time.
+  // The timer starts again each time the card changes.
+  useEffect(() => {
+    if (!isAutoPlaying || totalCards === 0) return;
+    const timer = setTimeout(next, autoPlayDuration);
+    return () => clearTimeout(timer);
+  }, [currentIndex, isAutoPlaying, autoPlayDuration, totalCards, next]);
 
-  const totalCards = cards.length;
-
-  // Extract summary metrics from the year-summary card to pass to all cards
-  const yearSummaryCard = cards.find(card => card.type === 'year-summary');
-  const summaryMetrics = yearSummaryCard
-    ? {
-        impressions: yearSummaryCard.data.impressions,
-        membersReached: yearSummaryCard.data.membersReached,
-      }
-    : { impressions: '0', membersReached: '0' };
-
-  // Clear auto-play timer
-  const clearAutoPlayTimer = useCallback(() => {
-    if (autoPlayTimerRef.current) {
-      clearTimeout(autoPlayTimerRef.current);
-      autoPlayTimerRef.current = null;
-    }
+  // Clear the gesture timers when the component unmounts.
+  useEffect(() => {
+    const swipeArrowTimer = swipeArrowTimerRef;
+    const pressHoldTimer = pressHoldTimerRef;
+    return () => {
+      if (swipeArrowTimer.current) clearTimeout(swipeArrowTimer.current);
+      if (pressHoldTimer.current) clearTimeout(pressHoldTimer.current);
+    };
   }, []);
 
-  // Start auto-play
-  const startAutoPlay = useCallback(() => {
-    clearAutoPlayTimer();
-    setIsAutoPlaying(true);
+  // Child components, such as ShareButton, call this to pause autoplay.
+  const handlePauseAutoPlay = useCallback(() => setUserPaused(true), []);
 
-    autoPlayTimerRef.current = setTimeout(() => {
-      setCurrentCardIndex(prev => {
-        const nextIndex = prev + 1;
-        if (nextIndex >= totalCards) {
-          return 0;  // Cycle back to beginning
-        }
-        return nextIndex;
-      });
-    }, autoPlayDuration);
-  }, [totalCards, autoPlayDuration, clearAutoPlayTimer]);
+  const handleToggleAutoPlay = () => setUserPaused((paused) => !paused);
 
-  // Navigation handlers
-  const handleNext = useCallback(() => {
-    setCurrentCardIndex(prev => {
-      const nextIndex = prev + 1;
-      if (nextIndex >= totalCards) return 0;  // Cycle to beginning
-      previousCardIndexRef.current = prev;
-      setIsNavigatingBackward(false);
-      return nextIndex;
-    });
-    clearAutoPlayTimer();
-    // Continue autoplay unless manually paused
-    if (!userManuallyPaused) {
-      setIsAutoPlaying(true);
+  useShortcutKeys((event) => {
+    if (event.key === 'ArrowRight') {
+      next();
+    } else if (event.key === 'ArrowLeft') {
+      previous();
     }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
-
-  const handlePrevious = useCallback(() => {
-    setCurrentCardIndex(prev => {
-      const prevIndex = prev - 1;
-      if (prevIndex < 0) return totalCards - 1;  // Cycle to end
-      previousCardIndexRef.current = prev;
-      setIsNavigatingBackward(true);
-      return prevIndex;
-    });
-    clearAutoPlayTimer();
-    // Continue autoplay unless manually paused
-    if (!userManuallyPaused) {
-      setIsAutoPlaying(true);
-    }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
-
-  const handleJumpToCard = useCallback((index: number) => {
-    if (index >= 0 && index < totalCards) {
-      setCurrentCardIndex(prevIndex => {
-        setIsNavigatingBackward(index < prevIndex);
-        previousCardIndexRef.current = prevIndex;
-        return index;
-      });
-      clearAutoPlayTimer();
-      // Continue autoplay unless manually paused
-      if (!userManuallyPaused) {
-        setIsAutoPlaying(true);
-      }
-    }
-  }, [totalCards, clearAutoPlayTimer, userManuallyPaused]);
-
-  const handleToggleAutoPlay = useCallback(() => {
-    if (isAutoPlaying) {
-      clearAutoPlayTimer();
-      setIsAutoPlaying(false);
-      setUserManuallyPaused(true);
-    } else {
-      setUserManuallyPaused(false);
-      startAutoPlay();
-    }
-  }, [isAutoPlaying, clearAutoPlayTimer, startAutoPlay]);
-
-  // Pause autoplay callback to be called from child components (e.g., ShareButton)
-  const handlePauseAutoPlay = useCallback(() => {
-    clearAutoPlayTimer();
-    setIsAutoPlaying(false);
-    setUserManuallyPaused(true);
-  }, [clearAutoPlayTimer]);
-
-  // Store latest handlers in refs for event listeners
-  const handleNextRef = useRef(handleNext);
-  const handlePreviousRef = useRef(handlePrevious);
-  const clearAutoPlayTimerRef2 = useRef(clearAutoPlayTimer);
-
-  useEffect(() => {
-    handleNextRef.current = handleNext;
-    handlePreviousRef.current = handlePrevious;
-    clearAutoPlayTimerRef2.current = clearAutoPlayTimer;
   });
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      switch (event.key) {
-        case 'ArrowRight':
-          handleNextRef.current();
-          break;
-        case 'ArrowLeft':
-          handlePreviousRef.current();
-          break;
-        case 'Escape':
-          clearAutoPlayTimerRef2.current();
-          setIsAutoPlaying(false);
-          break;
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []); // Empty deps - event listener set up once
-
-  // Touch/swipe handling
-  const touchStartXRef = useRef<number | null>(null);
-  const touchStartYRef = useRef<number | null>(null);
-  const touchStartTimeRef = useRef<number | null>(null);
-
-  // Clear swipe arrow animation
-  const clearSwipeArrowTimer = useCallback(() => {
-    if (swipeArrowTimerRef.current) {
-      clearTimeout(swipeArrowTimerRef.current);
+  const showSwipeArrow = (direction: SwipeArrow['direction']) => {
+    setSwipeArrow((current) => ({ direction, key: (current?.key ?? 0) + 1 }));
+    if (swipeArrowTimerRef.current) clearTimeout(swipeArrowTimerRef.current);
+    swipeArrowTimerRef.current = setTimeout(() => {
       swipeArrowTimerRef.current = null;
-    }
-  }, []);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartXRef.current = e.touches[0].clientX;
-    touchStartYRef.current = e.touches[0].clientY;
-    touchStartTimeRef.current = Date.now();
+      setSwipeArrow(null);
+    }, SWIPE_ARROW_DURATION);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null || touchStartYRef.current === null || touchStartTimeRef.current === null) return;
+  const touchStartRef = useRef<TouchStart | null>(null);
 
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-    const touchDuration = Date.now() - touchStartTimeRef.current;
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isCardNavigationTouch(e.target as Element, e.currentTarget)) {
+      touchStartRef.current = null;
+      return;
+    }
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      time: Date.now(),
+    };
+  };
 
-    const horizontalDifference = touchStartXRef.current - touchEndX;
-    const verticalDifference = Math.abs(touchStartYRef.current - touchEndY);
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touchStart = touchStartRef.current;
+    if (!touchStart) return;
+    touchStartRef.current = null;
 
-    const swipeThreshold = 50; // pixels for swipe
-    const tapThreshold = 10; // pixels for tap
-    const tapDurationThreshold = 300; // milliseconds
+    const touchDuration = Date.now() - touchStart.time;
+    const horizontalDifference = touchStart.x - e.changedTouches[0].clientX;
+    const verticalDifference = Math.abs(touchStart.y - e.changedTouches[0].clientY);
 
-    // Detect swipe (significant horizontal movement)
-    if (Math.abs(horizontalDifference) > swipeThreshold && verticalDifference < swipeThreshold) {
+    const isSwipe =
+      Math.abs(horizontalDifference) > SWIPE_MIN_DISTANCE &&
+      verticalDifference < SWIPE_MIN_DISTANCE;
+    const isTap =
+      Math.abs(horizontalDifference) < TAP_MAX_DISTANCE &&
+      verticalDifference < TAP_MAX_DISTANCE &&
+      touchDuration < TAP_MAX_DURATION;
+
+    if (isSwipe) {
       if (horizontalDifference > 0) {
-        setSwipeArrowDirection('left');
-        handleNext();
+        showSwipeArrow('left');
+        next();
       } else {
-        setSwipeArrowDirection('right');
-        handlePrevious();
+        showSwipeArrow('right');
+        previous();
       }
-
-      // Clear previous timer
-      clearSwipeArrowTimer();
-
-      // Hide arrow after animation completes
-      swipeArrowTimerRef.current = setTimeout(() => {
-        setSwipeArrowDirection(null);
-      }, 600);
-    }
-    // Detect tap (minimal movement and quick duration)
-    else if (
-      Math.abs(horizontalDifference) < tapThreshold &&
-      verticalDifference < tapThreshold &&
-      touchDuration < tapDurationThreshold
-    ) {
-      // Get viewport element for width calculation
-      const viewportElement = e.currentTarget as HTMLElement;
-      const viewportWidth = viewportElement.offsetWidth;
-      const tapXPosition = touchStartXRef.current;
-      const midpoint = viewportWidth / 2;
-
-      // Tap on right side = next, tap on left side = previous
-      if (tapXPosition > midpoint) {
-        handleNext();
+    } else if (isTap) {
+      // A tap on the right half goes to the next card. A tap on the left half goes back.
+      const midpoint = e.currentTarget.offsetWidth / 2;
+      if (touchStart.x > midpoint) {
+        next();
       } else {
-        handlePrevious();
+        previous();
       }
     }
-
-    touchStartXRef.current = null;
-    touchStartYRef.current = null;
-    touchStartTimeRef.current = null;
   };
 
-  // Press-and-hold to pause (Instagram stories style)
-  const handlePointerDown = useCallback(() => {
+  // Press and hold pauses autoplay, as in Instagram stories.
+  // A press on a control, such as Share or an embed link, does not count.
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isCardNavigationTouch(e.target as Element, e.currentTarget)) return;
+    if (pressHoldTimerRef.current) clearTimeout(pressHoldTimerRef.current);
     pressHoldTimerRef.current = setTimeout(() => {
+      pressHoldTimerRef.current = null;
       setIsPressHolding(true);
-      clearAutoPlayTimer();
-      setIsAutoPlaying(false);
-    }, 200); // 200ms threshold to distinguish from tap
-  }, [clearAutoPlayTimer]);
+    }, PRESS_HOLD_DELAY);
+  };
 
-  const handlePointerUp = useCallback(() => {
-    // Clear the press-hold timer if it hasn't fired yet
+  // At the end of a press, cancel the hold timer and end the hold.
+  // Autoplay stays paused if the user paused it before the hold.
+  const handlePointerUp = () => {
     if (pressHoldTimerRef.current) {
       clearTimeout(pressHoldTimerRef.current);
       pressHoldTimerRef.current = null;
     }
+    setIsPressHolding(false);
+  };
 
-    // If we were holding, resume autoplay
-    if (isPressHolding) {
-      setIsPressHolding(false);
-      setUserManuallyPaused(false);
-      startAutoPlay();
-    }
-  }, [isPressHolding, startAutoPlay]);
-
-  // Start auto-play on mount and restart when card changes if autoplay is active
-  useEffect(() => {
-    if (isAutoPlaying) {
-      startAutoPlay();
-    }
-
-    return () => {
-      clearAutoPlayTimer();
-      clearSwipeArrowTimer();
-    };
-  }, [currentCardIndex, isAutoPlaying, startAutoPlay, clearAutoPlayTimer, clearSwipeArrowTimer]);
-
-  const currentCard = cards[currentCardIndex];
-  const viewportClassName = `story-viewport${currentCard?.type === 'peak-performer' ? ' peak-performer-viewport' : ''}`;
+  if (totalCards === 0) {
+    return null;
+  }
 
   return (
     <div className="wrapped-stories-container">
-      {/* Left arrow - positioned on left side of viewport */}
       <button
         className="side-nav-button side-nav-prev"
-        onClick={handlePrevious}
+        onClick={previous}
         aria-label="Previous card"
         title="Previous card"
       >
@@ -297,99 +187,64 @@ export const WrappedStoriesContainer: React.FC<WrappedStoriesContainerProps> = (
       </button>
 
       <div
-        className={viewportClassName}
+        className="story-viewport"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {/* Click zones for desktop navigation */}
-        <div
-          className="click-zone click-zone-left"
-          onClick={handlePrevious}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handlePrevious();
-            }
-          }}
-          tabIndex={0}
-          role="button"
-          aria-label="Previous card"
-        />
-        <div
-          className="click-zone click-zone-right"
-          onClick={handleNext}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleNext();
-            }
-          }}
-          tabIndex={0}
-          role="button"
-          aria-label="Next card"
-        />
-
-        {/* Swipe Arrow Indicators */}
-        {swipeArrowDirection && (
-          <>
-            {swipeArrowDirection === 'left' && (
-              <div className="swipe-arrow swipe-arrow-left">→</div>
-            )}
-            {swipeArrowDirection === 'right' && (
-              <div className="swipe-arrow swipe-arrow-right">←</div>
-            )}
-          </>
+        {swipeArrow && (
+          <div key={swipeArrow.key} className={`swipe-arrow swipe-arrow-${swipeArrow.direction}`}>
+            {swipeArrow.direction === 'left' ? '→' : '←'}
+          </div>
         )}
 
-        {/* Render all cards - CSS makes only active one visible */}
+        <StoryProgress
+          currentCardIndex={currentIndex}
+          totalCards={totalCards}
+          onJumpToCard={jumpTo}
+          isAutoPlaying={isAutoPlaying}
+          autoPlayDuration={autoPlayDuration}
+          isNavigatingBackward={isBackward}
+        />
+
+        {/* All cards render, so the PDF export can read them. CSS shows only the active card. */}
         {cards.map((card, index) => (
           <StoryCard
             key={card.id}
             card={card}
-            isActive={index === currentCardIndex}
-            cardIndex={index}
+            isActive={index === currentIndex}
             cardRef={cardRefs[index]}
-            allCards={cardRefs}
-            summaryMetrics={summaryMetrics}
-            onPauseAutoplay={handlePauseAutoPlay}
-            currentCardIndex={currentCardIndex}
-            totalCards={totalCards}
-            onJumpToCard={handleJumpToCard}
-            isAutoPlaying={isAutoPlaying}
-            autoPlayDuration={autoPlayDuration}
-            isNavigatingBackward={isNavigatingBackward}
+            allCardRefs={cardRefs}
+            shareInfo={shareInfo}
+            onPauseAutoPlay={handlePauseAutoPlay}
           />
         ))}
       </div>
 
-      {/* Right arrow - positioned on right side of viewport */}
       <button
         className="side-nav-button side-nav-next"
-        onClick={handleNext}
+        onClick={next}
         aria-label="Next card"
         title="Next card"
       >
         →
       </button>
 
-      {/* Pause button stays centered below */}
       <div className="story-controls">
         <button
-          className={`control-button autoplay-button ${isAutoPlaying ? 'playing' : ''}`}
+          className={`control-button autoplay-button ${userPaused ? '' : 'playing'}`}
           onClick={handleToggleAutoPlay}
-          aria-label={isAutoPlaying ? 'Pause auto-play' : 'Start auto-play'}
-          title={isAutoPlaying ? 'Pause' : 'Play'}
+          aria-label={userPaused ? 'Start auto-play' : 'Pause auto-play'}
+          title={userPaused ? 'Play' : 'Pause'}
         >
-          {isAutoPlaying ? '⏸' : '►'}
+          {userPaused ? '►' : '⏸'}
         </button>
         {onUploadNewData && (
           <button
-            className="control-button upload-button mobile-only-upload"
+            className="control-button mobile-only-upload"
             onClick={onUploadNewData}
-            aria-label="Upload new data"
             title="Upload new data"
           >
             Upload new data

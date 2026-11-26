@@ -1,73 +1,29 @@
 .final-message {
-  text-align: left;
-  padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: left;
-  align-items: left;
-  animation: fadeInUp 0.8s ease-out forwards;
+  padding: 2rem 1rem;
+  text-align: left;
 }
 
 .final-message-title {
-  font-family: Roobert, var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  background: var(--pink-blue-gradient);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0;
-  letter-spacing: -0.5px;
+  font-family: var(--font-heading);
+  font-size: clamp(48px, 5.8vw, 88px);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -0.05em;
+  color: var(--text);
 }
 
 .final-message-subtitle {
-  font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
   padding-top: 1rem;
-  font-weight: 500;
-  letter-spacing: -0.3px;
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 .wave-image {
-  height: 1.5rem;
   width: auto;
-  vertical-align: middle;
+  height: 1.5rem;
   margin-left: 0.3rem;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .final-message-title {
-    font-size: 2.5rem;
-    font-family: "Roobert", sans-serif;
-  }
-
-  .final-message-subtitle {
-    font-size: 1.1rem;
-    font-family: "Roobert", sans-serif;
-  }
-}
-
-@media (max-width: 480px) {
-  .final-message-title {
-    font-size: 2rem;
-    font-family: "Roobert", sans-serif;
-  }
-
-  .final-message-subtitle {
-    font-size: 1rem;
-    font-family: "Roobert", sans-serif;
-  }
+  vertical-align: middle;
 }

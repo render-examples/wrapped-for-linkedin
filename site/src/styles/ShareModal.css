@@ -1,0 +1,154 @@
+/* The native dialog for the share modals. The browser shows it in the top layer. */
+.share-modal {
+  width: calc(100% - 2rem);
+  max-width: 650px;
+  max-height: 90vh;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.share-modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.share-modal::backdrop {
+  background: var(--scrim);
+}
+
+/* Modal content. The download steps and the native share prompt use these. */
+.instructions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.instructions-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.instructions-check-icon {
+  width: auto;
+  height: 1.5rem;
+}
+
+.instructions-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  color: var(--text-faint);
+}
+
+@media (hover: hover) {
+  .instructions-close-btn:hover {
+    color: var(--text);
+  }
+}
+
+.instructions-close-icon {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.instructions-actions {
+  padding: 1.5rem 1.5rem 0;
+}
+
+.btn-share-linkedin {
+  width: 100%;
+}
+
+.btn-linkedin-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  object-fit: contain;
+}
+
+.instructions-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.instructions-text,
+.instruction-step {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.instructions-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.instruction-image {
+  max-width: 100%;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.instruction-images-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.instruction-images-column .instruction-image {
+  max-width: 500px;
+  margin-top: 0;
+}
+
+.instructions-disclaimer {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.disclaimer-text {
+  font-size: 0.9rem;
+  color: var(--text-faint);
+}
+
+.disclaimer-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.5em;
+  vertical-align: -0.2em;
+}
+
+@media (max-width: 480px) {
+  .share-modal {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .instructions-header,
+  .instructions-content {
+    padding: 1rem;
+  }
+
+  .instructions-actions {
+    padding: 1rem 1rem 0;
+  }
+
+  .instructions-close-btn {
+    width: 44px;
+    height: 44px;
+  }
+}

@@ -1,217 +1,225 @@
 /**
- * Utility to export HTML card elements as PNG images
- * Uses html-to-image for efficient rendering
- * Removes share buttons and replaces iframes before export
+ * Export story cards as PNG images with html-to-image.
  *
- * Performance optimizations:
- * - Element cloning to avoid DOM mutations
- * - Batched DOM operations
- * - Direct conversion to PNG via html-to-image
- * - Clean separation of concerns with imageExport and pdfExport
- * - Image caching to avoid re-rendering unchanged cards
- * - Content hashing for cache invalidation
+ * Each card is cloned into a fixed-size off-screen container, so the PNG is
+ * 1080 × 1350 on every device. The clone gets the `story-card-export` class,
+ * which the stylesheet uses for export-only layout.
  */
 
-// Export configuration constants
-const EXPORT_PIXEL_RATIO = 1.5;
-const TEXT_COLOR_OPACITY = 0.95;
-const EXPORT_ZINDEX = 999999;
-const EXPORT_DIMENSIONS_WIDTH = 1080;
-const EXPORT_DIMENSIONS_HEIGHT = 1350;
-
+import { createElement } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { toPng } from 'html-to-image';
-import { imageCache } from '@exports/imageCache';
 import hashSum from 'hash-sum';
+import { imageCache } from '@exports/imageCache';
+import { isPostImageDataUrl } from '@exports/postScreenshot';
+import { Icon } from '@components/Icon';
 
-/**
- * Prepare a cloned element for export by cleaning up styles and removing unwanted elements
- * @param clone The cloned element to prepare
- * @returns Object with prepared clone and style element for cleanup
- */
-function prepareElementForExport(clone: HTMLElement): { clone: HTMLElement; styleElement: HTMLStyleElement } {
-  // Batch DOM cleanup - remove unwanted elements
-  const shareButtons = clone.querySelectorAll('.share-button-wrapper, .share-button, [class*="share"]');
-  const iframeContainers = clone.querySelectorAll('.peak-post-embed-container');
+export const EXPORT_WIDTH = 1080;
+export const EXPORT_HEIGHT = 1350;
 
-  // Remove share buttons
-  shareButtons.forEach(btn => btn.remove());
+// The clone is laid out at this CSS size and scaled up to EXPORT_WIDTH × EXPORT_HEIGHT.
+const EXPORT_CSS_WIDTH = 432;
+const EXPORT_CSS_HEIGHT = (EXPORT_CSS_WIDTH * EXPORT_HEIGHT) / EXPORT_WIDTH;
+const EXPORT_PIXEL_RATIO = EXPORT_WIDTH / EXPORT_CSS_WIDTH;
+const EXPORT_ZINDEX = 999999;
 
-  // Replace iframes with trophy emoji for peak performer card exports
-  iframeContainers.forEach((container) => {
-    const trophyDiv = document.createElement('div');
-    trophyDiv.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 200px; font-size: 3.5rem;';
-    trophyDiv.textContent = '🏆';
-    container.replaceWith(trophyDiv);
-  });
+// Elements that only make sense on screen.
+const SCREEN_ONLY_SELECTORS = ['.share-button-wrapper', '.card-logo', '.post-status-link'].join(
+  ', ',
+);
 
-  // Ensure clone is visible and properly formatted
-  clone.style.opacity = '1';
-  clone.style.transform = 'scale(1)';
-  clone.style.visibility = 'visible';
-  clone.style.display = 'block';
-  clone.style.borderRadius = '0';
-  clone.style.overflow = 'hidden';
+export interface ExportCardOptions {
+  // Data URL of the post screenshot for the Peak Performer card, or null to show the fallback.
+  postImage?: string | null;
+}
 
-  // Remove selection highlighting styles via global CSS injection
-  const styleId = 'png-export-styles-' + Math.random().toString(36).slice(2, 11);
-  const styleElement = document.createElement('style');
-  styleElement.id = styleId;
-  styleElement.innerHTML = `
-    *::selection {
-      background: transparent !important;
-      color: inherit !important;
-    }
-    *::-moz-selection {
-      background: transparent !important;
-      color: inherit !important;
-    }
-  `;
-  document.head.appendChild(styleElement);
+// Get the page background color from the `--bg` token in index.css.
+function getBackgroundColor(element: HTMLElement): string {
+  return getComputedStyle(element).getPropertyValue('--bg').trim();
+}
 
-  // Single comprehensive pass through all elements for style normalization
-  const allElements = [clone, ...Array.from(clone.querySelectorAll('*'))] as HTMLElement[];
-  allElements.forEach((el) => {
-    // Disable user selection
-    el.style.userSelect = 'none';
-    (el.style as any).webkitUserSelect = 'none';
-    (el.style as any).msUserSelect = 'none';
-    (el.style as any).mozUserSelect = 'none';
+// Render the trophy icon at once, so the clone has the SVG before the export reads it.
+// Copy the SVG out of the React root, then unmount the root.
+function createPostFallback(): HTMLElement {
+  const fallback = document.createElement('div');
+  fallback.className = 'peak-post-export-fallback';
+  const icon = document.createElement('div');
+  icon.className = 'peak-post-export-fallback-icon';
+  const holder = document.createElement('div');
+  const root = createRoot(holder);
+  flushSync(() => root.render(createElement(Icon, { name: 'trophy' })));
+  icon.append(...Array.from(holder.childNodes, (node) => node.cloneNode(true)));
+  root.unmount();
+  fallback.appendChild(icon);
+  return fallback;
+}
 
-    // Remove background-related styles from child elements only (preserve root gradient)
-    // Skip the clone element itself to keep the card's gradient background
-    if (el !== clone) {
-      el.style.setProperty('background', 'transparent', 'important');
-      el.style.setProperty('backgroundImage', 'none', 'important');
-      el.style.setProperty('backgroundClip', 'unset', 'important');
-    }
+interface PostImage {
+  src: string;
+  width: number;
+  height: number;
+}
 
-    // Remove webkit-specific gradient text styles
-    (el.style as any).setProperty('-webkit-background-clip', 'unset', 'important');
-    (el.style as any).setProperty('-webkit-text-fill-color', 'unset', 'important');
-    (el.style as any).setProperty('-moz-background-clip', 'unset', 'important');
+async function loadPostImage(src: string): Promise<PostImage | null> {
+  const image = new Image();
+  image.src = src;
+  try {
+    await image.decode();
+  } catch {
+    return null;
+  }
+  return { src, width: image.naturalWidth, height: image.naturalHeight };
+}
 
-    // Set explicit white color
-    el.style.setProperty(`color`, `rgba(255, 255, 255, ${TEXT_COLOR_OPACITY})`, 'important');
-
-    // Remove shadows that might create highlighting effect
-    el.style.setProperty('textShadow', 'none', 'important');
-    el.style.setProperty('boxShadow', 'none', 'important');
-  });
-
-  return { clone, styleElement };
+// A background image, because html-to-image does not apply object-fit to <img> elements.
+// The aspect ratio makes the box as tall as the image, so no empty area shows below the post.
+function createPostImage({ src, width, height }: PostImage): HTMLElement {
+  const image = document.createElement('div');
+  image.className = 'peak-post-export-image';
+  image.style.backgroundImage = `url("${src}")`;
+  image.style.aspectRatio = `${width} / ${height}`;
+  return image;
 }
 
 /**
- * Export a single card as PNG image using html-to-image
- * Checks cache first to avoid re-rendering unchanged cards
- * @param element The card element to export
- * @param backgroundColor Optional background color for the PNG (defaults to dark)
- * @param useCache Optional flag to enable caching (default: true)
- * @param cardId Optional card ID for cache key (uses element ID if available)
- * @returns A promise that resolves to a data URL string
+ * Remove screen-only elements and replace the LinkedIn iframe.
+ * The browser cannot read pixels from a cross-origin iframe, so the export
+ * uses a server-side screenshot or a trophy icon.
+ */
+function prepareCloneContent(clone: HTMLElement, postImage: PostImage | null): void {
+  clone.querySelectorAll(SCREEN_ONLY_SELECTORS).forEach((el) => el.remove());
+
+  clone
+    .querySelectorAll('.peak-post-embed-container, .peak-post-unavailable')
+    .forEach((el) => el.replaceWith(postImage ? createPostImage(postImage) : createPostFallback()));
+
+  clone.classList.add('active', 'story-card-export');
+}
+
+/**
+ * html-to-image does not render gradient text (`background-clip: text`)
+ * correctly. Replace it with solid text in the element's own color.
+ * Call this after the clone is in the DOM, so computed styles are available.
+ */
+function flattenGradientText(clone: HTMLElement): void {
+  const elements = [clone, ...Array.from(clone.querySelectorAll<HTMLElement>('*'))];
+  for (const el of elements) {
+    const style = getComputedStyle(el);
+    const clip = style.getPropertyValue('-webkit-background-clip') || style.backgroundClip;
+    if (clip !== 'text') {
+      continue;
+    }
+    el.style.setProperty('background', 'none', 'important');
+    el.style.setProperty('-webkit-background-clip', 'border-box', 'important');
+    el.style.setProperty('background-clip', 'border-box', 'important');
+    el.style.setProperty('-webkit-text-fill-color', 'currentColor', 'important');
+  }
+}
+
+function waitForImages(root: HTMLElement): Promise<void> {
+  const images = Array.from(root.querySelectorAll('img'));
+  return Promise.all(
+    images.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => {
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+          }),
+    ),
+  ).then(() => undefined);
+}
+
+// The key uses the card HTML and the post screenshot. Only the Peak Performer card has a
+// screenshot, so the large data URL is hashed at most once per export.
+function getCacheKey(element: HTMLElement, postImage: string | null): string {
+  const postKey = postImage ? hashSum(postImage) : 'none';
+  return `card-${hashSum(element.innerHTML)}-${postKey}`;
+}
+
+// Lay out the clone at the export size in a hidden container on the page.
+// html-to-image needs the clone in the DOM to read computed styles.
+function mountOffscreen(clone: HTMLElement): HTMLElement {
+  Object.assign(clone.style, {
+    position: 'relative',
+    inset: 'auto',
+    width: `${EXPORT_CSS_WIDTH}px`,
+    height: `${EXPORT_CSS_HEIGHT}px`,
+    margin: '0',
+    opacity: '1',
+    transform: 'none',
+    transition: 'none',
+    visibility: 'visible',
+    borderRadius: '0',
+    overflow: 'hidden',
+  });
+
+  const container = document.createElement('div');
+  Object.assign(container.style, {
+    position: 'fixed',
+    left: '0',
+    top: '0',
+    width: `${EXPORT_CSS_WIDTH}px`,
+    height: `${EXPORT_CSS_HEIGHT}px`,
+    zIndex: String(EXPORT_ZINDEX),
+    pointerEvents: 'none',
+    opacity: '0',
+  });
+
+  container.appendChild(clone);
+  document.body.appendChild(container);
+  return container;
+}
+
+/**
+ * Export a single card as a 1080 × 1350 PNG.
+ * Results are cached by card content and post screenshot.
+ * @returns A data URL of the PNG.
  */
 export async function exportCardAsImage(
   element: HTMLElement,
-  backgroundColor: string = '#0F0F0F',
-  useCache: boolean = true,
-  cardId?: string
+  options: ExportCardOptions = {},
 ): Promise<string> {
   try {
-    // Generate stable cache key using element content hash
-    let id = cardId || element.id;
-    if (!id) {
-      // Use element's innerHTML hash for stable identification
-      const contentHash = hashSum(element.innerHTML);
-      id = `card-${contentHash}`;
-    }
-    const cacheKey = `${id}-${backgroundColor.replace('#', '')}`;
+    // Only the Peak Performer card shows the post screenshot. Use only a PNG or JPEG data URL,
+    // because the export puts it in a CSS url().
+    const usesPostImage = element.querySelector('.peak-post-embed-wrapper') !== null;
+    const postImage =
+      usesPostImage && options.postImage && isPostImageDataUrl(options.postImage)
+        ? options.postImage
+        : null;
 
-    // Check cache first
-    if (useCache) {
-      const cachedImage = imageCache.get(cacheKey);
-      if (cachedImage) {
-        return cachedImage.dataUrl;
-      }
+    const cacheKey = getCacheKey(element, postImage);
+    const cached = imageCache.get(cacheKey);
+    if (cached) {
+      return cached;
     }
 
-    // Clone the element to avoid modifying the original
+    const loadedPostImage = postImage ? await loadPostImage(postImage) : null;
     const clone = element.cloneNode(true) as HTMLElement;
-
-    // Prepare the clone for export
-    const { clone: preparedClone, styleElement } = prepareElementForExport(clone);
-
-    // Get dimensions
-    const rect = element.getBoundingClientRect();
-    const width = Math.ceil(rect.width || 400);
-    const height = Math.ceil(rect.height || 600);
-
-    // Set up clone styling
-    preparedClone.style.width = `${width}px`;
-    preparedClone.style.height = `${height}px`;
-    preparedClone.style.margin = '0';
-    preparedClone.style.padding = window.getComputedStyle(element).padding;
-    preparedClone.style.boxSizing = 'border-box';
-    preparedClone.style.position = 'relative';
-    preparedClone.style.display = 'block';
-
-    // Place in DOM at visible location
-    const container = document.createElement('div');
-    container.style.position = 'fixed';
-    container.style.left = '0';
-    container.style.top = '0';
-    container.style.width = `${width}px`;
-    container.style.height = `${height}px`;
-    container.style.zIndex = EXPORT_ZINDEX.toString();
-    container.style.pointerEvents = 'none';
-    container.style.opacity = '0';
-
-    container.appendChild(preparedClone);
-    document.body.appendChild(container);
+    prepareCloneContent(clone, loadedPostImage);
+    const container = mountOffscreen(clone);
 
     try {
-      // Convert to PNG using html-to-image with high resolution
-      const dataUrl = await toPng(preparedClone, {
+      flattenGradientText(clone);
+      await waitForImages(clone);
+
+      const dataUrl = await toPng(clone, {
         cacheBust: true,
         pixelRatio: EXPORT_PIXEL_RATIO,
-        backgroundColor,
+        width: EXPORT_CSS_WIDTH,
+        height: EXPORT_CSS_HEIGHT,
+        backgroundColor: getBackgroundColor(clone),
       });
 
-      // Store in cache
-      if (useCache) {
-        const size = dataUrl.length; // Approximate size in bytes
-        imageCache.set(cacheKey, {
-          dataUrl,
-          timestamp: Date.now(),
-          backgroundColor,
-          size,
-        });
-      }
-
+      imageCache.set(cacheKey, dataUrl);
       return dataUrl;
     } finally {
-      // Clean up DOM elements
-      if (document.body.contains(container)) {
-        document.body.removeChild(container);
-      }
-      // Clean up style element to prevent memory leak
-      if (document.head.contains(styleElement)) {
-        document.head.removeChild(styleElement);
-      }
+      container.remove();
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to export card as image: ${errorMessage}`);
   }
 }
-
-/**
- * Get the optimal dimensions for a card export
- * Returns width and height for LinkedIn-friendly aspect ratio
- */
-export function getOptimalExportDimensions(): { width: number; height: number } {
-  return {
-    width: EXPORT_DIMENSIONS_WIDTH,
-    height: EXPORT_DIMENSIONS_HEIGHT,
-  };
-}
-
