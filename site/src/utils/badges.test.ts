@@ -68,7 +68,7 @@ describe('getEarnedBadges', () => {
     ]);
   });
 
-  it('earns Viral at 100K impressions on the top post', () => {
+  it('earns Main character at 100K impressions on the top post', () => {
     expect(earnedIds(topPost(VIRAL_POST_IMPRESSIONS - 1))).toEqual([]);
     expect(earnedIds(topPost(VIRAL_POST_IMPRESSIONS))).toEqual(['viral']);
   });

@@ -60,7 +60,7 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'viral',
-    name: 'Viral',
+    name: 'Main character',
     description: `A post with ${formatNumber(VIRAL_POST_IMPRESSIONS)}+ impressions`,
     shareSentence: `One of my posts hit ${formatNumber(VIRAL_POST_IMPRESSIONS)} impressions this year. Did yours?`,
     icon: 'rocket',
