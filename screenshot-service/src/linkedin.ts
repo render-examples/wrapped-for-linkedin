@@ -181,6 +181,8 @@ const runWithPageLimit = createLimiter({
   queueTimeoutMs: QUEUE_TIMEOUT_MS,
 });
 
+const ERROR_RESULT: ScreenshotResult = { status: 'error' };
+
 type ScreenshotOptions = {
   // For tests.
   launch?: () => Promise<Browser>;
@@ -211,7 +213,7 @@ export function takePostScreenshot(
       if (expired) {
         // The deadline passed while the context opened. The finally block below already ran.
         await newContext.close().catch(() => {});
-        return { status: 'error' };
+        return ERROR_RESULT;
       }
       await newContext.route('**/*', (route) =>
         isAllowedRequestUrl(route.request().url()) ? route.continue() : route.abort()
@@ -220,14 +222,11 @@ export function takePostScreenshot(
     };
 
     const deadline = new Promise<ScreenshotResult>((resolve) => {
-      timer = setTimeout(() => {
-        expired = true;
-        resolve({ status: 'error' });
-      }, deadlineMs);
+      timer = setTimeout(() => resolve(ERROR_RESULT), deadlineMs);
     });
 
     try {
-      return await Promise.race([capture().catch((): ScreenshotResult => ({ status: 'error' })), deadline]);
+      return await Promise.race([capture().catch(() => ERROR_RESULT), deadline]);
     } finally {
       clearTimeout(timer);
       expired = true;

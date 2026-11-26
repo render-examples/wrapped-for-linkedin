@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as XLSX from 'xlsx';
 import { processExcelFile } from '@utils/excel/excelProcessor';
 
@@ -11,6 +11,8 @@ function workbookFile(sheetName: string): File {
 }
 
 describe('processExcelFile', () => {
+  afterEach(() => vi.restoreAllMocks());
+
   it('rejects an empty file', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     await expect(processExcelFile(new File([], 'empty.xlsx'))).rejects.toThrow(NOT_AN_EXPORT);

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CACHE_VERSION, storageManager } from '@utils/storageManager';
 
 const CACHE_KEY = 'wrapped-for-linkedin-cache';
@@ -20,6 +20,11 @@ function memoryStorage(): Storage {
 beforeEach(() => {
   vi.stubGlobal('localStorage', memoryStorage());
   vi.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('storageManager.load', () => {
