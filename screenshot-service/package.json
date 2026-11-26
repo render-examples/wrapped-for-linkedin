@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Takes screenshots of public LinkedIn post embeds for Wrapped for LinkedIn exports.",
+  "license": "MIT",
   "engines": {
     "node": ">=22.18"
   },

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "vulnerabilityAlerts": { "schedule": ["at any time"] },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "minor and patch updates"
+    },
+    {
+      "matchPackageNames": ["playwright", "mcr.microsoft.com/playwright"],
+      "groupName": "playwright"
+    },
+    {
+      "matchPackageNames": ["xlsx"],
+      "enabled": false
+    }
+  ]
+}
