@@ -130,8 +130,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
           <strong>Your analytics data never leaves your browser</strong>
           <br /> <br />
           <span className="privacy-disclaimer-text">
-            All processing happens locally. To show and export your top posts, the app sends only
-            each post's public ID to our server.
+            The app reads your file in your browser. <br /> To show and export your top posts, it
+            sends public post IDs to our server.
           </span>
           <br /> <br />
           <a
