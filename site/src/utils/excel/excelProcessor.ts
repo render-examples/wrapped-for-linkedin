@@ -13,17 +13,36 @@ import {
   calculateMedianDailyImpressions,
 } from '@utils/excel/engagementParser';
 import { parseFollowers } from '@utils/excel/followersParser';
+import { SHEET_NAMES } from '@utils/excel/constants';
+import { findSheet } from '@utils/excel/utils';
+
+const KNOWN_SHEETS = Object.values(SHEET_NAMES);
 
 /**
- * @throws An Error if the file is not a valid Excel file.
+ * @throws An Error with a message for the user if the file is not a LinkedIn analytics export.
  */
 export async function processExcelFile(file: File): Promise<ParsedExcelData> {
+  let workbook: XLSX.WorkBook;
   try {
-    const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array' });
-    if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-      throw new Error('Invalid Excel file: no sheets found');
-    }
+    // Parse only the sheets the app uses.
+    workbook = XLSX.read(await file.arrayBuffer(), {
+      type: 'array',
+      sheets: KNOWN_SHEETS.flat(),
+      cellFormula: false,
+      cellHTML: false,
+    });
+  } catch (error) {
+    console.error('Error reading Excel file:', error);
+    throw new Error(
+      'This file could not be read. Upload the .xlsx file that you exported from LinkedIn.',
+    );
+  }
 
+  if (!KNOWN_SHEETS.some((names) => findSheet(workbook, names))) {
+    throw new Error('This file is not a LinkedIn analytics export.');
+  }
+
+  try {
     const parsedData: ParsedExcelData = {};
 
     let discoveryData = parseDiscovery(workbook);
@@ -64,7 +83,7 @@ export async function processExcelFile(file: File): Promise<ParsedExcelData> {
   } catch (error) {
     console.error('Error processing Excel file:', error);
     throw new Error(
-      `Failed to process Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'The data in this file could not be read. Export the file from LinkedIn again and upload it.',
     );
   }
 }

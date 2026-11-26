@@ -1,11 +1,26 @@
 import React, { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { ErrorCode, useDropzone, type FileRejection } from 'react-dropzone';
 import type { ParsedExcelData } from '@utils/excel/types';
 import { useCache } from '@/hooks/useCache';
 import { useSampleData } from '@/hooks/useSampleData';
 import { SampleDataButton } from '@components/SampleDataButton';
 import { isTouchDevice } from '@utils/webShare';
 import '@styles/FileUpload.css';
+
+// Real exports are under 200 KB.
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+const REJECTION_MESSAGES: Record<string, string> = {
+  [ErrorCode.FileTooLarge]: 'This file is larger than 10 MB. A LinkedIn analytics export is smaller.',
+  [ErrorCode.FileInvalidType]:
+    'Upload an Excel (.xlsx) file. Export it from your LinkedIn analytics.',
+  [ErrorCode.TooManyFiles]: 'Upload one file at a time.',
+};
+
+function rejectionMessage(rejections: FileRejection[]): string {
+  const code = rejections[0]?.errors[0]?.code;
+  return (code && REJECTION_MESSAGES[code]) || REJECTION_MESSAGES[ErrorCode.FileInvalidType];
+}
 
 interface FileUploadProps {
   onDataLoaded: (data: ParsedExcelData) => void;
@@ -44,8 +59,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, onError })
     accept: {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
-    onDropRejected: () =>
-      onError('Upload an Excel (.xlsx) file. Export it from your LinkedIn analytics.'),
+    maxSize: MAX_FILE_SIZE,
+    maxFiles: 1,
+    multiple: false,
+    onDropRejected: (rejections) => onError(rejectionMessage(rejections)),
     disabled: isDisabled,
   });
 
