@@ -11,7 +11,8 @@ import '@styles/FileUpload.css';
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const REJECTION_MESSAGES: Record<string, string> = {
-  [ErrorCode.FileTooLarge]: 'This file is larger than 10 MB. A LinkedIn analytics export is smaller.',
+  [ErrorCode.FileTooLarge]:
+    'This file is larger than 10 MB. A LinkedIn analytics export is smaller.',
   [ErrorCode.FileInvalidType]:
     'Upload an Excel (.xlsx) file. Export it from your LinkedIn analytics.',
   [ErrorCode.TooManyFiles]: 'Upload one file at a time.',

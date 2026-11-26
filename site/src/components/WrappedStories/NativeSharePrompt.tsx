@@ -60,11 +60,7 @@ export const NativeSharePrompt: React.FC<NativeSharePromptProps> = ({
           onClick={handleShare}
           disabled={isSharing}
         >
-          <img
-            src="/images/dashboard/linkedin-logo.png"
-            alt=""
-            className="btn-linkedin-icon"
-          />
+          <img src="/images/dashboard/linkedin-logo.png" alt="" className="btn-linkedin-icon" />
           Share to LinkedIn
         </button>
         <button className="button secondary native-share-download" onClick={onFallback}>

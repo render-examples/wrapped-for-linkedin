@@ -34,11 +34,7 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
           onClick={() => openLinkedInShare(shareInfo)}
           aria-label="Share on LinkedIn with prepared text"
         >
-          <img
-            src="/images/dashboard/linkedin-logo.png"
-            alt=""
-            className="btn-linkedin-icon"
-          />
+          <img src="/images/dashboard/linkedin-logo.png" alt="" className="btn-linkedin-icon" />
           Share on LinkedIn
         </button>
       </div>
