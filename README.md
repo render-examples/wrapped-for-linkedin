@@ -95,7 +95,7 @@ The service logs only status codes. It does not log post IDs, IP addresses, or h
 Click **Deploy to Render** at the top of this README. The Blueprint creates two services:
 
 - `wrappedforlinkedin` is a static site.
-- `wrapped-for-linkedin-screenshots` is a Docker web service. It uses the Standard plan because Chromium needs about 1 GB of memory. It autoscales from 1 to 4 instances, which needs a Professional workspace or higher. In a Hobby workspace, remove the `scaling` block from `render.yaml` before you deploy.
+- `wrapped-for-linkedin-screenshots` is a Docker web service. It uses the Standard plan because Chromium needs about 1 GB of memory.
 
 If you deploy under different service names, update `VITE_SCREENSHOT_SERVICE_URL` and `ALLOWED_ORIGINS` in `render.yaml` to match the new URLs.
 
