@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { FileUpload } from '@components/FileUpload';
 import { UnifiedDashboard } from '@components/UnifiedDashboard';
 import { ErrorDisplay } from '@components/ErrorDisplay';
@@ -68,12 +69,26 @@ function App() {
 
           {error && <ErrorDisplay error={error} onRetry={resetState} />}
 
-          {!error &&
-            (data ? (
-              <UnifiedDashboard data={data} onUploadNewData={handleClearCache} />
-            ) : (
-              <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
-            ))}
+          {!error && (
+            // Cached data can cause a render error, so Try again also clears the cache.
+            <ErrorBoundary
+              fallbackRender={({ resetErrorBoundary }) => (
+                <ErrorDisplay
+                  error="The app could not show this data. Upload your file again."
+                  onRetry={resetErrorBoundary}
+                />
+              )}
+              onReset={handleClearCache}
+              onError={(renderError) => console.error('Render error:', renderError)}
+              resetKeys={[data]}
+            >
+              {data ? (
+                <UnifiedDashboard data={data} onUploadNewData={handleClearCache} />
+              ) : (
+                <FileUpload onDataLoaded={handleDataLoaded} onError={setError} />
+              )}
+            </ErrorBoundary>
+          )}
         </main>
       </div>
 

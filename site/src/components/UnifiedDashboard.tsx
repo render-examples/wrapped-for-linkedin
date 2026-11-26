@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { YearSummary } from '@components/YearSummary';
 import { TopPostsDisplay } from '@components/TopPostsDisplay';
 import { DemographicsView } from '@components/DemographicsView';
@@ -44,11 +45,17 @@ export const UnifiedDashboard: React.FC<UnifiedDashboardProps> = ({ data, onUplo
   return (
     <div className="unified-dashboard">
       {wrappedCards.length > 0 && (
-        <WrappedStoriesContainer
-          cards={wrappedCards}
-          shareInfo={shareInfo}
-          onUploadNewData={onUploadNewData}
-        />
+        // A story error closes the stories and keeps the dashboard.
+        <ErrorBoundary
+          fallback={null}
+          onError={(error) => console.error('Stories render error:', error)}
+        >
+          <WrappedStoriesContainer
+            cards={wrappedCards}
+            shareInfo={shareInfo}
+            onUploadNewData={onUploadNewData}
+          />
+        </ErrorBoundary>
       )}
 
       <BadgesSection badges={earnedBadges} />
