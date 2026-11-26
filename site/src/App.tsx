@@ -124,6 +124,14 @@ function App() {
             >
               GitHub
             </a>
+            <a
+              href="https://render.com/deploy?repo=https://github.com/render-examples/wrapped-for-linkedin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              Deploy
+            </a>
           </p>
           <p className="footer-copyright">© Render {currentYear}</p>
         </div>
