@@ -62,7 +62,7 @@ export const NativeSharePrompt: React.FC<NativeSharePromptProps> = ({
         >
           <img
             src="/images/dashboard/linkedin-logo.png"
-            alt="LinkedIn"
+            alt=""
             className="btn-linkedin-icon"
           />
           Share to LinkedIn

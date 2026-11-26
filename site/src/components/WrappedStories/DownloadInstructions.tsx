@@ -36,7 +36,7 @@ export const DownloadInstructions: React.FC<DownloadInstructionsProps> = ({
         >
           <img
             src="/images/dashboard/linkedin-logo.png"
-            alt="LinkedIn"
+            alt=""
             className="btn-linkedin-icon"
           />
           Share on LinkedIn

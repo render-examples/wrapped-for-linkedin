@@ -13,7 +13,6 @@ export const Header: React.FC<HeaderProps> = ({ onLogoClick }) => {
           <button
             className="wrapped-for-linkedin-title-container"
             onClick={onLogoClick}
-            aria-label="Navigate to home"
             title="Wrapped for LinkedIn home"
           >
             <span className="logo-wrapper">
@@ -31,7 +30,6 @@ export const Header: React.FC<HeaderProps> = ({ onLogoClick }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="render-logo-link"
-            aria-label="Sign up for Render"
           >
             <span className="render-powered-text" data-mobile-text="DEPLOYED ON">
               POWERED BY AND DEPLOYED ON

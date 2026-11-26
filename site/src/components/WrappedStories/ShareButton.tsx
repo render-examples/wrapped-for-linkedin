@@ -248,7 +248,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             <>
               <img
                 src="/images/dashboard/linkedin-logo.png"
-                alt="LinkedIn"
+                alt=""
                 className="linkedin-logo-btn"
               />
               <span>Share</span>
@@ -271,7 +271,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               onKeyDown={handleMenuKeyDown}
             >
               <button className="dropdown-option" onClick={handlePNGExport}>
-                <img src="/images/share/png-file.png" alt="PNG" className="option-icon" />
+                <img src="/images/share/png-file.png" alt="" className="option-icon" />
                 <div className="option-content">
                   <div className="option-title">PNG</div>
                   <div className="option-description">Export current card as a PNG</div>
@@ -279,7 +279,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
               </button>
 
               <button className="dropdown-option" onClick={handlePDFExport}>
-                <img src="/images/share/pdf-file.png" alt="PDF" className="option-icon" />
+                <img src="/images/share/pdf-file.png" alt="" className="option-icon" />
                 <div className="option-content">
                   <div className="option-title">PDF</div>
                   <div className="option-description">Export all cards as a single PDF</div>

@@ -29,6 +29,8 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       style={{ '--card-accent': card.accent } as React.CSSProperties}
       role="region"
       aria-label={card.title}
+      // Hidden cards stay in the page, so remove them from the screen reader and Tab order.
+      inert={!isActive}
     >
       <div className="card-content-wrapper">
         <div className="card-header">

@@ -93,7 +93,7 @@ interface PostStatProps {
 const PostStat: React.FC<PostStatProps> = ({ icon, label, value }) => (
   <div className="top-post-stat-box">
     <div className="top-post-stat-icon">
-      <img src={icon} alt={label} />
+      <img src={icon} alt="" />
     </div>
     <div className="top-post-stat-info">
       <div className="top-post-stat-value">{formatNumber(value)}</div>
