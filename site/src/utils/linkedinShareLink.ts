@@ -23,7 +23,9 @@ export function buildShareText({
   const hashtags = `#WrappedForLinkedIn #${year}Recap #Render`;
 
   if (topBadgeSentence) {
-    return `${topBadgeSentence}\n\nGet your Wrapped for LinkedIn ${year}: ${APP_URL}\n\n${hashtags}`;
+    // The call to action names the current year, because new users get this year's Wrapped.
+    const currentYear = new Date().getFullYear();
+    return `${topBadgeSentence}\n\nGet your Wrapped for LinkedIn ${currentYear}: ${APP_URL}\n\n${hashtags}`;
   }
 
   return [

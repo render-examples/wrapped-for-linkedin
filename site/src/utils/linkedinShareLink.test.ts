@@ -1,10 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { generateLinkedInShareUrl } from './linkedinShareLink';
 
 const textOf = (url: string) => new URL(url).searchParams.get('text');
 
 describe('generateLinkedInShareUrl', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('starts with the badge sentence when the user has a badge', () => {
+    vi.useFakeTimers({ now: new Date(2026, 10, 1) });
     const url = generateLinkedInShareUrl({
       impressions: '1.2M',
       membersReached: '300K',
@@ -17,6 +22,18 @@ describe('generateLinkedInShareUrl', () => {
         'Get your Wrapped for LinkedIn 2026: https://wrappedforlinkedin.onrender.com/\n\n' +
         '#WrappedForLinkedIn #2026Recap #Render',
     );
+  });
+
+  it('names the current year in the call to action, not the data year', () => {
+    vi.useFakeTimers({ now: new Date(2027, 0, 15) });
+    const url = generateLinkedInShareUrl({
+      impressions: '1.2M',
+      membersReached: '300K',
+      year: 2026,
+      topBadgeSentence: 'I hit a million impressions on LinkedIn this year. Did you?',
+    });
+    expect(textOf(url)).toContain('Get your Wrapped for LinkedIn 2027: ');
+    expect(textOf(url)).toContain('#2026Recap');
   });
 
   it('keeps the stats text when the user has no badge', () => {
